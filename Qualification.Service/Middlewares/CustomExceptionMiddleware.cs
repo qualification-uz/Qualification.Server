@@ -32,7 +32,8 @@ public class CustomExceptionMiddleware
     private Task HandleExceptionAsync(HttpContext context, HttpStatusCodeException exception)
     {
         context.Response.ContentType = "application/json";
-        ErrorDetails result = new ErrorDetails()
+        
+        var result = new ErrorDetails()
         {
             Message = exception.Message,
             StatusCode = exception.StatusCode
@@ -44,7 +45,7 @@ public class CustomExceptionMiddleware
     private Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         context.Response.ContentType = "application/json";
-        ErrorDetails result = new ErrorDetails()
+        var result = new ErrorDetails()
         {
             Message = exception.ToString(),
             StatusCode = 500
