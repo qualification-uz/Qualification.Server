@@ -17,27 +17,25 @@ public class GenericRepository<TSource> : IGenericRepository<TSource> where TSou
         _dbSet = dbContext.Set<TSource>();
     }
 
-    public ValueTask<EntityEntry<TSource>> CreateAsync(TSource source) 
-        => _dbSet.AddAsync(source);
+    public async Task<TSource> AddAsync(TSource source) 
+        => (await _dbSet.AddAsync(source)).Entity;
 
+    public Task AddRangeAsync(IEnumerable<TSource> sources)
+        => _dbSet.AddRangeAsync(sources);
+    
     public TSource Update(TSource source) 
         => _dbSet.Update(source).Entity;
 
-    public Task<TSource?> GetAsync(Expression<Func<TSource, bool>> expression) 
+    public Task<TSource?> FirstOrDefaultAsync(Expression<Func<TSource, bool>> expression) 
         => _dbSet.FirstOrDefaultAsync(expression);
 
     public IQueryable<TSource> Where(Expression<Func<TSource, bool>>? expression = null)
         => expression is null ? _dbSet : _dbSet.Where(expression); 
 
-    public async Task<bool> DeleteAsync(Expression<Func<TSource, bool>> expression)
+    public async Task DeleteAsync(Expression<Func<TSource, bool>> expression)
     {
-        var entity = await _dbSet.FirstOrDefaultAsync(expression);
+        var entityies = _dbSet.Where(expression);
 
-        if (entity is null)
-            return false;
-
-        _dbSet.Remove(entity);
-
-        return true;
+        _dbSet.RemoveRange(entityies);
     }
 }

@@ -4,6 +4,6 @@ namespace Qualification.Data.IRepositories;
 
 public interface IUnitOfWork: IDisposable
 {
-    IGenericRepository<User> Users { get; }
+    IGenericRepository<Teacher> Teachers { get; }
     Task SaveChangesAsync();
 }

@@ -5,15 +5,19 @@ namespace Qualification.Data.Contexts;
 
 public class AppDbContext : DbContext
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options): base(options)
-    {
-            
-    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         
     }
-    
-    public virtual DbSet<User> Users { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        var con = "Server=127.0.0.1;Port=5432;Database=QualificationLocal;User Id=postgres;Password=root;";
+
+        optionsBuilder.UseNpgsql(con);
+    }
+
+    public virtual DbSet<Teacher> Teachers { get; set; }
+    public virtual DbSet<Student> Students { get; set; }
 }

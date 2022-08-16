@@ -8,11 +8,11 @@ public class UnitOfWork : IUnitOfWork
 {
     private readonly AppDbContext _dbContext;
     
-    public IGenericRepository<User> Users { get; }
+    public IGenericRepository<Teacher> Teachers { get; }
 
     public UnitOfWork(AppDbContext dbContext)
     {
-        Users = new GenericRepository<User>(dbContext);
+        Teachers = new GenericRepository<Teacher>(dbContext);
         _dbContext = dbContext;
     }
     

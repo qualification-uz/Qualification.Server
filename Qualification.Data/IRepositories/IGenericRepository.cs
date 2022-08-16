@@ -1,13 +1,13 @@
 using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Qualification.Data.IRepositories;
 
 public interface IGenericRepository<TSource> where TSource : class
 {
-    ValueTask<EntityEntry<TSource>> CreateAsync(TSource source);
+    Task<TSource> AddAsync(TSource source);
+    Task AddRangeAsync(IEnumerable<TSource> sources);
     TSource Update(TSource source);
-    Task<TSource?> GetAsync(Expression<Func<TSource, bool>> expression);
+    Task<TSource?> FirstOrDefaultAsync(Expression<Func<TSource, bool>> expression);
     IQueryable<TSource> Where(Expression<Func<TSource, bool>>? expression = null);
-    Task<bool> DeleteAsync(Expression<Func<TSource, bool>> expression);
+    Task DeleteAsync(Expression<Func<TSource, bool>> expression);
 }
