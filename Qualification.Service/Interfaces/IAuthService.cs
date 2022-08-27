@@ -4,5 +4,9 @@ namespace Qualification.Service.Interfaces;
 
 public interface IAuthService
 {
-    Task<string> LoginAsync(UserLoginDto loginDto, bool externalUser = false);
+    ValueTask<object> LoginAsync(
+        UserLoginDto loginDto,
+        bool isExternalUser);
+
+    ValueTask<UserDto> RegisterAsync(UserForCreationDto userDto);
 }

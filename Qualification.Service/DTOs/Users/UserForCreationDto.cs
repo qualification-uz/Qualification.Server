@@ -11,6 +11,10 @@ public class UserForCreationDto
     [Required] 
     public string LastName { get; set; }
     
+    public string MiddleName { get; set; }
+
+    public string PhoneNumber { get; set; }
+
     [Required] 
     public string Login { get; set; }
 
@@ -18,5 +22,5 @@ public class UserForCreationDto
     public string Password { get; set; }
     
     [Required]
-    public UserRole Role { get; set; }
+    public UserRole RoleId { get; set; }
 }

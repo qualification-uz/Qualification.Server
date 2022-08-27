@@ -1,65 +1,183 @@
+using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using Qualification.Domain.Entities.Users;
+using Qualification.Service.AvloniyClient;
+using Qualification.Service.DTOs.Users;
+using Qualification.Service.Exceptions;
+using Qualification.Service.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using Qualification.Data.IRepositories;
-using Qualification.Domain.Entities.Users;
-using Qualification.Service.DTOs.Users;
-using Qualification.Service.Exceptions;
-using Qualification.Service.Extensions;
-using Qualification.Service.Interfaces;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using Qualification.Domain.Enums;
 
 namespace Qualification.Service.Services;
 
 public class AuthService : IAuthService
 {
-    private readonly IConfiguration _config;
-    private readonly IUnitOfWork _unitOfWork;
+    private readonly IAvloniyClientService avloniyClientService;
+    private readonly UserManager<User> userManager;
+    private readonly IMapper mapper;
+    private readonly IConfiguration configuration;
+    private readonly RoleManager<Role> roleManager;
 
-    public AuthService(IConfiguration config, IUnitOfWork unitOfWork)
+    public AuthService(
+        IAvloniyClientService avloniyClientService,
+        UserManager<User> userManager,
+        IMapper mapper,
+        IConfiguration configuration,
+        RoleManager<Role> roleManager)
     {
-        _config = config;
-        _unitOfWork = unitOfWork;
+        this.avloniyClientService = avloniyClientService;
+        this.userManager = userManager;
+        this.mapper = mapper;
+        this.configuration = configuration;
+        this.roleManager = roleManager;
     }
 
-    private string CreateToken(BaseUser user)
+    public async ValueTask<object> LoginAsync(
+        UserLoginDto loginDto,
+        bool isExternalUser)
     {
-        var claims = new Claim[]
+        #region External API User
+
+        if (isExternalUser)
         {
-            new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Role, user.Role.ToString()),
-            new(ClaimTypes.Email, user.Login)
-        };
+            var eRPReponse =
+                await avloniyClientService.IsUserRegistered(
+                    username: loginDto.Login,
+                    password: loginDto.Password);
 
-        var issuer = _config.GetSection("JWT:issuer").Value;
-        var expires = _config.GetSection("JWT:expires").Value;
-        var secret = _config.GetSection("JWT:secret").Value;
+            // if response is null it causes not found exception
+            if (!eRPReponse?.Success ?? true)
+                throw new NotFoundException("Coudn't find user for given credentials");
 
-        var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
-        var credentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256Signature);
-        var token = new JwtSecurityToken(issuer, claims: claims, expires: DateTime.Now.AddDays(double.Parse(expires)),
-            signingCredentials: credentials);
-        return new JwtSecurityTokenHandler().WriteToken(token);
-    }
+            var school = this.mapper.Map<School>(eRPReponse.Result);
 
-    public async Task<string> LoginAsync(UserLoginDto loginDto, bool externalUser = false)
-    {
-        loginDto.Password = loginDto.Password.Encrypt();
+            if (school is null)
+                throw new NullReferenceException("School object is null");
 
-        if (externalUser)
-        {
-            // ToDo Check from ERP system
-            throw new NotImplementedException();
+            return GenerateJwtToken(GetClaims(school, new[] { Enum.GetName(UserRole.School) }));
         }
 
-        var existUser = await _unitOfWork.Teachers.FirstOrDefaultAsync(user => 
-            user.Login.Equals(loginDto.Login) && user.Password.Equals(loginDto.Password));
+        #endregion
 
-        if (existUser is null)
-            throw new HttpStatusCodeException(401, "Wrong login or password!");
+        var user = await this.userManager.FindByNameAsync(loginDto.Login);
 
-        return CreateToken(existUser);
+        if (user is null)
+            throw new NotFoundException("Coudn't find user for given credentials.");
+
+        bool isValidPassword = await this.userManager
+            .CheckPasswordAsync(user, loginDto.Password);
+
+        if (!isValidPassword)
+            throw new NotFoundException("Coudn't find user for given credentials.");
+
+        var roles = await this.userManager.GetRolesAsync(user);
+
+        return GenerateJwtToken(GetClaims(user, roles));
     }
 
+    public async ValueTask<UserDto> RegisterAsync(UserForCreationDto userDto)
+    {
+        var userExists = await userManager.FindByNameAsync(userDto.Login);
+
+        if (userExists is not null)
+            throw new AlreadyExistsException("Username has already taken.");
+
+        if (!IsValidRole(userDto.RoleId))
+            throw new InvalidOperationException("Given role is not valid");
+        
+        User user = GenerateNeUser(userDto);
+        var result = await userManager.CreateAsync(user, userDto.Password);
+
+        if (!result.Succeeded)
+            throw new InvalidOperationException(message:
+                string.Join("", result.Errors.Select(error => error.Description)));
+
+        await CreateRolesAsync();
+        await userManager.AddToRoleAsync(user, Enum.GetName(userDto.RoleId));
+
+        var mappedUser = this.mapper.Map<UserDto>(user);
+        mappedUser.RoleId = userDto.RoleId;
+        mappedUser.Role = Enum.GetName(userDto.RoleId);
+
+        return mappedUser;
+    }
+
+    private static User GenerateNeUser(UserForCreationDto userDto)
+    {
+        return new User()
+        {
+            FirstName = userDto.FirstName,
+            LastName = userDto.LastName,
+            MiddleName = userDto.MiddleName,
+            PhoneNumber = userDto.PhoneNumber,
+            SecurityStamp = Guid.NewGuid().ToString(),
+            UserName = userDto.Login
+        };
+    }
+
+    private bool IsValidRole(UserRole role) =>
+        role == UserRole.School ||
+        role == UserRole.Student ||
+        role == UserRole.Admin ||
+        role == UserRole.SuperAdmin ||
+        role == UserRole.Teacher ||
+        role == UserRole.Tester;
+
+    private async Task CreateRolesAsync()
+    {
+        var roles = Enum.GetNames(typeof(UserRole));
+
+        for (var index = 0; index < roles.Length; index++)
+            if (!await this.roleManager.RoleExistsAsync(roles[index]))
+                await this.roleManager.CreateAsync(new Role(roles[index]));
+    }
+
+    #region JWT Token Generation
+
+    private static List<Claim> GetClaims(User user, IList<string> userRoles)
+    {
+        var authClaims =
+            new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            };
+
+        foreach (var userRole in userRoles)
+        {
+            authClaims.Add(new Claim("role", userRole));
+        }
+
+        return authClaims;
+    }
+
+    private object GenerateJwtToken(IReadOnlyList<Claim> authClaims)
+    {
+        var authSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(this.configuration["JWT:Secret"]));
+
+        var token = new JwtSecurityToken(
+            issuer: this.configuration["JWT:ValidIssuer"],
+            audience: this.configuration["JWT:ValidAudience"],
+            expires: DateTime.Now.AddHours(3),
+            claims: authClaims,
+            signingCredentials: new SigningCredentials(
+                key: authSigningKey,
+                algorithm: SecurityAlgorithms.HmacSha256)
+            );
+
+        return new
+        {
+            Token = new JwtSecurityTokenHandler().WriteToken(token),
+            Expiration = token.ValidTo
+        };
+    }
+
+    #endregion
 }

@@ -1,33 +1,52 @@
 using System.Net.Http.Headers;
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using Qualification.Service.DTOs;
 
 namespace Qualification.Service.AvloniyClient;
 
 public class AvloniyClientService : IAvloniyClientService
 {
-    private readonly HttpClient _httpClient;
-    private readonly string _baseUrl = "https://erp-integration.maktab.uz/api/v1/avloniy/";
+    private const string BASE_URL = "https://erp-integration.maktab.uz/api/v1/avloniy";
+    private readonly IConfiguration configuration;
     
-    public AvloniyClientService(IConfiguration config)
+    public AvloniyClientService(IConfiguration configuration)
     {
-        _httpClient = new HttpClient();
+        this.configuration = configuration;
+    }
 
-        var username = config.GetSection("ERP:username").Value;
-        var password = config.GetSection("ERP:password").Value;
-        
+    public async ValueTask<ERPResponse> IsUserRegistered(string username, string password)
+    {
+        using (var httpClient = GetHttpClient())
+        {
+            var content = await httpClient
+                .GetStringAsync(GetUserRegistrationUrl(username, password));
+
+            var eRPResponse = JsonConvert
+                .DeserializeObject<ERPResponse>(content);
+
+            return eRPResponse;
+        }
+    }
+
+    private string GetUserRegistrationUrl(string username, string password) =>
+        $"{BASE_URL}/IsUserRegistered?username={username}&password={password}";
+
+    private HttpClient GetHttpClient()
+    {
+
+        HttpClientHandler clientHandler = new HttpClientHandler();
+
+        clientHandler.ServerCertificateCustomValidationCallback =
+            (sender, cert, chain, sslPolicyErrors) => { return true; };
+
+        var httpClient = new HttpClient(clientHandler);
+        var username = this.configuration.GetSection("ERP:username").Value;
+        var password = configuration.GetSection("ERP:password").Value;
         var svcCredentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(username + ":" + password));
-        
-        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", svcCredentials);
-    }
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", svcCredentials);
 
-
-    public async Task<bool> IsUserRegistered(string username, string password)
-    {
-        var response = await _httpClient.GetAsync(_baseUrl + $"?username={username}&password={password}");
-        
-        return response.IsSuccessStatusCode;
+        return httpClient;
     }
-    
-    
 }
