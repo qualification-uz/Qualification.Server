@@ -2,8 +2,6 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Qualification.Data.IRepositories;
-using Qualification.Data.Repositories;
 using Qualification.Service.AvloniyClient;
 using Qualification.Service.Interfaces;
 using Qualification.Service.Mappers;
@@ -15,10 +13,10 @@ public static class ServiceExtensions
 {
     public static void AddCustomServices(this IServiceCollection services)
     {
-        services.AddScoped<IAvloniyClientService, AvloniyClientService>();
-        services.AddScoped<IAuthService, AuthService>();
-        services.AddScoped<ITeacherService, TeacherService>();
-        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddTransient<IAvloniyClientService, AvloniyClientService>();
+        services.AddTransient<IAuthService, AuthService>();
+        services.AddTransient<IUserService, UserService>();
+
         services.AddAutoMapper(typeof(MapperProfile));
     }
     
@@ -40,8 +38,8 @@ public static class ServiceExtensions
                 ValidateAudience = false,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = config["Jwt:Issuer"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Key"]))
+                ValidIssuer = config["JWT:ValidIssuer"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["JWT:Secret"]))
             };
         });
         services.AddMvc().AddNewtonsoftJson(options =>
