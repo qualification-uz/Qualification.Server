@@ -8,9 +8,6 @@ public class ERPResponse
     [JsonProperty("success")]
     public bool Success { get; set; }
 
-    [JsonProperty("date")]
-    public DateTime Date { get; set; }
-
     [JsonProperty("resultCount")]
     public int ResultCount { get; set; }
 
