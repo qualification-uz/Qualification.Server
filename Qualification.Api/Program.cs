@@ -55,6 +55,7 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 }
 app.UseMiddleware<CustomExceptionMiddleware>();
 
+app.UseStaticFiles();
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 
