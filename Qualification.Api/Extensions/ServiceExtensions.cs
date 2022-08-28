@@ -1,7 +1,11 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Qualification.Data.IRepositories;
+using Qualification.Data.Repositories;
+using Qualification.Domain.Entities.Users;
 using Qualification.Service.AvloniyClient;
 using Qualification.Service.Interfaces;
 using Qualification.Service.Mappers;
@@ -13,9 +17,13 @@ public static class ServiceExtensions
 {
     public static void AddCustomServices(this IServiceCollection services)
     {
+        services.AddTransient<IApplicationRepository, ApplicationRepository>();
+
         services.AddTransient<IAvloniyClientService, AvloniyClientService>();
         services.AddTransient<IAuthService, AuthService>();
         services.AddTransient<IUserService, UserService>();
+        services.AddTransient<IApplicationService, ApplicationService>();
+        services.AddTransient<IAssetService, AssetService>();
 
         services.AddAutoMapper(typeof(MapperProfile));
     }

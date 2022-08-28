@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Qualification.Data.Contexts;
 using Qualification.Data.IRepositories;
 using Qualification.Domain.Entities;
@@ -30,6 +31,21 @@ public class ApplicationRepository : IApplicationRepository
     public async ValueTask<Application> SelectApplicationByIdAsync(long applicationId) =>
         await this.appDbContext.Applications.FindAsync(applicationId);
 
+    public async ValueTask<Application> SelectApplicationByIdAsync(
+        long applicationId,
+        IReadOnlyList<string> includes)
+    {
+        IQueryable<Application> applications = this.appDbContext.Applications;
+
+        if(includes is not null)
+        {
+            foreach (string include in includes)
+                applications = applications.Include(include);
+        }
+
+        return await applications.FirstOrDefaultAsync(application => application.Id == applicationId);
+    }
+    
     public async ValueTask<Application> UpdateApplicationAsync(Application application)
     {
         EntityEntry<Application> applicationEntityEntry =

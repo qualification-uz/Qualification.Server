@@ -11,10 +11,10 @@ public class Application : Auditable
     public long SchoolId { get; set; }
     public string DocumentUrl { get; set; }
 
-    public Teacher  Teacher { get; set; }
-    public long TeacherId { get; set; }
+    public User  Teacher { get; }
+    public long TeacherId { get; }
 
-    public ApplicationStatus Status { get; set; }
+    public ApplicationStatus Status { get; set; } = ApplicationStatus.Yuborildi;
 
     public ICollection<Group> Groups { get; set; }
 }

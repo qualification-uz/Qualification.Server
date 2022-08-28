@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Qualification.Api.Extensions;
+using Qualification.Api.Helpers;
 using Qualification.Data.Contexts;
 using Qualification.Domain.Entities.Users;
 using Qualification.Service.Middlewares;
@@ -24,6 +25,12 @@ builder.Services
     })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddMvc(options =>
+{
+    // add custom model binders to beginning of collection
+    options.ModelBinderProviders.Insert(0, new FormDataJsonBinderProvider());
+});
 
 // Jwt services
 builder.Services.AddJwtService(builder.Configuration);
