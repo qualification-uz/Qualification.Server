@@ -8,5 +8,5 @@ public class User : IdentityUser<long>
     public string LastName { get; set; }
     public string MiddleName { get; set; }
 
-    public string Asset { get; set; }
+    public string AssetUrl { get; set; }
 }
