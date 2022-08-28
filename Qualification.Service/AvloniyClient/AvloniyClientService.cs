@@ -8,17 +8,20 @@ namespace Qualification.Service.AvloniyClient;
 
 public class AvloniyClientService : IAvloniyClientService
 {
-    private const string BASE_URL = "https://erp-integration.maktab.uz/api/v1/avloniy";
     private readonly IConfiguration configuration;
+    private readonly IHttpClientFactory httpClientFactory;
     
-    public AvloniyClientService(IConfiguration configuration)
+    public AvloniyClientService(
+        IConfiguration configuration,
+        IHttpClientFactory httpClientFactory)
     {
         this.configuration = configuration;
+        this.httpClientFactory = httpClientFactory;
     }
 
     public async ValueTask<ERPResponse> IsUserRegistered(string username, string password)
     {
-        using (var httpClient = GetHttpClient())
+        using (var httpClient = this.httpClientFactory.CreateClient("avloniy"))
         {
             var content = await httpClient
                 .GetStringAsync(GetUserRegistrationUrl(username, password));
@@ -31,22 +34,5 @@ public class AvloniyClientService : IAvloniyClientService
     }
 
     private string GetUserRegistrationUrl(string username, string password) =>
-        $"{BASE_URL}/IsUserRegistered?username={username}&password={password}";
-
-    private HttpClient GetHttpClient()
-    {
-
-        HttpClientHandler clientHandler = new HttpClientHandler();
-
-        clientHandler.ServerCertificateCustomValidationCallback =
-            (sender, cert, chain, sslPolicyErrors) => { return true; };
-
-        var httpClient = new HttpClient(clientHandler);
-        var username = this.configuration.GetSection("ERP:username").Value;
-        var password = configuration.GetSection("ERP:password").Value;
-        var svcCredentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(username + ":" + password));
-        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", svcCredentials);
-
-        return httpClient;
-    }
+        $"IsUserRegistered?username={username}&password={password}";
 }

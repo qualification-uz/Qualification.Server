@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -26,6 +27,19 @@ public static class ServiceExtensions
         services.AddTransient<IAssetService, AssetService>();
 
         services.AddAutoMapper(typeof(MapperProfile));
+    }
+
+    public static void AddHttpClientServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddHttpClient("avloniy", config =>
+        {
+            var username = configuration.GetSection("ERP:username").Value;
+            var password = configuration.GetSection("ERP:password").Value;
+
+            config.BaseAddress = new Uri(configuration.GetSection("ERP:base_address").Value);
+            var svcCredentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(username + ":" + password));
+            config.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", svcCredentials);
+        });
     }
     
     public static void AddJwtService(this IServiceCollection services, IConfiguration config)

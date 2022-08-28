@@ -44,6 +44,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddSwaggerService();
 builder.Services.AddCustomServices();
+builder.Services.AddHttpClientServices(builder.Configuration);
 
 var app = builder.Build();
 
