@@ -9,4 +9,8 @@ public class User : IdentityUser<long>
     public string MiddleName { get; set; }
 
     public string AssetUrl { get; set; }
+
+    public int SchoolId { get; set; }
+
+    public ICollection<Application> Applications { get; set; }
 }

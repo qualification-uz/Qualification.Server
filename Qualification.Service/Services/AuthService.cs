@@ -91,7 +91,7 @@ public class AuthService : IAuthService
         if (!IsValidRole(userDto.RoleId))
             throw new InvalidOperationException("Given role is not valid");
         
-        User user = GenerateNeUser(userDto);
+        User user = GenerateNewUser(userDto);
         var result = await userManager.CreateAsync(user, userDto.Password);
 
         if (!result.Succeeded)
@@ -108,7 +108,7 @@ public class AuthService : IAuthService
         return mappedUser;
     }
 
-    private static User GenerateNeUser(UserForCreationDto userDto)
+    private static User GenerateNewUser(UserForCreationDto userDto)
     {
         return new User()
         {
