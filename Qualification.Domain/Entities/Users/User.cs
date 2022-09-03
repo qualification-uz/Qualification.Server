@@ -10,5 +10,7 @@ public class User : IdentityUser<long>
 
     public string AssetUrl { get; set; }
 
+    public int SchoolId { get; set; }
+
     public ICollection<Application> Applications { get; set; }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Qualification.Service.DTOs.Application;
 using Qualification.Service.Interfaces;
 
@@ -6,6 +7,7 @@ namespace Qualification.Api.Controllers
 {
     [ApiController]
     [Route("api/applications")]
+    [Authorize(Policy = "ApplicationPolicy")]
     public class ApplicationsController : ControllerBase
     {
         private readonly IApplicationService applicationService;

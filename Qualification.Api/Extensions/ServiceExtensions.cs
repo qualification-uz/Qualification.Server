@@ -26,6 +26,7 @@ public static class ServiceExtensions
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<IApplicationService, ApplicationService>();
         services.AddTransient<IAssetService, AssetService>();
+        services.AddTransient<ISchoolService, SchoolService>();
 
         services.AddAutoMapper(typeof(MapperProfile));
     }

@@ -4,6 +4,7 @@ using Qualification.Api.Extensions;
 using Qualification.Api.Helpers;
 using Qualification.Data.Contexts;
 using Qualification.Domain.Entities.Users;
+using Qualification.Domain.Enums;
 using Qualification.Service.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +26,20 @@ builder.Services
     })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("SchoolPolicy", policy => policy.RequireRole(
+        Enum.GetName(UserRole.SuperAdmin),
+        Enum.GetName(UserRole.School)));
+
+    options.AddPolicy("ApplicationPolicy", policy => policy.RequireRole(
+        Enum.GetName(UserRole.SuperAdmin),
+        Enum.GetName(UserRole.School),
+        Enum.GetName(UserRole.Admin)));
+
+
+});
 
 builder.Services.AddMvc(options =>
 {
@@ -60,6 +75,7 @@ app.UseStaticFiles();
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
