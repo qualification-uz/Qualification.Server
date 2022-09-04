@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Qualification.Service.DTOs.Question;
 using Qualification.Service.Interfaces;
 
@@ -6,6 +7,7 @@ namespace Qualification.Api.Controllers
 {
     [ApiController]
     [Route("api/questions/{id}/answers")]
+    [Authorize(Policy = "TestPolicy")]
     public class QuestionAnswersController : ControllerBase
     {
         private readonly IQuestionService questionService;
@@ -24,8 +26,8 @@ namespace Qualification.Api.Controllers
         [HttpPost]
         public async ValueTask<IActionResult> PostQuestionAnswersAsync(
             long id,
-            [FromForm] QuestionAnswerForCreationDto questionAnswerForCreationDtos) =>
-                Ok(await this.questionService.AddQuestionAnswerAsync(id, questionAnswerForCreationDtos));
+            [FromBody] IReadOnlyList<QuestionAnswerForCreationDto> questionAnswerForCreationDtos) =>
+                Ok(await this.questionService.AddQuestionAnswersAsync(id, questionAnswerForCreationDtos));
 
         /// <summary>
         /// Test javobini o'zgartirish
@@ -38,7 +40,7 @@ namespace Qualification.Api.Controllers
         public  async ValueTask<IActionResult> PatchQuestionAnswerAsync(
             long id,
             long answerId,
-            [FromForm] QuestionAnswerForUpdateDto questionAnswerForUpdateDto) =>
+            [FromBody] QuestionAnswerForUpdateDto questionAnswerForUpdateDto) =>
                 Ok(await this.questionService.ModifyQuestionAnswerAsync(id, answerId, questionAnswerForUpdateDto));
     }
 }

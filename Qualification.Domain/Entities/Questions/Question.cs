@@ -1,4 +1,5 @@
 ﻿using Qualification.Domain.Commons;
+using Qualification.Domain.Entities.Assets;
 using Qualification.Domain.Enums;
 
 namespace Qualification.Domain.Entities.Questions;

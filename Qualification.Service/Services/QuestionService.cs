@@ -45,12 +45,12 @@ public class QuestionService : IQuestionService
         var question = this.mapper.Map<Question>(questionForCreationDto);
         var assets = new List<QuestionAsset>();
 
-        foreach(var asset in questionForCreationDto.Assets)
+        if(questionForCreationDto.AssetIds is not null)
         {
-            (var fileName, var filePath) = await this.assetService
-                .SaveFileAsync(asset);
-
-            assets.Add(new QuestionAsset { AssetUrl = fileName });
+            foreach (var assetId in questionForCreationDto.AssetIds)
+            {
+                assets.Add(new QuestionAsset { AssetId = assetId });
+            }
         }
 
         question.Assets = assets;
@@ -129,14 +129,14 @@ public class QuestionService : IQuestionService
             if (answer.Assets is null)
                 answer.Assets = new List<QuestionAnswerAsset>();
 
-            foreach (var asset in answerDto.Assets)
+            if (answerDto.AssetIds is not null)
             {
-                (var fileName, var filePath) = await this.assetService
-                    .SaveFileAsync(asset);
 
-                answer.Assets.Add(new QuestionAnswerAsset { AssetUrl = fileName });
+                foreach (var assetId in answerDto.AssetIds)
+                {
+                    answer.Assets.Add(new QuestionAnswerAsset { AssetId = assetId });
+                }
             }
-
             question.Answers.Add(answer);
         }
         
@@ -165,12 +165,12 @@ public class QuestionService : IQuestionService
         if (answer.Assets is null)
             answer.Assets = new List<QuestionAnswerAsset>();
 
-        foreach (var asset in questionAnswerForCreationDto.Assets)
+       if(questionAnswerForCreationDto.AssetIds is not null)
         {
-            (var fileName, var filePath) = await this.assetService
-                .SaveFileAsync(asset);
-
-            answer.Assets.Add(new QuestionAnswerAsset { AssetUrl = fileName });
+            foreach (var assetId in questionAnswerForCreationDto.AssetIds)
+            {
+                answer.Assets.Add(new QuestionAnswerAsset { AssetId = assetId });
+            }
         }
 
         question.Answers.Add(answer);

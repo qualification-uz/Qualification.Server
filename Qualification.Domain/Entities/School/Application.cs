@@ -1,4 +1,5 @@
 ﻿using Qualification.Domain.Commons;
+using Qualification.Domain.Entities.Assets;
 using Qualification.Domain.Entities.Users;
 using Qualification.Domain.Enums;
 
@@ -9,7 +10,8 @@ public class Application : Auditable
     public short AttandancePercent { get; set; }
     public int SubjectId { get; set; }
     public long SchoolId { get; set; }
-    public string DocumentUrl { get; set; }
+
+    public long DocumentId { get; set; }
 
     public User  Teacher { get; }
     public long TeacherId { get; }

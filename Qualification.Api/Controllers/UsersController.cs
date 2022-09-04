@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qualification.Service.Interfaces;
 
@@ -6,6 +7,7 @@ namespace Qualification.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "All")]
     public class UsersController : ControllerBase
     {
         private readonly IUserService userService;

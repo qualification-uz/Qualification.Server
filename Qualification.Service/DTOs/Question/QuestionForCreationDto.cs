@@ -25,5 +25,5 @@ public class QuestionForCreationDto
     [Required]
     public short Level { get; set; }
 
-    public ICollection<IFormFile> Assets { get; set; }
+    public IReadOnlyList<long> AssetIds { get; set; }
 }

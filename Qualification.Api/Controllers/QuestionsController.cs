@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Qualification.Service.DTOs.Question;
 using Qualification.Service.Interfaces;
 
@@ -6,6 +7,7 @@ namespace Qualification.Api.Controllers
 {
     [ApiController]
     [Route("api/questions")]
+    [Authorize(Policy = "TestPolicy")]
     public class QuestionsController : ControllerBase
     {
         private readonly IQuestionService questionService;
@@ -38,7 +40,7 @@ namespace Qualification.Api.Controllers
         /// <param name="questionForCreationDto"></param>
         /// <returns></returns>
         [HttpPost]
-        public async ValueTask<IActionResult> PostQuestionAsync([FromForm]QuestionForCreationDto questionForCreationDto) =>
+        public async ValueTask<IActionResult> PostQuestionAsync([FromBody]QuestionForCreationDto questionForCreationDto) =>
             Ok(await this.questionService.AddQuestionAsync(questionForCreationDto));
 
         /// <summary>
