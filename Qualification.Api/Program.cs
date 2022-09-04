@@ -5,6 +5,7 @@ using Qualification.Api.Helpers;
 using Qualification.Data.Contexts;
 using Qualification.Domain.Entities.Users;
 using Qualification.Domain.Enums;
+using Qualification.Service.Helpers;
 using Qualification.Service.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -78,6 +79,12 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+if (app.Services.GetService<IHttpContextAccessor>() != null)
+{
+    HttpContextHelper.Accessor = app.Services.GetRequiredService<IHttpContextAccessor>();
+}
+
 app.UseMiddleware<CustomExceptionMiddleware>();
 
 app.UseStaticFiles();

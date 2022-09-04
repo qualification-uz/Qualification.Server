@@ -1,11 +1,13 @@
-﻿using Qualification.Service.DTOs.Application;
+﻿using Qualification.Domain.Configurations;
+using Qualification.Service.DTOs;
+using Qualification.Service.DTOs.Application;
 
 namespace Qualification.Service.Interfaces;
 
 public interface IApplicationService
 {
     ValueTask<ApplicationDto> AddApplicationAsync(ApplicationForCreationDto applicationDto);
-    IEnumerable<ApplicationDto> RetrieveAllApplications();
+    IEnumerable<ApplicationDto> RetrieveAllApplications(PaginationParams @params, Filter filter);
     ValueTask<ApplicationDto> RetrieveApplicationByIdAsync(long applicationId);
     
     ValueTask<ApplicationDto> ModifyApplicationAsync(

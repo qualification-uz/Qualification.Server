@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Qualification.Domain.Configurations;
+using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Application;
 using Qualification.Service.Interfaces;
 
@@ -32,7 +34,10 @@ namespace Qualification.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult GetAllApplications() => Ok(this.applicationService.RetrieveAllApplications());
+        public IActionResult GetAllApplications(
+            [FromQuery] PaginationParams @params,
+            [FromQuery] Filter filter) =>
+            Ok(this.applicationService.RetrieveAllApplications(@params, filter));
 
         /// <summary>
         /// Id bo'yicha arizani olish

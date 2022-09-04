@@ -1,10 +1,11 @@
-﻿using Qualification.Service.DTOs.Question;
+﻿using Qualification.Domain.Configurations;
+using Qualification.Service.DTOs.Question;
 
 namespace Qualification.Service.Interfaces;
 
 public interface IQuestionService
 {
-    IEnumerable<QuestionDto> RetrieveAllQuestions();
+    IEnumerable<QuestionDto> RetrieveAllQuestions(PaginationParams @params);
     ValueTask<QuestionDto> RetrieveQuestionByIdAsync(long questionId);
     ValueTask<QuestionDto> AddQuestionAsync(QuestionForCreationDto questionForCreationDto);
     ValueTask<QuestionDto> ModifyQuestionAsync(long questionId, QuestionForUpdateDto questionForUpdateDto);

@@ -2,11 +2,14 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Qualification.Data.IRepositories;
+using Qualification.Domain.Configurations;
 using Qualification.Domain.Entities;
 using Qualification.Domain.Entities.Users;
 using Qualification.Domain.Enums;
+using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Application;
 using Qualification.Service.Exceptions;
+using Qualification.Service.Extensions;
 using Qualification.Service.Interfaces;
 
 namespace Qualification.Service.Services;
@@ -58,14 +61,18 @@ public class ApplicationService : IApplicationService
         return this.mapper.Map<ApplicationDto>(application);
     }
 
-    public IEnumerable<ApplicationDto> RetrieveAllApplications()
+    public IEnumerable<ApplicationDto> RetrieveAllApplications(
+        PaginationParams @params,
+        Filter filter)
     {
         var applications = this.applicationRepository
             .SelectAllApplications()
+            .OrderBy(filter)
             .Include(application => application.Groups)
             .Include(application => application.Teacher);
 
-        return this.mapper.Map<IEnumerable<ApplicationDto>>(applications);
+        return this.mapper.Map<IEnumerable<ApplicationDto>>(applications)
+            .ToPagedList(@params);
     }
 
     public async ValueTask<ApplicationDto> RetrieveApplicationByIdAsync(long applicationId)

@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Qualification.Data.IRepositories;
+using Qualification.Domain.Configurations;
 using Qualification.Domain.Entities.Questions;
 using Qualification.Service.DTOs.Question;
 using Qualification.Service.Exceptions;
+using Qualification.Service.Extensions;
 using Qualification.Service.Interfaces;
 
 namespace Qualification.Service.Services;
@@ -23,10 +25,11 @@ public class QuestionService : IQuestionService
         this.assetService = assetService;
     }
 
-    public IEnumerable<QuestionDto> RetrieveAllQuestions()
+    public IEnumerable<QuestionDto> RetrieveAllQuestions(PaginationParams @params)
     {
         var questions = this.questionRepository.SelectAllQuestions();
-        return this.mapper.Map<IEnumerable<QuestionDto>>(questions);
+        return this.mapper.Map<IEnumerable<QuestionDto>>(questions)
+            .ToPagedList(@params);
     }
 
     public async ValueTask<QuestionDto> RetrieveQuestionByIdAsync(long questionId)
