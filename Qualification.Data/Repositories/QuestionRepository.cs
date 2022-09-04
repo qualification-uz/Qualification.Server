@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Qualification.Data.Contexts;
 using Qualification.Data.IRepositories;
 using Qualification.Domain.Entities.Questions;
@@ -18,6 +19,19 @@ public class QuestionRepository : IQuestionRepository
 
     public async ValueTask<Question> SelectQuestionByIdAsync(long questionId) =>
         await this.appDbContext.Questions.FindAsync(questionId);
+
+    public async ValueTask<Question> SelectQuestionByIdAsync(
+        long questionId,
+        IReadOnlyList<string> includes)
+    {
+        IQueryable<Question> questions = this.appDbContext.Questions;
+        
+        foreach(var include in includes)
+            questions = questions.Include(include);
+
+        return await questions
+            .FirstOrDefaultAsync(question => question.Id == questionId);
+    }
 
     public async ValueTask<Question> InsertQuestionAsync(Question question)
     {
