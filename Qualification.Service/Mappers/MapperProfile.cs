@@ -23,14 +23,19 @@ public class MapperProfile : Profile
 
         CreateMap<Group, GroupDto>().ReverseMap();
         CreateMap<Group, GroupForCreationDto>().ReverseMap();
-        
-        CreateMap<Question, QuestionDto>().ReverseMap();
-        CreateMap<QuestionForCreationDto, Question>().ReverseMap();
-        CreateMap<QuestionAsset, QuestionAssetDto>().ReverseMap();
 
-        CreateMap<QuestionAnswerAsset, QuestionAssetDto>().ReverseMap();
+        CreateMap<Question, QuestionDto>()
+            .ForMember(dto => dto.AssetIds, src => src
+                .MapFrom(dest => dest.Assets
+                    .Select(asset => asset.AssetId)));
+
+        CreateMap<QuestionForCreationDto, Question>().ReverseMap();
         CreateMap<QuestionAnswerForCreationDto, QuestionAnswer>().ReverseMap();
-        CreateMap<QuestionAnswer, QuestionAnswerDto>().ReverseMap();
+        
+        CreateMap<QuestionAnswer, QuestionAnswerDto>()
+            .ForMember(dto => dto.AssetIds, src => src
+                .MapFrom(dest => dest.Assets
+                    .Select(asset => asset.AssetId)));
 
         CreateMap<Asset, AssetDto>().ReverseMap();
     }

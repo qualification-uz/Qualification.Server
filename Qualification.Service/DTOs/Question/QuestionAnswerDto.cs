@@ -8,5 +8,5 @@ public class QuestionAnswerDto
     public string Content { get; set; }
     public bool IsCorrect { get; set; }
 
-    public IReadOnlyList<QuestionAssetDto> Assets { get; set; }
+    public IReadOnlyList<long> AssetIds { get; set; }
 }

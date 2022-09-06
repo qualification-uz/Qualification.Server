@@ -35,7 +35,7 @@ public class QuestionService : IQuestionService
     public async ValueTask<QuestionDto> RetrieveQuestionByIdAsync(long questionId)
     {
         var question = await this.questionRepository
-            .SelectQuestionByIdAsync(questionId, includes: new[] { "Answers", "Assets" });
+            .SelectQuestionByIdAsync(questionId, includes: new[] { "Answers", "Assets", "Answers.Assets" });
 
         if (question is null)
             throw new NotFoundException("Couldn't find any question for given id");

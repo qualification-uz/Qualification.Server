@@ -120,7 +120,6 @@ public class ApplicationService : IApplicationService
             existedTeacher?.Applications.Remove(application);
             teacher.Applications.Add(application);
 
-            application = await this.applicationRepository.UpdateApplicationAsync(application);
             await this.userManager.UpdateAsync(existedTeacher);
             await this.userManager.UpdateAsync(teacher);
         }
@@ -131,6 +130,9 @@ public class ApplicationService : IApplicationService
             application.SubjectId = applicationDto.SubjectId.Value;
         if (applicationDto.DocumentId.HasValue)
             application.DocumentId = applicationDto.DocumentId.Value;
+
+        application = await this.applicationRepository
+            .UpdateApplicationAsync(application);
 
         return this.mapper.Map<ApplicationDto>(application);
     }
