@@ -37,11 +37,8 @@ public class ApplicationRepository : IApplicationRepository
     {
         IQueryable<Application> applications = this.appDbContext.Applications;
 
-        if(includes is not null)
-        {
-            foreach (string include in includes)
-                applications = applications.Include(include);
-        }
+        foreach (string include in includes)
+            applications = applications.Include(include);
 
         return await applications.FirstOrDefaultAsync(application => application.Id == applicationId);
     }

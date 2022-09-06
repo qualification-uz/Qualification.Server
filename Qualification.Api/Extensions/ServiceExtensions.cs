@@ -20,6 +20,9 @@ public static class ServiceExtensions
     public static void AddCustomServices(this IServiceCollection services)
     {
         services.AddTransient<IApplicationRepository, ApplicationRepository>();
+        services.AddTransient<IApplicationRepository, ApplicationRepository>();
+        services.AddTransient<IFileUploadRepository, FileUploadRepository>();
+        services.AddTransient<IQuestionRepository, QuestionRepository>();
 
         services.AddTransient<IAvloniyClientService, AvloniyClientService>();
         services.AddTransient<IAuthService, AuthService>();
@@ -27,6 +30,8 @@ public static class ServiceExtensions
         services.AddTransient<IApplicationService, ApplicationService>();
         services.AddTransient<IAssetService, AssetService>();
         services.AddTransient<ISchoolService, SchoolService>();
+        services.AddTransient<IQuestionService, QuestionService>();
+        services.AddTransient<IFileUploadService, FileUploadService>();
 
         services.AddAutoMapper(typeof(MapperProfile));
     }

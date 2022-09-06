@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Qualification.Domain.Configurations;
+using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Application;
 using Qualification.Service.Interfaces;
 
@@ -24,7 +26,7 @@ namespace Qualification.Api.Controllers
         /// <returns></returns>
         [HttpPost]
         public async ValueTask<IActionResult> PostApplicationAsync(
-            [FromForm] ApplicationForCreationDto applicationDto) =>
+            [FromBody] ApplicationForCreationDto applicationDto) =>
                 Ok(await this.applicationService.AddApplicationAsync(applicationDto));
 
         /// <summary>
@@ -32,7 +34,10 @@ namespace Qualification.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult GetAllApplications() => Ok(this.applicationService.RetrieveAllApplications());
+        public IActionResult GetAllApplications(
+            [FromQuery] PaginationParams @params,
+            [FromQuery] Filter filter) =>
+            Ok(this.applicationService.RetrieveAllApplications(@params, filter));
 
         /// <summary>
         /// Id bo'yicha arizani olish
@@ -51,7 +56,7 @@ namespace Qualification.Api.Controllers
         /// <returns></returns>
         [HttpPut("{id}")]
         public async ValueTask<IActionResult> PutApplicationAsync(
-            long id, [FromForm] ApplicationForUpdateDto applicationDto) =>
+            long id, [FromBody] ApplicationForUpdateDto applicationDto) =>
                 Ok(await this.applicationService.ModifyApplicationAsync(id, applicationDto));
 
         /// <summary>

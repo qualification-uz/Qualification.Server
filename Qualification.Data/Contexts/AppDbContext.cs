@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Qualification.Domain.Entities;
+using Qualification.Domain.Entities.Assets;
 using Qualification.Domain.Entities.Questions;
 using Qualification.Domain.Entities.Users;
 
@@ -57,6 +58,7 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
     public DbSet<QuestionAsset> QuestionAssets { get; set; }
     public DbSet<QuestionAnswer> QuestionAnswers { get; set; }
     public DbSet<QuestionAnswerAsset> QuestionAnswerAssets { get; set; }
+    public DbSet<Asset> Assets { get; set; }
 }
 
     

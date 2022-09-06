@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Qualification.Data.Contexts;
@@ -11,9 +12,10 @@ using Qualification.Data.Contexts;
 namespace Qualification.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220903193625_QuestionModelSubjectField")]
+    partial class QuestionModelSubjectField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -139,8 +141,8 @@ namespace Qualification.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("DocumentId")
-                        .HasColumnType("bigint");
+                    b.Property<string>("DocumentUrl")
+                        .HasColumnType("text");
 
                     b.Property<long>("SchoolId")
                         .HasColumnType("bigint");
@@ -162,28 +164,6 @@ namespace Qualification.Data.Migrations
                     b.HasIndex("TeacherId");
 
                     b.ToTable("Applications");
-                });
-
-            modelBuilder.Entity("Qualification.Domain.Entities.Assets.Asset", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Url")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Assets");
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Group", b =>
@@ -306,8 +286,8 @@ namespace Qualification.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long>("AssetId")
-                        .HasColumnType("bigint");
+                    b.Property<string>("AssetUrl")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -333,8 +313,8 @@ namespace Qualification.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long>("AssetId")
-                        .HasColumnType("bigint");
+                    b.Property<string>("AssetUrl")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -392,8 +372,8 @@ namespace Qualification.Data.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
 
-                    b.Property<long?>("AssetId")
-                        .HasColumnType("bigint");
+                    b.Property<string>("AssetUrl")
+                        .HasColumnType("text");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()

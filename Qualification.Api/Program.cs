@@ -5,6 +5,7 @@ using Qualification.Api.Helpers;
 using Qualification.Data.Contexts;
 using Qualification.Domain.Entities.Users;
 using Qualification.Domain.Enums;
+using Qualification.Service.Helpers;
 using Qualification.Service.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,7 +39,16 @@ builder.Services.AddAuthorization(options =>
         Enum.GetName(UserRole.School),
         Enum.GetName(UserRole.Admin)));
 
+    options.AddPolicy("All", policy => policy.RequireRole(
+        Enum.GetName(UserRole.SuperAdmin),
+        Enum.GetName(UserRole.Admin),
+        Enum.GetName(UserRole.Tester),
+        Enum.GetName(UserRole.Teacher),
+        Enum.GetName(UserRole.School)));
 
+    options.AddPolicy("TestPolicy", policy => policy.RequireRole(
+        Enum.GetName(UserRole.SuperAdmin),
+        Enum.GetName(UserRole.Tester)));
 });
 
 builder.Services.AddMvc(options =>
@@ -69,6 +79,12 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+if (app.Services.GetService<IHttpContextAccessor>() != null)
+{
+    HttpContextHelper.Accessor = app.Services.GetRequiredService<IHttpContextAccessor>();
+}
+
 app.UseMiddleware<CustomExceptionMiddleware>();
 
 app.UseStaticFiles();
