@@ -32,7 +32,8 @@ public static class ServiceExtensions
         services.AddTransient<ISchoolService, SchoolService>();
         services.AddTransient<IQuestionService, QuestionService>();
         services.AddTransient<IFileUploadService, FileUploadService>();
-
+        services.AddScoped<IQuizService, QuizService>();
+        
         services.AddAutoMapper(typeof(MapperProfile));
     }
 
