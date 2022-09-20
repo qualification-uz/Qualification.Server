@@ -24,6 +24,9 @@ public class QuizService : IQuizService
 
         var questions = questionRepository.SelectAllQuestions()
             .Where(p => p.IsForTeacher.Equals(isForTeacher) && p.SubjectId == subjectId)
+            .Include(p => p.Answers)
+            .ThenInclude(p => p.Assets)
+            .Include(p => p.Assets)
             .ToDictionary(question => question.Id);
 
         HashSet<long> ids = new HashSet<long>();
@@ -47,7 +50,7 @@ public class QuizService : IQuizService
         random.Shuffle(idsArray);
 
         var query = ids.Join(questions, p => p, p => p.Key, (id, question) => question.Value);
-
+        
         return query;
     }
 }
