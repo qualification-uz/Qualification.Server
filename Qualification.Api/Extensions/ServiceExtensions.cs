@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Qualification.Data.IRepositories;
 using Qualification.Data.Repositories;
+using Qualification.Domain.Entities.Questions;
 using Qualification.Domain.Entities.Users;
 using Qualification.Service.AvloniyClient;
 using Qualification.Service.Interfaces;
@@ -23,6 +24,7 @@ public static class ServiceExtensions
         services.AddTransient<IApplicationRepository, ApplicationRepository>();
         services.AddTransient<IFileUploadRepository, FileUploadRepository>();
         services.AddTransient<IQuestionRepository, QuestionRepository>();
+        services.AddScoped<IQuestionAnswerRepository, QuestionAnswerRepository>();
 
         services.AddTransient<IAvloniyClientService, AvloniyClientService>();
         services.AddTransient<IAuthService, AuthService>();
