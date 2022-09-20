@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Qualification.Domain.Entities;
 using Qualification.Domain.Entities.Assets;
 using Qualification.Domain.Entities.Questions;
+using Qualification.Domain.Entities.Quizes;
 using Qualification.Domain.Entities.Users;
 
 namespace Qualification.Data.Contexts;
@@ -19,6 +20,8 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        #region Application request
+
         modelBuilder.Entity<Application>()
             .HasMany(application => application.Groups)
             .WithOne(group => group.Application)
@@ -30,6 +33,10 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
             .WithOne(application => application.Teacher)
             .HasForeignKey(application => application.TeacherId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        #endregion
+
+        #region Question
 
         modelBuilder.Entity<Question>()
             .HasMany(question => question.Answers)
@@ -49,6 +56,48 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
             .HasForeignKey(asset => asset.QuestionAnswerId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        #endregion
+
+        #region Quiz
+
+        modelBuilder.Entity<Quiz>()
+            .HasMany(quiz => quiz.Questions)
+            .WithOne(question => question.Quiz)
+            .HasForeignKey(question => question.QuizId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Quiz>()
+            .HasMany(quiz => quiz.Submissions)
+            .WithOne(submission => submission.Quiz)
+            .HasForeignKey(submission => submission.QuizId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Application>()
+            .HasMany(application => application.Quizes)
+            .WithOne(quiz => quiz.Application)
+            .HasForeignKey(quiz => quiz.ApplicationId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<QuizQuestion>()
+            .HasMany(question => question.Options)
+            .WithOne(option => option.Question)
+            .HasForeignKey(option => option.QuizQuestionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<QuizQuestion>()
+            .HasMany(question => question.Assets)
+            .WithOne(asset => asset.Question)
+            .HasForeignKey(asset => asset.QuizQuestionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<QuestionOption>()
+            .HasMany(option => option.Assets)
+            .WithOne(asset => asset.QuestionOption)
+            .HasForeignKey(asset => asset.QuestionOptionId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        #endregion
+
         base.OnModelCreating(modelBuilder);
     }
 
@@ -59,6 +108,10 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
     public DbSet<QuestionAnswer> QuestionAnswers { get; set; }
     public DbSet<QuestionAnswerAsset> QuestionAnswerAssets { get; set; }
     public DbSet<Asset> Assets { get; set; }
+
+    public DbSet<Quiz> Quizes { get; set; }
+    public DbSet<QuizQuestion> QuizQuestions { get; set; }
+    public DbSet<Submission> Submissions { get; set; }
 }
 
     
