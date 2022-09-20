@@ -4,11 +4,9 @@ namespace Qualification.Domain.Entities.Quizes;
 
 public class QuizQuestion : Auditable
 {
-    public string Content { get; set; }
-
-    public long QuizId { get; }
-    public Quiz Quiz { get; }
+    public long QuestionId { get; set; }
+    public long QuizId { get; set; }
+    public short ShufflePosition { get; set; }
 
     public ICollection<QuestionOption> Options { get; set; }
-    public ICollection<QuizQuestionAsset> Assets { get; set; }
 }

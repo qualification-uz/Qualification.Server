@@ -20,6 +20,5 @@ public class Quiz : Auditable
     public long ApplicationId { get; }
     public Application Application { get; }
 
-    public ICollection<QuizQuestion> Questions { get; set; }
     public ICollection<Submission> Submissions { get; set; }
 }

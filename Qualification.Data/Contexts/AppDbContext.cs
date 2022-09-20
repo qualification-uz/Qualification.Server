@@ -61,12 +61,6 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
         #region Quiz
 
         modelBuilder.Entity<Quiz>()
-            .HasMany(quiz => quiz.Questions)
-            .WithOne(question => question.Quiz)
-            .HasForeignKey(question => question.QuizId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<Quiz>()
             .HasMany(quiz => quiz.Submissions)
             .WithOne(submission => submission.Quiz)
             .HasForeignKey(submission => submission.QuizId)
@@ -76,24 +70,6 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
             .HasMany(application => application.Quizes)
             .WithOne(quiz => quiz.Application)
             .HasForeignKey(quiz => quiz.ApplicationId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<QuizQuestion>()
-            .HasMany(question => question.Options)
-            .WithOne(option => option.Question)
-            .HasForeignKey(option => option.QuizQuestionId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<QuizQuestion>()
-            .HasMany(question => question.Assets)
-            .WithOne(asset => asset.Question)
-            .HasForeignKey(asset => asset.QuizQuestionId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<QuestionOption>()
-            .HasMany(option => option.Assets)
-            .WithOne(asset => asset.QuestionOption)
-            .HasForeignKey(asset => asset.QuestionOptionId)
             .OnDelete(DeleteBehavior.Cascade);
 
         #endregion
@@ -110,7 +86,6 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
     public DbSet<Asset> Assets { get; set; }
 
     public DbSet<Quiz> Quizes { get; set; }
-    public DbSet<QuizQuestion> QuizQuestions { get; set; }
     public DbSet<Submission> Submissions { get; set; }
 }
 
