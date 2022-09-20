@@ -24,6 +24,7 @@ namespace Qualification.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("subjects")]
+        [AllowAnonymous]
         public async ValueTask<IActionResult> GetAllSubjectsAsync() =>
             Ok(await this.schoolService.RetrieveAllSubjectsAsync());
 
