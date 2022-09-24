@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Qualification.Domain.Entities.Users;
 using Qualification.Domain.Enums;
 using Qualification.Service.AvloniyClient;
@@ -109,5 +110,19 @@ public class SchoolService : ISchoolService
             SecurityStamp = Guid.NewGuid().ToString(),
             UserName = teacherDto.PINFL
         };
+    }
+
+    public async ValueTask<UserDto> FillInfoByPinfl(
+        int schoolId, 
+        TeacherPinflDto teacherPinflDto)
+    {
+        var teacherExists = await avloniyClientService.SelectTeacherByPinflAsync(teacherPinflDto.PINFL);
+
+        if (!teacherExists.Success)
+            throw new NotFoundException("Coudn't find teacher with this PINFL");
+
+        var mappedTeacher = mapper.Map<TeacherForCreationDto>(teacherExists);
+
+        return await AddTeacherAsync(schoolId, mappedTeacher);
     }
 }

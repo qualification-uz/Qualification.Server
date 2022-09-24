@@ -1,4 +1,5 @@
 ﻿using Qualification.Domain.Configurations;
+using Qualification.Domain.Enums;
 using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Application;
 
@@ -15,4 +16,5 @@ public interface IApplicationService
         ApplicationForUpdateDto applicationDto);
     
     ValueTask<ApplicationDto> RemoveApplicationAsync(long applicationId);
+    ValueTask<ApplicationDto> ModifyApplicationStatusAsync(long applicationId, ApplicationStatus status);
 }

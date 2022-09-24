@@ -149,4 +149,22 @@ public class ApplicationService : IApplicationService
 
         return this.mapper.Map<ApplicationDto>(application);
     }
+
+    public async ValueTask<ApplicationDto> ModifyApplicationStatusAsync(
+        long applicationId,
+        ApplicationStatus status)
+    {
+        var application = 
+            await this.applicationRepository.SelectApplicationByIdAsync(applicationId);
+
+        if (application is null)
+            throw new NotFoundException("Couldn't find application for given id");
+
+        application.Status = status;
+
+        var updatedApplication = await this.applicationRepository
+            .UpdateApplicationAsync(application);
+
+        return this.mapper.Map<ApplicationDto>(updatedApplication);
+    }
 }

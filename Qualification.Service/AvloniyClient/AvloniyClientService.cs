@@ -91,10 +91,26 @@ public class AvloniyClientService : IAvloniyClientService
         }
     }
     
+    public async ValueTask<ERPResponse<TeacherFromErpDto>> SelectTeacherByPinflAsync(string pinfl)
+    {
+        using (var httpClient = this.httpClientFactory.CreateClient("avloniy"))
+        {
+            var content = await httpClient.
+                GetStringAsync(GetUserInfoWithPinfl(pinfl));
+
+            var eRPResponse = JsonConvert
+                .DeserializeObject<ERPResponse<TeacherFromErpDto>>(content);
+
+            return eRPResponse;
+        }
+    }
+    
     private string GetSchoolSubjectUrl() => $"GetSchoolSubject";
     private string GetSchoolGradeUrl() => $"GetAllschoolgrade";
     private string GetSchoolGradeLetterUrl() => $"GetAllSchoolgradeletter";
     private string GetSchoolYeaUrl() => $"GetAllSchoolyear";
+    private string GetUserInfoWithPinfl(string pinfl) =>
+        $"GetPersonInfoWithPINFL?pinfl={pinfl}";
 
     private string GetUserRegistrationUrl(string username, string password) =>
         $"IsUserRegistered?username={username}&password={password}";
