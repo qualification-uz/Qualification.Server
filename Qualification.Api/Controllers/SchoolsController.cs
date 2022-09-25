@@ -61,14 +61,6 @@ namespace Qualification.Api.Controllers
             Ok(this.schoolService.RetrieveAllTeachers(id));
 
         /// <summary>
-        /// Yangi o'qituvchini ro'yxatga olish
-        /// </summary>
-        /// <returns></returns>
-        [HttpPost("{id}/teachers")]
-        public async ValueTask<IActionResult> PostTeacherAsync(int id, [FromBody] TeacherForCreationDto teacherDto) =>
-            Ok(await this.schoolService.AddTeacherAsync(id, teacherDto));
-
-        /// <summary>
         /// O'qituvchini PINFL orqali ro'yxatga olish 
         /// </summary>
         /// <param name="id"></param>
@@ -77,6 +69,6 @@ namespace Qualification.Api.Controllers
         [HttpPost("{id}/teachers/pinfl")]
         public async ValueTask<IActionResult> PostTeacherByPinflAsyn(
             int id, [FromQuery] TeacherPinflDto teacherPinflDto) =>
-                Ok(await this.schoolService.FillInfoByPinfl(id, teacherPinflDto));
+                Ok(await this.schoolService.RetrieveTeacherByPinfl(id, teacherPinflDto));
     }
 }

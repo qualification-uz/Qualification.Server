@@ -112,16 +112,16 @@ public class SchoolService : ISchoolService
         };
     }
 
-    public async ValueTask<UserDto> FillInfoByPinfl(
+    public async ValueTask<UserDto> RetrieveTeacherByPinfl(
         int schoolId, 
         TeacherPinflDto teacherPinflDto)
     {
-        var teacherExists = await avloniyClientService.SelectTeacherByPinflAsync(teacherPinflDto.PINFL);
+        var existingTeacher = await avloniyClientService.SelectTeacherByPinflAsync(teacherPinflDto.PINFL);
 
-        if (!teacherExists.Success)
+        if (!existingTeacher.Success)
             throw new NotFoundException("Coudn't find teacher with this PINFL");
 
-        var mappedTeacher = mapper.Map<TeacherForCreationDto>(teacherExists);
+        var mappedTeacher = mapper.Map<TeacherForCreationDto>(existingTeacher);
 
         return await AddTeacherAsync(schoolId, mappedTeacher);
     }
