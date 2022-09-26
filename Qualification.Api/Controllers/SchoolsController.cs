@@ -67,8 +67,8 @@ namespace Qualification.Api.Controllers
         /// <param name="teacherPinflDto"></param>
         /// <returns></returns>
         [HttpPost("{id}/teachers/pinfl")]
-        public async ValueTask<IActionResult> PostTeacherByPinflAsyn(
+        public async ValueTask<IActionResult> PostTeacherByPinflAsync(
             int id, [FromQuery] TeacherPinflDto teacherPinflDto) =>
-                Ok(await this.schoolService.RetrieveTeacherByPinfl(id, teacherPinflDto));
+                Ok(await this.schoolService.RetrieveTeacherByPinflAsync(id, teacherPinflDto));
     }
 }

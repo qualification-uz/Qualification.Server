@@ -30,20 +30,20 @@ public class SchoolService : ISchoolService
 
     public async ValueTask<UserDto> AddTeacherAsync(int schoolId, TeacherForCreationDto teacherDto)
     {
-        var userExists = await userManager.FindByNameAsync(teacherDto.PINFL);
+        var userExists = await this.userManager.FindByNameAsync(teacherDto.PINFL);
 
         if (userExists is not null)
             throw new AlreadyExistsException("User already exists with the same PINFL");
 
         User user = GenerateNewUser(teacherDto);
         user.SchoolId = schoolId;
-        var result = await userManager.CreateAsync(user, teacherDto.Password);
+        var result = await this.userManager.CreateAsync(user, teacherDto.Password);
 
         if (!result.Succeeded)
             throw new InvalidOperationException(message:
                 string.Join("", result.Errors.Select(error => error.Description)));
 
-        await userManager.AddToRoleAsync(user, Enum.GetName(UserRole.Teacher));
+        await this.userManager.AddToRoleAsync(user, Enum.GetName(UserRole.Teacher));
 
         var mappedUser = this.mapper.Map<UserDto>(user);
         mappedUser.RoleId = UserRole.Teacher;
@@ -112,16 +112,16 @@ public class SchoolService : ISchoolService
         };
     }
 
-    public async ValueTask<UserDto> RetrieveTeacherByPinfl(
+    public async ValueTask<UserDto> RetrieveTeacherByPinflAsync(
         int schoolId, 
         TeacherPinflDto teacherPinflDto)
     {
-        var existingTeacher = await avloniyClientService.SelectTeacherByPinflAsync(teacherPinflDto.PINFL);
+        var existingTeacher = await this.avloniyClientService.SelectTeacherByPinflAsync(teacherPinflDto.PINFL);
 
         if (!existingTeacher.Success)
             throw new NotFoundException("Coudn't find teacher with this PINFL");
 
-        var mappedTeacher = mapper.Map<TeacherForCreationDto>(existingTeacher);
+        var mappedTeacher = this.mapper.Map<TeacherForCreationDto>(existingTeacher);
 
         return await AddTeacherAsync(schoolId, mappedTeacher);
     }
