@@ -49,6 +49,10 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("TestPolicy", policy => policy.RequireRole(
         Enum.GetName(UserRole.SuperAdmin),
         Enum.GetName(UserRole.Tester)));
+
+    options.AddPolicy("PaymentPolicy", policy => policy.RequireRole(
+        Enum.GetName(UserRole.SuperAdmin),
+        Enum.GetName(UserRole.Admin)));
 });
 
 builder.Services.AddMvc(options =>

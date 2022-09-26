@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Qualification.Domain.Entities;
 using Qualification.Domain.Entities.Assets;
+using Qualification.Domain.Entities.Payments;
 using Qualification.Domain.Entities.Questions;
 using Qualification.Domain.Entities.Quizes;
 using Qualification.Domain.Entities.Users;
@@ -78,6 +78,7 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
     }
 
     public DbSet<Application> Applications { get; set; }
+    public DbSet<Payment> Payments { get; set; }
     public DbSet<Group> Groups { get; set; }
     public DbSet<Question> Questions { get; set; }
     public DbSet<QuestionAsset> QuestionAssets { get; set; }
@@ -89,4 +90,3 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
     public DbSet<Submission> Submissions { get; set; }
 }
 
-    
