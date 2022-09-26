@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Qualification.Domain.Configurations;
+using Qualification.Domain.Enums;
 using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Application;
 using Qualification.Service.Interfaces;
@@ -67,5 +68,16 @@ namespace Qualification.Api.Controllers
         [HttpDelete("{id}")]
         public async ValueTask<IActionResult> DeleteApplicationAsync(long id) =>
             Ok(await this.applicationService.RemoveApplicationAsync(id));
+
+        /// <summary>
+        /// Arizani statusini o'zgartirish
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="applicationStatus"></param>
+        /// <returns></returns>
+        [HttpPatch("{id}")]
+        public async ValueTask<IActionResult> PatchApplicationStatusAsync(
+            long id, [FromQuery] ApplicationStatus applicationStatus) =>
+                Ok(await this.applicationService.ModifyApplicationStatusAsync(id, applicationStatus));
     }
 }

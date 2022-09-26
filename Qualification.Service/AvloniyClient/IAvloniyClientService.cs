@@ -11,4 +11,5 @@ public interface IAvloniyClientService
     ValueTask<ERPResponse<IEnumerable<GradeDto>>> SelectAllGradesAsync();
     ValueTask<ERPResponse<IEnumerable<GradeLetterDto>>> SelectAllGradeLettersAsync();
     ValueTask<ERPResponse<IEnumerable<SchoolYearDto>>> SelectAllSchoolYearsAsync();
+    ValueTask<ERPResponse<TeacherFromErpDto>> SelectTeacherByPinflAsync(string pinfl);
 }

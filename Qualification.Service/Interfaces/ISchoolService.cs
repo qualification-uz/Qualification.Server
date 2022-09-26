@@ -11,4 +11,5 @@ public interface ISchoolService
     ValueTask<IEnumerable<SchoolYearDto>> RetrieveAllSchoolYearsAsync();
     IEnumerable<UserDto> RetrieveAllTeachers(int schoolId);
     ValueTask<UserDto> AddTeacherAsync(int schoolId, TeacherForCreationDto teacherDto);
+    ValueTask<UserDto> RetrieveTeacherByPinflAsync(int schoolId, TeacherPinflDto teacherPinflDto);
 }
