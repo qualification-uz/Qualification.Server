@@ -1,10 +1,12 @@
 using AutoMapper;
 using Qualification.Domain.Entities;
 using Qualification.Domain.Entities.Assets;
+using Qualification.Domain.Entities.Payment;
 using Qualification.Domain.Entities.Questions;
 using Qualification.Domain.Entities.Users;
 using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Application;
+using Qualification.Service.DTOs.Payment;
 using Qualification.Service.DTOs.Question;
 using Qualification.Service.DTOs.Users;
 
@@ -38,5 +40,12 @@ public class MapperProfile : Profile
                     .Select(asset => asset.AssetId)));
 
         CreateMap<Asset, AssetDto>().ReverseMap();
+
+        CreateMap<TeacherFromErpDto, TeacherForCreationDto>().ReverseMap();
+
+        CreateMap<PaymentRequestDto, PaymentRequest>().ReverseMap();
+        CreateMap<PaymentRequestForCreationDto, PaymentRequest>().ReverseMap();
+        CreateMap<PaymentRequestForUpdateDto, PaymentRequest>().ReverseMap();
+        CreateMap<PaymentAssetDto, PaymentAsset>().ReverseMap();
     }
 }

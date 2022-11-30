@@ -69,10 +69,10 @@ public class ApplicationService : IApplicationService
             .SelectAllApplications()
             .OrderBy(filter)
             .Include(application => application.Groups)
-            .Include(application => application.Teacher);
-
-        return this.mapper.Map<IEnumerable<ApplicationDto>>(applications)
+            .Include(application => application.Teacher)
             .ToPagedList(@params);
+
+        return this.mapper.Map<IEnumerable<ApplicationDto>>(applications);
     }
 
     public async ValueTask<ApplicationDto> RetrieveApplicationByIdAsync(long applicationId)
@@ -124,8 +124,6 @@ public class ApplicationService : IApplicationService
             await this.userManager.UpdateAsync(teacher);
         }
 
-        if(applicationDto.AttandancePercent.HasValue)
-            application.AttandancePercent = applicationDto.AttandancePercent.Value;
         if(applicationDto.SubjectId.HasValue)
             application.SubjectId = applicationDto.SubjectId.Value;
         if (applicationDto.DocumentId.HasValue)

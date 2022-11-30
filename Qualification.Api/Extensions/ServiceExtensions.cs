@@ -20,6 +20,7 @@ public static class ServiceExtensions
 {
     public static void AddCustomServices(this IServiceCollection services)
     {
+        services.AddTransient<IPaymentRequestRepository, PaymentRequestRepository>();
         services.AddTransient<IApplicationRepository, ApplicationRepository>();
         services.AddTransient<IApplicationRepository, ApplicationRepository>();
         services.AddTransient<IFileUploadRepository, FileUploadRepository>();
@@ -35,6 +36,7 @@ public static class ServiceExtensions
         services.AddTransient<IQuestionService, QuestionService>();
         services.AddTransient<IFileUploadService, FileUploadService>();
         services.AddScoped<IQuizService, QuizService>();
+        services.AddScoped<IPaymentRequestService, PaymentRequestService>();
         
         services.AddAutoMapper(typeof(MapperProfile));
     }

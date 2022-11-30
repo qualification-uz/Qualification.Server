@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Qualification.Data.Contexts;
@@ -11,9 +12,10 @@ using Qualification.Data.Contexts;
 namespace Qualification.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221116231700_RemovedAttandancePercent")]
+    partial class RemovedAttandancePercent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -223,74 +225,6 @@ namespace Qualification.Data.Migrations
                     b.HasIndex("ApplicationId");
 
                     b.ToTable("Groups");
-                });
-
-            modelBuilder.Entity("Qualification.Domain.Entities.Payment.PaymentAsset", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long>("AssetId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsFromAdmin")
-                        .HasColumnType("boolean");
-
-                    b.Property<long>("PaymentRequestId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PaymentRequestId");
-
-                    b.ToTable("PaymentAssets");
-                });
-
-            modelBuilder.Entity("Qualification.Domain.Entities.Payment.PaymentRequest", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("numeric");
-
-                    b.Property<long>("ApplicationId")
-                        .HasColumnType("bigint");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
-                    b.Property<bool>("IsPaid")
-                        .HasColumnType("boolean");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ApplicationId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("PaymentRequests");
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Questions.Question", b =>
@@ -670,36 +604,6 @@ namespace Qualification.Data.Migrations
                     b.Navigation("Application");
                 });
 
-            modelBuilder.Entity("Qualification.Domain.Entities.Payment.PaymentAsset", b =>
-                {
-                    b.HasOne("Qualification.Domain.Entities.Payment.PaymentRequest", "PaymentRequest")
-                        .WithMany("Assets")
-                        .HasForeignKey("PaymentRequestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PaymentRequest");
-                });
-
-            modelBuilder.Entity("Qualification.Domain.Entities.Payment.PaymentRequest", b =>
-                {
-                    b.HasOne("Qualification.Domain.Entities.Application", "Application")
-                        .WithMany("PaymentRequests")
-                        .HasForeignKey("ApplicationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Qualification.Domain.Entities.Users.User", "User")
-                        .WithMany("PaymentRequests")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .IsRequired();
-
-                    b.Navigation("Application");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Qualification.Domain.Entities.Questions.QuestionAnswer", b =>
                 {
                     b.HasOne("Qualification.Domain.Entities.Questions.Question", "Question")
@@ -759,14 +663,7 @@ namespace Qualification.Data.Migrations
                 {
                     b.Navigation("Groups");
 
-                    b.Navigation("PaymentRequests");
-
                     b.Navigation("Quizes");
-                });
-
-            modelBuilder.Entity("Qualification.Domain.Entities.Payment.PaymentRequest", b =>
-                {
-                    b.Navigation("Assets");
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Questions.Question", b =>
@@ -789,8 +686,6 @@ namespace Qualification.Data.Migrations
             modelBuilder.Entity("Qualification.Domain.Entities.Users.User", b =>
                 {
                     b.Navigation("Applications");
-
-                    b.Navigation("PaymentRequests");
                 });
 #pragma warning restore 612, 618
         }

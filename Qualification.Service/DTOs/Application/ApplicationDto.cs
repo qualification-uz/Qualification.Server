@@ -6,7 +6,6 @@ namespace Qualification.Service.DTOs.Application;
 public class ApplicationDto
 {
     public long Id { get; set; }
-    public short AttandancePercent { get; set; }
     public int SubjectId { get; set; }
     public long SchoolId { get; set; }
     public long DocumentId { get; set; }

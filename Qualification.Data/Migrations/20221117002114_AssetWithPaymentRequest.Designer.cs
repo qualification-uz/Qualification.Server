@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Qualification.Data.Contexts;
@@ -11,9 +12,10 @@ using Qualification.Data.Contexts;
 namespace Qualification.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221117002114_AssetWithPaymentRequest")]
+    partial class AssetWithPaymentRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -266,9 +268,6 @@ namespace Qualification.Data.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric");
 
-                    b.Property<long>("ApplicationId")
-                        .HasColumnType("bigint");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -285,8 +284,6 @@ namespace Qualification.Data.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ApplicationId");
 
                     b.HasIndex("UserId");
 
@@ -683,19 +680,11 @@ namespace Qualification.Data.Migrations
 
             modelBuilder.Entity("Qualification.Domain.Entities.Payment.PaymentRequest", b =>
                 {
-                    b.HasOne("Qualification.Domain.Entities.Application", "Application")
-                        .WithMany("PaymentRequests")
-                        .HasForeignKey("ApplicationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Qualification.Domain.Entities.Users.User", "User")
                         .WithMany("PaymentRequests")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
-
-                    b.Navigation("Application");
 
                     b.Navigation("User");
                 });
@@ -758,8 +747,6 @@ namespace Qualification.Data.Migrations
             modelBuilder.Entity("Qualification.Domain.Entities.Application", b =>
                 {
                     b.Navigation("Groups");
-
-                    b.Navigation("PaymentRequests");
 
                     b.Navigation("Quizes");
                 });

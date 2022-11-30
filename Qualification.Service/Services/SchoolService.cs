@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Qualification.Domain.Entities.Users;
 using Qualification.Domain.Enums;
 using Qualification.Service.AvloniyClient;
-using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Application;
 using Qualification.Service.DTOs.Users;
 using Qualification.Service.Exceptions;
@@ -26,30 +24,6 @@ public class SchoolService : ISchoolService
         this.avloniyClientService = avloniyClientService;
         this.mapper = mapper;
         this.userManager = userManager;
-    }
-
-    public async ValueTask<UserDto> AddTeacherAsync(int schoolId, TeacherForCreationDto teacherDto)
-    {
-        var userExists = await this.userManager.FindByNameAsync(teacherDto.PINFL);
-
-        if (userExists is not null)
-            throw new AlreadyExistsException("User already exists with the same PINFL");
-
-        User user = GenerateNewUser(teacherDto);
-        user.SchoolId = schoolId;
-        var result = await this.userManager.CreateAsync(user, teacherDto.Password);
-
-        if (!result.Succeeded)
-            throw new InvalidOperationException(message:
-                string.Join("", result.Errors.Select(error => error.Description)));
-
-        await this.userManager.AddToRoleAsync(user, Enum.GetName(UserRole.Teacher));
-
-        var mappedUser = this.mapper.Map<UserDto>(user);
-        mappedUser.RoleId = UserRole.Teacher;
-        mappedUser.Role = Enum.GetName(UserRole.Teacher);
-
-        return mappedUser;
     }
 
     public IEnumerable<UserDto> RetrieveAllTeachers(int schoolId)
@@ -116,13 +90,40 @@ public class SchoolService : ISchoolService
         int schoolId, 
         TeacherPinflDto teacherPinflDto)
     {
-        var existingTeacher = await this.avloniyClientService.SelectTeacherByPinflAsync(teacherPinflDto.PINFL);
+        var eRPResponse = await this.avloniyClientService
+            .SelectTeacherByPinflAsync(teacherPinflDto.PINFL);
 
-        if (!existingTeacher.Success)
+        if (!eRPResponse.Success)
             throw new NotFoundException("Coudn't find teacher with this PINFL");
 
-        var mappedTeacher = this.mapper.Map<TeacherForCreationDto>(existingTeacher);
+        var mappedTeacher = this.mapper.Map<TeacherForCreationDto>(eRPResponse.Result);
+        mappedTeacher.PINFL = teacherPinflDto.PINFL;
+        mappedTeacher.Password = teacherPinflDto.Password;
 
         return await AddTeacherAsync(schoolId, mappedTeacher);
+    }
+
+    public async ValueTask<UserDto> AddTeacherAsync(int schoolId, TeacherForCreationDto teacherDto)
+    {
+        var userExists = await this.userManager.FindByNameAsync(teacherDto.PINFL);
+
+        if (userExists is not null)
+            throw new AlreadyExistsException("User already exists with the same PINFL");
+
+        User user = GenerateNewUser(teacherDto);
+        user.SchoolId = schoolId;
+        var result = await this.userManager.CreateAsync(user, teacherDto.Password);
+
+        if (!result.Succeeded)
+            throw new InvalidOperationException(message:
+                string.Join("", result.Errors.Select(error => error.Description)));
+
+        await this.userManager.AddToRoleAsync(user, Enum.GetName(UserRole.Teacher));
+
+        var mappedUser = this.mapper.Map<UserDto>(user);
+        mappedUser.RoleId = UserRole.Teacher;
+        mappedUser.Role = Enum.GetName(UserRole.Teacher);
+
+        return mappedUser;
     }
 }

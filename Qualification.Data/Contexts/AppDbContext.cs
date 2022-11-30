@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Qualification.Domain.Entities;
 using Qualification.Domain.Entities.Assets;
+using Qualification.Domain.Entities.Payment;
 using Qualification.Domain.Entities.Questions;
 using Qualification.Domain.Entities.Quizes;
 using Qualification.Domain.Entities.Users;
@@ -74,6 +75,24 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
 
         #endregion
 
+        modelBuilder.Entity<User>()
+            .HasMany(teacher => teacher.PaymentRequests)
+            .WithOne(paymentRequest => paymentRequest.User)
+            .HasForeignKey(paymentRequest => paymentRequest.UserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<PaymentRequest>()
+            .HasMany(paymentRequest => paymentRequest.Assets)
+            .WithOne(asset => asset.PaymentRequest)
+            .HasForeignKey(asset => asset.PaymentRequestId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Application>()
+            .HasMany(application => application.PaymentRequests)
+            .WithOne(paymentRequest => paymentRequest.Application)
+            .HasForeignKey(paymentRequest => paymentRequest.ApplicationId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         base.OnModelCreating(modelBuilder);
     }
 
@@ -87,6 +106,8 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
 
     public DbSet<Quiz> Quizes { get; set; }
     public DbSet<Submission> Submissions { get; set; }
+    public DbSet<PaymentRequest> PaymentRequests { get; set; }
+    public DbSet<PaymentAsset> PaymentAssets { get; set; }
 }
 
     
