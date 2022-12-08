@@ -8,6 +8,7 @@ using Qualification.Domain.Entities.Users;
 using Qualification.Domain.Enums;
 using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Application;
+using Qualification.Service.DTOs.Users;
 using Qualification.Service.Exceptions;
 using Qualification.Service.Extensions;
 using Qualification.Service.Interfaces;
@@ -164,5 +165,18 @@ public class ApplicationService : IApplicationService
             .UpdateApplicationAsync(application);
 
         return this.mapper.Map<ApplicationDto>(updatedApplication);
+    }
+
+    public IEnumerable<RoleDto> RetrieveAllApplicationStatus()
+    {
+
+        var applicationStatusIds = Enum.GetValues<ApplicationStatus>();
+
+        foreach (var applicationStatusId in applicationStatusIds)
+            yield return new RoleDto
+            {
+                Id = (int)applicationStatusId,
+                Name = Enum.GetName<ApplicationStatus>(applicationStatusId)
+            };
     }
 }

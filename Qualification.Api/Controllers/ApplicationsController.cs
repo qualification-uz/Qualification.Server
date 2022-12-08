@@ -4,6 +4,7 @@ using Qualification.Domain.Configurations;
 using Qualification.Domain.Enums;
 using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Application;
+using Qualification.Service.DTOs.Users;
 using Qualification.Service.Interfaces;
 
 namespace Qualification.Api.Controllers
@@ -79,5 +80,9 @@ namespace Qualification.Api.Controllers
         public async ValueTask<IActionResult> PatchApplicationStatusAsync(
             long id, [FromQuery] ApplicationStatus applicationStatus) =>
                 Ok(await this.applicationService.ModifyApplicationStatusAsync(id, applicationStatus));
+
+        [HttpGet("status")]
+        public IActionResult GetAllApplicationStatus() =>
+            Ok(this.applicationService.RetrieveAllApplicationStatus());
     }
 }

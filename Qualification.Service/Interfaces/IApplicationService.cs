@@ -2,6 +2,7 @@
 using Qualification.Domain.Enums;
 using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Application;
+using Qualification.Service.DTOs.Users;
 
 namespace Qualification.Service.Interfaces;
 
@@ -17,4 +18,5 @@ public interface IApplicationService
     
     ValueTask<ApplicationDto> RemoveApplicationAsync(long applicationId);
     ValueTask<ApplicationDto> ModifyApplicationStatusAsync(long applicationId, ApplicationStatus status);
+    IEnumerable<RoleDto> RetrieveAllApplicationStatus();
 }
