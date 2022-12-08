@@ -101,7 +101,22 @@ public class PaymentRequestService : IPaymentRequestService
         var paymentAssets = paymentRequests
             .Include(request => request.Assets)
             .Where(payment => payment.Id == paymentRequestId)
-            .Select(payment => payment.Assets);
+            .SelectMany(payment => payment.Assets);
+
+        return this.mapper.Map<IEnumerable<PaymentAssetDto>>(paymentAssets);
+    }
+
+    public IEnumerable<PaymentAssetDto> RetrievePaymentsForApplication(long applicationId, bool isFromAdmin)
+    {
+        var paymentRequests = this.paymentRequestRepository.SelectAllPaymentRequests();
+
+        var paymentAssets = paymentRequests
+            .Include(request => request.Assets)
+            .Include(request => request.Application)
+            .Where(request => request.ApplicationId == applicationId)
+            .SelectMany(request => request.Assets)
+            .Include(payment => payment.PaymentRequest)
+            .Where(asset => asset.IsFromAdmin == isFromAdmin);
 
         return this.mapper.Map<IEnumerable<PaymentAssetDto>>(paymentAssets);
     }

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Qualification.Service.DTOs.Payment;
 using Qualification.Service.Interfaces;
 
@@ -15,6 +14,7 @@ namespace Qualification.Api.Controllers
         {
             this.paymentRequestService = paymentRequestService;
         }
+
         [HttpGet]
         public IActionResult GetAllPaymentRequests() =>
             Ok(this.paymentRequestService.RetrieveAllPaymentRequests());
@@ -40,5 +40,9 @@ namespace Qualification.Api.Controllers
         [HttpDelete("{id}")]
         public async ValueTask<IActionResult> DeletePaymentRequestAsync(long id) =>
             Ok(await this.paymentRequestService.RemovePaymentRequestAsync(id));
+
+        [HttpGet("applications/{id}")]
+        public IActionResult GetAllPaymentAssetsForTeacher(long id, [FromQuery]bool isFromAdmin) =>
+            Ok(this.paymentRequestService.RetrievePaymentsForApplication(id, isFromAdmin));
     }
 }
