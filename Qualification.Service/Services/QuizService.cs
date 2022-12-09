@@ -60,30 +60,6 @@ public class QuizService : IQuizService
 
     public async Task<CheckedQuizResultDto> CheckQuizAsync(CheckedQuizInputDto[] answers)
     {
-        var quizResult = new CheckedQuizResultDto()
-        {
-            InCorrectQuestions = new List<Question>()
-        };
-
-        var questionIds = answers.Select(p => p.QuestionId);
-        var questionAnswers = questionAnswerRepository.SelectAllQuestions()
-            .Include(p => p.Question)
-            .Where(p => questionIds.Contains(p.QuestionId)).ToDictionary(p => p.Id);
-
-
-        foreach (var answer in answers)
-        {
-            var questionAnswer = questionAnswers
-                .FirstOrDefault(p => p.Value.QuestionId == answer.QuestionId);
-            
-            if(!questionAnswer.Value.IsCorrect)
-                quizResult.InCorrectQuestions.Add(questionAnswer.Value.Question);
-        }
-
-        quizResult.InCorrectCount = quizResult.InCorrectQuestions.Count;
-        quizResult.CorrectCount = questionAnswers.Count - quizResult.InCorrectCount;
-        quizResult.Percent = (quizResult.CorrectCount * 100) / (questionAnswers.Count == 0 ? 100 : questionAnswers.Count);
-        
-        return quizResult;
+        return null;
     }
 }

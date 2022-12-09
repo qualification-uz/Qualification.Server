@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Qualification.Data.Contexts;
@@ -11,9 +12,10 @@ using Qualification.Data.Contexts;
 namespace Qualification.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221209104532_QuizQuestions")]
+    partial class QuizQuestions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -520,41 +522,6 @@ namespace Qualification.Data.Migrations
                     b.ToTable("QuizQuestions");
                 });
 
-            modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuizResult", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<short>("CorrectAnswers")
-                        .HasColumnType("smallint");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("QuizId")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("Score")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("QuizId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Results");
-                });
-
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.Submission", b =>
                 {
                     b.Property<long>("Id")
@@ -844,25 +811,6 @@ namespace Qualification.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Application");
-                });
-
-            modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuizResult", b =>
-                {
-                    b.HasOne("Qualification.Domain.Entities.Quizes.Quiz", "Quiz")
-                        .WithMany()
-                        .HasForeignKey("QuizId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Qualification.Domain.Entities.Users.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Quiz");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.Submission", b =>

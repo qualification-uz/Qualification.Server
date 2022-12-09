@@ -8,7 +8,7 @@ public class Quiz : Auditable
 {
     public string Title { get; set; }
     public string Content { get; set; }
-    public int QuestionCount { get; set; }    
+    public int QuestionCount { get; set; }
     public bool IsForTeacher { get; set; }
     public DateTime StartsAt { get; set; }
     public DateTime EndsAt { get; set; }
