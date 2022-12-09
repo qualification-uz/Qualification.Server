@@ -14,7 +14,9 @@ public class QuizService : IQuizService
     private readonly IQuestionAnswerRepository questionAnswerRepository;
     private readonly IConfiguration configuration;
     
-    public QuizService(IQuestionRepository questionRepository, IConfiguration configuration, 
+    public QuizService(
+        IQuestionRepository questionRepository,
+        IConfiguration configuration, 
         IQuestionAnswerRepository questionAnswerRepository)
     {
         this.questionRepository = questionRepository;
@@ -22,15 +24,16 @@ public class QuizService : IQuizService
         this.questionAnswerRepository = questionAnswerRepository;
     }
     
-    public IEnumerable<Question> GetAll(long subjectId, bool isForTeacher)
+    public IEnumerable<Question> GetShuffleQuestions(long subjectId, bool isForTeacher)
     {
         int questionCount = int.Parse(configuration.GetSection("Quiz:QuestionCount").Value);
 
-        var questions = questionRepository.SelectAllQuestions()
-            .Where(p => p.IsForTeacher.Equals(isForTeacher) && p.SubjectId == subjectId)
+        var questions = questionRepository
+            .SelectAllQuestions()
+            .Where(p => p.IsForTeacher == isForTeacher && p.SubjectId == subjectId)
+            .Include(p => p.Assets)
             .Include(p => p.Answers)
             .ThenInclude(p => p.Assets)
-            .Include(p => p.Assets)
             .ToDictionary(question => question.Id);
 
         HashSet<long> ids = new HashSet<long>();

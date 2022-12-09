@@ -58,14 +58,14 @@ public static class CollectionExtensions
         return source.Provider.CreateQuery<T>(expression);
     }
     
-    public static void Shuffle<T> (this Random rng, T[] array)
+    public static void Shuffle<T> (this Random random, T[] array)
     {
-        int n = array.Length;
-        while (n > 1) 
+        int length = array.Length;
+        while (length > 1) 
         {
-            int k = rng.Next(n--);
-            T temp = array[n];
-            array[n] = array[k];
+            int k = random.Next(length--);
+            T temp = array[length];
+            array[length] = array[k];
             array[k] = temp;
         }
     }

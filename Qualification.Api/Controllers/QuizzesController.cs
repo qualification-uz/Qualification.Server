@@ -17,7 +17,7 @@ public class QuizzesController : ControllerBase
 
     [HttpGet("questions")]
     public IActionResult GetQuestions(long subjectId, bool isForTeacher)
-        => Ok(quizService.GetAll(subjectId, isForTeacher));
+        => Ok(quizService.GetShuffleQuestions(subjectId, isForTeacher));
 
     [HttpPost("check-quiz")]
     public async Task<IActionResult> CheckQuizAsync(CheckedQuizInputDto[] dto)
