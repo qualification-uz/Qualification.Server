@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Qualification.Data.Contexts;
@@ -11,9 +12,10 @@ using Qualification.Data.Contexts;
 namespace Qualification.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221211042238_Quiz_Users")]
+    partial class Quiz_Users
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -522,8 +524,6 @@ namespace Qualification.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("QuizId");
-
                     b.ToTable("QuizQuestions");
                 });
 
@@ -590,8 +590,7 @@ namespace Qualification.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("QuestionOptionId")
-                        .IsUnique();
+                    b.HasIndex("QuestionOptionId");
 
                     b.HasIndex("QuizId");
 
@@ -877,15 +876,6 @@ namespace Qualification.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuizQuestion", b =>
-                {
-                    b.HasOne("Qualification.Domain.Entities.Quizes.Quiz", null)
-                        .WithMany("Questions")
-                        .HasForeignKey("QuizId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuizResult", b =>
                 {
                     b.HasOne("Qualification.Domain.Entities.Quizes.Quiz", "Quiz")
@@ -908,8 +898,8 @@ namespace Qualification.Data.Migrations
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.Submission", b =>
                 {
                     b.HasOne("Qualification.Domain.Entities.Quizes.QuestionOption", "Option")
-                        .WithOne("Submission")
-                        .HasForeignKey("Qualification.Domain.Entities.Quizes.Submission", "QuestionOptionId")
+                        .WithMany()
+                        .HasForeignKey("QuestionOptionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -966,15 +956,8 @@ namespace Qualification.Data.Migrations
                     b.Navigation("Assets");
                 });
 
-            modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuestionOption", b =>
-                {
-                    b.Navigation("Submission");
-                });
-
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.Quiz", b =>
                 {
-                    b.Navigation("Questions");
-
                     b.Navigation("Submissions");
                 });
 

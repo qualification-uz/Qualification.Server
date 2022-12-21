@@ -7,4 +7,6 @@ public class QuestionOption : Auditable
     public long QuizQuestionId { get; set; }
     public long QuizOptionId { get; set; }
     public short ShufflePosition { get; set; }
+
+    public Submission Submission { get; set; }
 }

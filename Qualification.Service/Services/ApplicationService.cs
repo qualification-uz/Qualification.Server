@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Qualification.Data.IRepositories;
+using Qualification.Data.Migrations;
 using Qualification.Domain.Configurations;
 using Qualification.Domain.Entities;
 using Qualification.Domain.Entities.Users;
@@ -79,7 +80,12 @@ public class ApplicationService : IApplicationService
     public async ValueTask<ApplicationDto> RetrieveApplicationByIdAsync(long applicationId)
     {
         var application = await this.applicationRepository
-            .SelectApplicationByIdAsync(applicationId, new[] { "Groups", "Teacher" } );
+            .SelectAllApplications()
+            .Include(application => application.Groups)
+            .Include(application => application.Teacher)
+            .Include(application => application.PaymentRequests)
+            .ThenInclude(payment => payment.Assets)
+            .FirstOrDefaultAsync(application => application.Id == applicationId);
 
         if (application is null)
             throw new NotFoundException("Couldn't find application for given id");
@@ -178,5 +184,37 @@ public class ApplicationService : IApplicationService
                 Id = (int)applicationStatusId,
                 Name = Enum.GetName<ApplicationStatus>(applicationStatusId)
             };
+    }
+
+    public IEnumerable<ApplicationDto> RetrieveApplicationsForSchool(
+        long schoolId,
+        PaginationParams @params,
+        Filter filter)
+    {
+        var applications = this.applicationRepository
+            .SelectAllApplications()
+            .Where(application => application.SchoolId == schoolId)
+            .OrderBy(filter)
+            .Include(application => application.Groups)
+            .Include(application => application.Teacher)
+            .ToPagedList(@params);
+
+        return this.mapper.Map<IEnumerable<ApplicationDto>>(applications);
+    }
+
+    public IEnumerable<ApplicationDto> RetrieveApplicationsForTeacher(
+        long teacherId,
+        PaginationParams @params,
+        Filter filter)
+    {
+        var applications = this.applicationRepository
+            .SelectAllApplications()
+            .Include(application => application.Groups)
+            .Include(application => application.Teacher)
+            .Where(application => application.TeacherId == teacherId)
+            .OrderBy(filter)
+            .ToPagedList(@params);
+
+        return this.mapper.Map<IEnumerable<ApplicationDto>>(applications);
     }
 }

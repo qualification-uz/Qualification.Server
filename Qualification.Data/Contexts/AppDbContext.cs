@@ -93,6 +93,11 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
             .HasForeignKey(paymentRequest => paymentRequest.ApplicationId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        modelBuilder.Entity<Submission>()
+            .HasOne(submission => submission.Option)
+            .WithOne(option => option.Submission)
+            .HasForeignKey<Submission>(submission => submission.QuestionOptionId);
+
         base.OnModelCreating(modelBuilder);
     }
 

@@ -4,7 +4,6 @@ using Qualification.Domain.Configurations;
 using Qualification.Domain.Enums;
 using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Application;
-using Qualification.Service.DTOs.Users;
 using Qualification.Service.Interfaces;
 
 namespace Qualification.Api.Controllers
@@ -84,5 +83,19 @@ namespace Qualification.Api.Controllers
         [HttpGet("status")]
         public IActionResult GetAllApplicationStatus() =>
             Ok(this.applicationService.RetrieveAllApplicationStatus());
+
+        [HttpGet("schools/{id}")]
+        public async ValueTask<IActionResult> GetApplicationsForSchool(
+            long id,
+            [FromQuery] PaginationParams @params,
+            [FromQuery] Filter filter) =>
+            Ok(this.applicationService.RetrieveApplicationsForSchool(id, @params, filter));
+
+        [HttpGet("teachers/{id}")]
+        public async ValueTask<IActionResult> GetApplicationsForTeacher(
+            long id,
+            [FromQuery] PaginationParams @params,
+            [FromQuery] Filter filter) =>
+            Ok(this.applicationService.RetrieveApplicationsForTeacher(id, @params, filter));
     }
 }

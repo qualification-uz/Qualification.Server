@@ -36,6 +36,7 @@ builder.Services.AddAuthorization(options =>
 
     options.AddPolicy("ApplicationPolicy", policy => policy.RequireRole(
         Enum.GetName(UserRole.SuperAdmin),
+        Enum.GetName(UserRole.Teacher),
         Enum.GetName(UserRole.School),
         Enum.GetName(UserRole.Admin)));
 

@@ -19,4 +19,13 @@ public interface IApplicationService
     ValueTask<ApplicationDto> RemoveApplicationAsync(long applicationId);
     ValueTask<ApplicationDto> ModifyApplicationStatusAsync(long applicationId, ApplicationStatus status);
     IEnumerable<RoleDto> RetrieveAllApplicationStatus();
+    IEnumerable<ApplicationDto> RetrieveApplicationsForSchool(
+        long schoolId,
+        PaginationParams @params,
+        Filter filter);
+
+    IEnumerable<ApplicationDto> RetrieveApplicationsForTeacher(
+        long teacherId,
+        PaginationParams @params,
+        Filter filter);
 }

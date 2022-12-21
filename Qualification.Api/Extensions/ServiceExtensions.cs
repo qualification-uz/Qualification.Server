@@ -2,13 +2,10 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Qualification.Data.IRepositories;
 using Qualification.Data.Repositories;
-using Qualification.Domain.Entities.Questions;
-using Qualification.Domain.Entities.Users;
 using Qualification.Service.AvloniyClient;
 using Qualification.Service.Interfaces;
 using Qualification.Service.Mappers;
@@ -20,24 +17,30 @@ public static class ServiceExtensions
 {
     public static void AddCustomServices(this IServiceCollection services)
     {
-        services.AddTransient<IPaymentRequestRepository, PaymentRequestRepository>();
-        services.AddTransient<IApplicationRepository, ApplicationRepository>();
-        services.AddTransient<IApplicationRepository, ApplicationRepository>();
-        services.AddTransient<IFileUploadRepository, FileUploadRepository>();
-        services.AddTransient<IQuestionRepository, QuestionRepository>();
+        services.AddScoped<IPaymentRequestRepository, PaymentRequestRepository>();
+        services.AddScoped<IApplicationRepository, ApplicationRepository>();
+        services.AddScoped<IApplicationRepository, ApplicationRepository>();
+        services.AddScoped<IFileUploadRepository, FileUploadRepository>();
+        services.AddScoped<IQuestionRepository, QuestionRepository>();
         services.AddScoped<IQuestionAnswerRepository, QuestionAnswerRepository>();
+        services.AddScoped<IQuizRepository, QuizRepository>();
+        services.AddScoped<IQuizQuestionRepository, QuizQuestionRepository>();
+        services.AddScoped<ISubmissionRepository, SubmissionRepository>();
+        services.AddScoped<IQuizResultRepository, QuizResultRepository>();
 
-        services.AddTransient<IAvloniyClientService, AvloniyClientService>();
-        services.AddTransient<IAuthService, AuthService>();
-        services.AddTransient<IUserService, UserService>();
-        services.AddTransient<IApplicationService, ApplicationService>();
-        services.AddTransient<IAssetService, AssetService>();
-        services.AddTransient<ISchoolService, SchoolService>();
-        services.AddTransient<IQuestionService, QuestionService>();
-        services.AddTransient<IFileUploadService, FileUploadService>();
+        services.AddScoped<IAvloniyClientService, AvloniyClientService>();
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IApplicationService, ApplicationService>();
+        services.AddScoped<IAssetService, AssetService>();
+        services.AddScoped<ISchoolService, SchoolService>();
+        services.AddScoped<IQuestionService, QuestionService>();
+        services.AddScoped<IFileUploadService, FileUploadService>();
         services.AddScoped<IQuizService, QuizService>();
         services.AddScoped<IPaymentRequestService, PaymentRequestService>();
-        
+        services.AddScoped<IQuizResultService, QuizResultService>();
+        services.AddScoped<ISubmissionService, SubmissionService>();
+
         services.AddAutoMapper(typeof(MapperProfile));
     }
 

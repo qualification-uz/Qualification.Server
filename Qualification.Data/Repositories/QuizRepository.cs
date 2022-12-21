@@ -24,7 +24,7 @@ public class QuizRepository : IQuizRepository
         return quizEntityEntry.Entity;
     }
 
-    public IQueryable<Quiz> SelectAllQuizes() =>
+    public IQueryable<Quiz> SelectAllQuizzes() =>
         this.appDbContext.Quizes;
 
     public async ValueTask<Quiz> SelectQuizByIdAsync(long quizId) =>
@@ -48,5 +48,12 @@ public class QuizRepository : IQuizRepository
         await this.appDbContext.SaveChangesAsync();
 
         return quizEntityEntry.Entity;
+    }
+
+    public async ValueTask InsertBulkQuizAsync(IEnumerable<Quiz> quizes)
+    {
+        await this.appDbContext.Quizes.AddRangeAsync(quizes);
+
+        await this.appDbContext.SaveChangesAsync();
     }
 }
