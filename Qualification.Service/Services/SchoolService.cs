@@ -93,7 +93,7 @@ public class SchoolService : ISchoolService
         var eRPResponse = await this.avloniyClientService
             .SelectTeacherByPinflAsync(teacherPinflDto.PINFL);
 
-        if (!eRPResponse.Success)
+        if (!eRPResponse.Success || eRPResponse.Result is null)
             throw new NotFoundException("Coudn't find teacher with this PINFL");
 
         var mappedTeacher = this.mapper.Map<TeacherForCreationDto>(eRPResponse.Result);

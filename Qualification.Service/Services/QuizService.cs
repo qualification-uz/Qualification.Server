@@ -70,9 +70,10 @@ public class QuizService : IQuizService
 
     public async ValueTask CreateBulkQuizAsync(QuizForBulkCreationDto quizForBulkCreationDto)
     {
+        var userIds = quizForBulkCreationDto.Datas.Select(data => data.UserId);
+
         var users = await this.userManager.Users
-            .Where(user => quizForBulkCreationDto.Datas
-                .Any(data => data.UserId == user.Id))
+            .Where(user => userIds.Contains(user.Id))
             .Include(user => user.Applications)
             .ToListAsync();
 
