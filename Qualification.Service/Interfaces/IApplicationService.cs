@@ -9,7 +9,7 @@ namespace Qualification.Service.Interfaces;
 public interface IApplicationService
 {
     ValueTask<ApplicationDto> AddApplicationAsync(ApplicationForCreationDto applicationDto);
-    IEnumerable<ApplicationDto> RetrieveAllApplications(PaginationParams @params, Filter filter);
+    IEnumerable<ApplicationDto> RetrieveAllApplications(PaginationParams @params, Filters filters);
     ValueTask<ApplicationDto> RetrieveApplicationByIdAsync(long applicationId);
     
     ValueTask<ApplicationDto> ModifyApplicationAsync(

@@ -37,8 +37,8 @@ namespace Qualification.Api.Controllers
         [HttpGet]
         public IActionResult GetAllApplications(
             [FromQuery] PaginationParams @params,
-            [FromQuery] Filter filter) =>
-            Ok(this.applicationService.RetrieveAllApplications(@params, filter));
+            [FromQuery(Name = "filter")] Filters filters) =>
+            Ok(this.applicationService.RetrieveAllApplications(@params, filters));
 
         /// <summary>
         /// Id bo'yicha arizani olish

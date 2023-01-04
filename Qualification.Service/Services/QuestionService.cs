@@ -2,6 +2,7 @@
 using Qualification.Data.IRepositories;
 using Qualification.Domain.Configurations;
 using Qualification.Domain.Entities.Questions;
+using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Question;
 using Qualification.Service.Exceptions;
 using Qualification.Service.Extensions;
@@ -25,9 +26,15 @@ public class QuestionService : IQuestionService
         this.assetService = assetService;
     }
 
-    public IEnumerable<QuestionDto> RetrieveAllQuestions(PaginationParams @params)
+    public IEnumerable<QuestionDto> RetrieveAllQuestions(
+        Filters filters, PaginationParams @params)
     {
-        var questions = this.questionRepository.SelectAllQuestions();
+        var questions = this.questionRepository
+            .SelectAllQuestions();
+
+        questions = filters
+                .Aggregate(questions, (current, filter) => current.Filter(filter));
+
         return this.mapper.Map<IEnumerable<QuestionDto>>(questions)
             .ToPagedList(@params);
     }

@@ -5,6 +5,7 @@ using Qualification.Data.IRepositories;
 using Qualification.Data.Migrations;
 using Qualification.Domain.Configurations;
 using Qualification.Domain.Entities;
+using Qualification.Domain.Entities.Questions;
 using Qualification.Domain.Entities.Users;
 using Qualification.Domain.Enums;
 using Qualification.Service.DTOs;
@@ -65,16 +66,20 @@ public class ApplicationService : IApplicationService
 
     public IEnumerable<ApplicationDto> RetrieveAllApplications(
         PaginationParams @params,
-        Filter filter)
+        Filters filters)
     {
         var applications = this.applicationRepository
-            .SelectAllApplications()
-            .OrderBy(filter)
-            .Include(application => application.Groups)
-            .Include(application => application.Teacher)
-            .ToPagedList(@params);
+            .SelectAllApplications();
 
-        return this.mapper.Map<IEnumerable<ApplicationDto>>(applications);
+        applications = filters
+                .Aggregate(applications, (current, filter) => current.Filter(filter));
+
+        applications = applications
+            .Include(application => application.Groups)
+            .Include(application => application.Teacher);
+
+        return this.mapper.Map<IEnumerable<ApplicationDto>>(applications)
+            .ToPagedList(@params);
     }
 
     public async ValueTask<ApplicationDto> RetrieveApplicationByIdAsync(long applicationId)
