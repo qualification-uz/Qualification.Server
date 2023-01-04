@@ -18,6 +18,11 @@ namespace Qualification.Api.Controllers
         }
 
         [HttpGet("roles")]
-        public IActionResult GetAllRoles() => Ok(this.userService.RetrieveAllRoles());
+        public IActionResult GetAllRoles() 
+            => Ok(this.userService.RetrieveAllRoles());
+
+        [HttpGet("current")]
+        public async Task<IActionResult> GetCurrentUser() 
+            => Ok(await this.userService.RetrieveCurrentUserAsync());
     }
 }
