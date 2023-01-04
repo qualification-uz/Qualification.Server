@@ -33,7 +33,8 @@ public class QuestionService : IQuestionService
         var questions = this.questionRepository
             .SelectAllQuestions()
             .Include(p => p.Answers)
-            .Include(p => p.Assets);
+            .Include(p => p.Assets)
+            .AsQueryable();
 
         questions = filters
                 .Aggregate(questions, (current, filter) => current.Filter(filter));
