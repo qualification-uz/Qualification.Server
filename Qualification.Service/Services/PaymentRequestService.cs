@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Qualification.Data.IRepositories;
 using Qualification.Domain.Entities.Payment;
+using Qualification.Domain.Enums;
 using Qualification.Service.DTOs.Payment;
 using Qualification.Service.Exceptions;
 using Qualification.Service.Interfaces;
@@ -78,14 +79,20 @@ public class PaymentRequestService : IPaymentRequestService
 
         var paymentRequest = await paymentRequests
             .Include(request => request.Assets)
+            .Include(request => request.Application)
             .Where(payment => payment.Id == paymentRequestId)
             .FirstAsync();
 
         var paymentAsset = new PaymentAsset
         {
-            IsFromAdmin = false,
+            IsFromAdmin = isFromAdmin,
             AssetId = assetId,
         };
+
+        if (!isFromAdmin)
+        {
+            paymentRequest.Application.Status = ApplicationStatus.TolovQilindi;
+        }
 
         paymentRequest.Assets.Add(paymentAsset);
 

@@ -1,5 +1,6 @@
+using Qualification.Domain.Configurations;
 using Qualification.Domain.Enums;
-using Qualification.Service.DTOs.Question;
+using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Quizzes;
 using Qualification.Service.DTOs.Users;
 
@@ -9,7 +10,8 @@ public interface IQuizService
 {
     ValueTask<QuizDto> CreateQuizAsync(QuizForCreationDto quizDto);
     ValueTask CreateBulkQuizAsync(QuizForBulkCreationDto quizForBulkCreationDto);
-    IEnumerable<QuizDto> RetrieveAllQuizzes();
+    IEnumerable<QuizDto> RetrieveAllQuizzes(Filters filter, PaginationParams @params);
+    ValueTask<QuizDto> RetrieveQuizByPropertyValue(Filter filter);
     ValueTask<QuizDto> RetrieveQuizByIdAsync(long quizId);
     ValueTask<QuizDto> ModifyQuizAsync(long quizId, QuizForUpdateDto quizDto);
     ValueTask<QuizDto> RemoveQuizAsync(long quizId);

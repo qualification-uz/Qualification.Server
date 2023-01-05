@@ -2,6 +2,7 @@
 using Qualification.Data.Contexts;
 using Qualification.Data.IRepositories;
 using Qualification.Domain.Entities.Payment;
+using Qualification.Domain.Enums;
 
 namespace Qualification.Data.Repositories;
 
@@ -18,6 +19,8 @@ public class PaymentRequestRepository : IPaymentRequestRepository
     {
         EntityEntry<PaymentRequest> paymentEntityEntry =
             await this.appDbContext.PaymentRequests.AddAsync(paymentRequest);
+
+        paymentEntityEntry.Entity.Application.Status = ApplicationStatus.TolovKutilmoqda;
 
         await this.appDbContext.SaveChangesAsync();
 

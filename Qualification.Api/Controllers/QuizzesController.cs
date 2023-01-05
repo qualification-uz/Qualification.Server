@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using Qualification.Domain.Configurations;
 using Qualification.Domain.Enums;
+using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Quizzes;
 using Qualification.Service.Interfaces;
 
@@ -29,8 +31,10 @@ public class QuizzesController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetAllQuizzes() =>
-        Ok(this.quizService.RetrieveAllQuizzes());
+    public IActionResult GetAllQuizzes(
+        [FromQuery(Name = "filter")] Filters filters,
+        [FromQuery] PaginationParams @params) =>
+        Ok(this.quizService.RetrieveAllQuizzes(filters, @params));
 
     [HttpGet("{id}")]
     public async ValueTask<IActionResult> GetQuizByIdAsync(long id) =>
@@ -55,4 +59,9 @@ public class QuizzesController : ControllerBase
     [HttpGet("status")]
     public IActionResult GetQuizStatuses() =>
         Ok(this.quizService.RetrieveQuizStatuses());
+
+    [HttpGet("property")]
+    public async ValueTask<IActionResult> GetAllQuizzes(
+        [FromQuery] Filter filter) =>
+        Ok(await this.quizService.RetrieveQuizByPropertyValue(filter));
 }

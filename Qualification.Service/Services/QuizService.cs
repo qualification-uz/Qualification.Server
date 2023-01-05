@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Qualification.Data.IRepositories;
+using Qualification.Domain.Configurations;
 using Qualification.Domain.Entities.Questions;
 using Qualification.Domain.Entities.Quizes;
 using Qualification.Domain.Entities.Users;
 using Qualification.Domain.Enums;
+using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Quizzes;
 using Qualification.Service.DTOs.Users;
 using Qualification.Service.Exceptions;
@@ -60,7 +62,7 @@ public class QuizService : IQuizService
 
         if (application is null)
             throw new NotFoundException("Couldn't find application for given id");
-
+        application.Status = ApplicationStatus.TestBelgilandi;
         quiz.User = user;
         quiz.Application = application;
         quiz = await this.quizRepository.InsertQuizAync(quiz);
@@ -111,15 +113,23 @@ public class QuizService : IQuizService
         await this.quizRepository.InsertBulkQuizAsync(quizzes);
     }
 
-    public IEnumerable<QuizDto> RetrieveAllQuizzes()
+    public IEnumerable<QuizDto> RetrieveAllQuizzes(
+        Filters filters,
+        PaginationParams @params)
     {
         var quizzes = this.quizRepository
-            .SelectAllQuizzes()
+            .SelectAllQuizzes();
+
+        quizzes = filters
+                .Aggregate(quizzes, (current, filter) => current.Filter(filter));
+
+        quizzes = quizzes
             .Include(quiz => quiz.Application)
             .Include(quiz => quiz.User)
             .OrderBy(quiz => quiz.CreatedAt);
 
-        return this.mapper.Map<IEnumerable<QuizDto>>(quizzes);
+        return this.mapper.Map<IEnumerable<QuizDto>>(quizzes)
+            .ToPagedList(@params);
     }
 
     public async ValueTask<QuizDto> RetrieveQuizByIdAsync(long quizId)
@@ -282,6 +292,23 @@ public class QuizService : IQuizService
                 Id = (int)quizStatusId,
                 Name = Enum.GetName<QuizStatus>(quizStatusId)
             };
+    }
+
+    public async ValueTask<QuizDto> RetrieveQuizByPropertyValue(Filter filter)
+    {
+        var quizes = this.quizRepository
+            .SelectAllQuizzes()
+            .Filter(filter);
+
+        var quiz = await quizes
+            .Include(quiz => quiz.Application)
+            .Include(quiz => quiz.User)
+            .FirstOrDefaultAsync();
+
+        if (quiz is null)
+            throw new NotFoundException("Couldn't find quiz for given id");
+
+        return this.mapper.Map<QuizDto>(quiz);
     }
 
     //private async Task<CheckedQuizResultDto> CheckQuizAsync(CheckedQuizInputDto[] answers)
