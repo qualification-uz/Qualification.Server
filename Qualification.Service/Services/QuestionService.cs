@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Qualification.Data.IRepositories;
 using Qualification.Domain.Configurations;
 using Qualification.Domain.Entities.Questions;
@@ -30,7 +31,10 @@ public class QuestionService : IQuestionService
         Filters filters, PaginationParams @params)
     {
         var questions = this.questionRepository
-            .SelectAllQuestions();
+            .SelectAllQuestions()
+            .Include(p => p.Answers)
+            .Include(p => p.Assets)
+            .AsQueryable();
 
         questions = filters
                 .Aggregate(questions, (current, filter) => current.Filter(filter));
