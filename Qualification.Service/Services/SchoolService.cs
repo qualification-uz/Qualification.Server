@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Qualification.Domain.Configurations;
 using Qualification.Domain.Entities.Users;
 using Qualification.Domain.Enums;
 using Qualification.Service.AvloniyClient;
 using Qualification.Service.DTOs.Application;
 using Qualification.Service.DTOs.Users;
 using Qualification.Service.Exceptions;
+using Qualification.Service.Extensions;
 using Qualification.Service.Interfaces;
 
 namespace Qualification.Service.Services;
@@ -26,9 +28,13 @@ public class SchoolService : ISchoolService
         this.userManager = userManager;
     }
 
-    public IEnumerable<UserDto> RetrieveAllTeachers(int schoolId)
+    public IEnumerable<UserDto> RetrieveAllTeachers(
+        int schoolId,
+        PaginationParams paginationParams)
     {
-        var users = this.userManager.Users.Where(user => user.SchoolId == schoolId);
+        var users = this.userManager.Users
+            .Where(user => user.SchoolId == schoolId)
+            .ToPagedList(paginationParams);
 
         return this.mapper.Map<IEnumerable<UserDto>>(users);
     }

@@ -217,7 +217,7 @@ public class ApplicationService : IApplicationService
             .Include(application => application.Groups)
             .Include(application => application.Teacher)
             .Where(application => application.TeacherId == teacherId)
-            .OrderBy(filter)
+            .Filter(filter)
             .ToPagedList(@params);
 
         return this.mapper.Map<IEnumerable<ApplicationDto>>(applications);

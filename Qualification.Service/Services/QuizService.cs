@@ -104,7 +104,7 @@ public class QuizService : IQuizService
                 EndsAt = quizForBulkCreationDto.EndsAt,
                 UserId = data.UserId,
                 ApplicationId = data.ApplicationId,
-                Status = QuizStatus.NotStarted,
+                Status = QuizStatus.Boshlanmadi,
                 CreatedAt = DateTime.UtcNow,
                 IsForTeacher = true
             };
@@ -309,6 +309,21 @@ public class QuizService : IQuizService
             throw new NotFoundException("Couldn't find quiz for given id");
 
         return this.mapper.Map<QuizDto>(quiz);
+    }
+
+    public async ValueTask<IEnumerable<QuizDto>> RetrieveQuizByTeacherId(
+        long teacherId,
+        PaginationParams paginationParams)
+    {
+        var quizzes = await this.quizRepository
+            .SelectAllQuizzes()
+            .Include(quiz => quiz.Application)
+            .Include(quiz => quiz.User)
+            .Where(quiz => quiz.UserId == teacherId)
+            .ToListAsync();
+
+        return this.mapper.Map<IEnumerable<QuizDto>>(quizzes
+            .ToPagedList(paginationParams));
     }
 
     //private async Task<CheckedQuizResultDto> CheckQuizAsync(CheckedQuizInputDto[] answers)

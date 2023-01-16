@@ -79,14 +79,15 @@ public static class CollectionExtensions
 
     public static IQueryable<T> Filter<T>(this IQueryable<T> source, Filter filter)
     {
-        if(filter is null)
+        if (filter is null ||
+            filter.Property is null ||
+            filter.Value is null)
         {
             return source;
         }
 
         return source
-            .Where(BuildPredicate<T>(filter.Property, filter.Value))
-            .OrderBy(filter);
+            .Where(BuildPredicate<T>(filter.Property, filter.Value));
     }
 
     private static Expression<Func<T, bool>> BuildPredicate<T>(string propertyName, string value)

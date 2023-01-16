@@ -224,4 +224,27 @@ public class QuestionService : IQuestionService
 
         return this.mapper.Map<QuestionDto>(question);
     }
+
+    public async ValueTask<QuestionDto> RemoveQuestionAnswerAsync(long questionId, long answerId)
+    {
+        var question = await this.questionRepository
+            .SelectQuestionByIdAsync(questionId, new[] { "Answers" });
+
+        if (question is null)
+            throw new NotFoundException("Couldn't find any question for given id");
+
+        var questionAnswer = question.Answers
+            .FirstOrDefault(answer => answer.Id == answerId);
+
+        if (questionAnswer is null)
+            throw new NotFoundException("Couldn't find any answer for given id");
+
+        question.Answers.Remove(questionAnswer);
+
+        question.UpdatedAt = DateTime.UtcNow;
+
+        question = await this.questionRepository.UpdateQuestionAsync(question);
+
+        return this.mapper.Map<QuestionDto>(question);
+    }
 }

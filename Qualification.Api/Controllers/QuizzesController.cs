@@ -64,4 +64,10 @@ public class QuizzesController : ControllerBase
     public async ValueTask<IActionResult> GetAllQuizzes(
         [FromQuery] Filter filter) =>
         Ok(await this.quizService.RetrieveQuizByPropertyValue(filter));
+
+    [HttpGet("teachers/{teacherId}")]
+    public async ValueTask<IActionResult> GetAllQuizzes(
+        long teacherId,
+        PaginationParams paginationParams) =>
+        Ok(await this.quizService.RetrieveQuizByTeacherId(teacherId, paginationParams));
 }

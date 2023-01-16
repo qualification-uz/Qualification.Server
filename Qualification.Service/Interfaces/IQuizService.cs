@@ -18,4 +18,5 @@ public interface IQuizService
     ValueTask<QuizDto> ModifyQuizStatusAsync(long quizId, QuizStatus quizStatus);
     ValueTask<IEnumerable<QuizQuestionDto>> RetrieveQuizQuestions(long quizId);
     IEnumerable<RoleDto> RetrieveQuizStatuses();
+    ValueTask<IEnumerable<QuizDto>> RetrieveQuizByTeacherId(long teacherId, PaginationParams paginationParams);
 }
