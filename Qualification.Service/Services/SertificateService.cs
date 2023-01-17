@@ -30,24 +30,24 @@ public class SertificateService : ISertificateService
         Brush brush = new SolidBrush(Color.FromKnownColor(KnownColor.Black));
 
         // Set text font
-        Font arial = new Font("Arial", 70, FontStyle.Bold);
-        Font arial2 = new Font("Arial", 35, FontStyle.Italic);
+        Font defaultFont = new Font("Arial", 50, FontStyle.Regular);
+        Font fullNameFont = new Font("Arial", 50, FontStyle.Bold);
         
         // Set text size
-        SizeF sizeOfCertNumber = graphics.MeasureString(sertificateForCreationDto.SertificateNumber, arial);
-        SizeF sizeOfFullName = graphics.MeasureString(sertificateForCreationDto.FullName, arial);
-        SizeF sizeOfSubject = graphics.MeasureString(sertificateForCreationDto.Subject, arial);
-        SizeF sizeOfSubjectScore = graphics.MeasureString(sertificateForCreationDto.SubjectScore.ToString(), arial);
-        SizeF sizeOfPedagogicalScore = graphics.MeasureString(sertificateForCreationDto.PedagogicalScore.ToString(), arial);
-        SizeF sizeOfTotalScore = graphics.MeasureString(sertificateForCreationDto.TotalScore.ToString(), arial);
+        SizeF sizeOfCertNumber = graphics.MeasureString(sertificateForCreationDto.SertificateNumber, defaultFont);
+        SizeF sizeOfFullName = graphics.MeasureString(sertificateForCreationDto.FullName, fullNameFont);
+        SizeF sizeOfSubject = graphics.MeasureString(sertificateForCreationDto.Subject, defaultFont);
+        SizeF sizeOfSubjectScore = graphics.MeasureString(sertificateForCreationDto.SubjectScore.ToString(), defaultFont);
+        SizeF sizeOfPedagogicalScore = graphics.MeasureString(sertificateForCreationDto.PedagogicalScore.ToString(), defaultFont);
+        SizeF sizeOfTotalScore = graphics.MeasureString(sertificateForCreationDto.TotalScore.ToString(), defaultFont);
 
         // Draw text to image
-        graphics.DrawString(sertificateForCreationDto.SertificateNumber, arial, brush, new PointF((bitmap.Width - sizeOfCertNumber.Width) / 2, 730));
-        graphics.DrawString(sertificateForCreationDto.FullName, arial, brush, new PointF((bitmap.Width - sizeOfFullName.Width) / 2, 870));
-        graphics.DrawString(sertificateForCreationDto.Subject, arial, brush, new PointF((bitmap.Width - sizeOfSubject.Width) / 2, 1000));
-        graphics.DrawString(sertificateForCreationDto.SubjectScore.ToString(), arial, brush, new PointF((bitmap.Width - sizeOfSubjectScore.Width) / 2, 1130));
-        graphics.DrawString(sertificateForCreationDto.PedagogicalScore.ToString(), arial, brush, new PointF((bitmap.Width - sizeOfPedagogicalScore.Width) / 2, 1260));
-        graphics.DrawString(sertificateForCreationDto.TotalScore.ToString(), arial, brush, new PointF((bitmap.Width - sizeOfTotalScore.Width) / 2, 1390));
+        graphics.DrawString(sertificateForCreationDto.SertificateNumber, defaultFont, brush, new PointF((bitmap.Width - sizeOfCertNumber.Width) / 2, 1715));
+        graphics.DrawString(sertificateForCreationDto.FullName, fullNameFont, brush, new PointF((bitmap.Width - sizeOfFullName.Width) / 2, 1900));
+        graphics.DrawString(sertificateForCreationDto.Subject, defaultFont, brush, new PointF((bitmap.Width - sizeOfSubject.Width) / 5, 2245));
+        graphics.DrawString(sertificateForCreationDto.SubjectScore.ToString(), defaultFont, brush, new PointF((bitmap.Width - sizeOfSubjectScore.Width) / 5 * 4.2f, 2140));
+        graphics.DrawString(sertificateForCreationDto.PedagogicalScore.ToString(), defaultFont, brush, new PointF((bitmap.Width - sizeOfPedagogicalScore.Width) / 5 * 4.2f, 2490));
+        graphics.DrawString(sertificateForCreationDto.TotalScore.ToString(), defaultFont, brush, new PointF((bitmap.Width - sizeOfTotalScore.Width) / 4.2f, 2570));
 
         // Save output image
         string outputFileName = Guid.NewGuid().ToString("N") + ".png";
