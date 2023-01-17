@@ -33,6 +33,7 @@ public class QuestionService : IQuestionService
         var questions = this.questionRepository
             .SelectAllQuestions()
             .Include(p => p.Answers)
+            .ThenInclude(p => p.Assets)
             .Include(p => p.Assets)
             .AsQueryable();
 
