@@ -40,6 +40,7 @@ public static class ServiceExtensions
         services.AddScoped<IPaymentRequestService, PaymentRequestService>();
         services.AddScoped<IQuizResultService, QuizResultService>();
         services.AddScoped<ISubmissionService, SubmissionService>();
+        services.AddScoped<ISertificateService, SertificateService>();
 
         services.AddAutoMapper(typeof(MapperProfile));
     }
