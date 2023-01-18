@@ -34,10 +34,8 @@ public class SchoolService : ISchoolService
     {
         var users = this.userManager.Users
             .Where(user => user.SchoolId == schoolId)
+            .OrderByDescending(user => user.Id)
             .ToPagedList(paginationParams);
-        var users = this.userManager.Users
-            .Where(user => user.SchoolId == schoolId)
-            .OrderByDescending(user => user.Id);
 
         return this.mapper.Map<IEnumerable<UserDto>>(users);
     }
