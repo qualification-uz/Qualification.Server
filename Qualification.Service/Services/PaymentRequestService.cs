@@ -95,7 +95,10 @@ public class PaymentRequestService : IPaymentRequestService
             .Include(request => request.Assets)
             .Include(request => request.Application)
             .Where(payment => payment.Id == paymentRequestId)
-            .FirstAsync();
+            .FirstOrDefaultAsync();
+
+        if (paymentRequest is null)
+            throw new NotFoundException("Couldn't find payment request for given id");
 
         var paymentAsset = new PaymentAsset
         {
