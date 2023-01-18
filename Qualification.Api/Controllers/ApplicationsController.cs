@@ -94,8 +94,8 @@ namespace Qualification.Api.Controllers
         [HttpGet("teachers/{id}")]
         public async ValueTask<IActionResult> GetApplicationsForTeacher(
             long id,
-            [FromQuery] PaginationParams @params,
-            [FromQuery] Filter filter) =>
+            [FromQuery] PaginationParams? @params,
+            [FromQuery] Filter? filter) =>
             Ok(this.applicationService.RetrieveApplicationsForTeacher(id, @params, filter));
     }
 }

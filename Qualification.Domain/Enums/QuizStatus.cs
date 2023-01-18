@@ -2,7 +2,7 @@
 
 public enum QuizStatus
 {
-    NotStarted,
-    InProgress,
-    Finished
+    Boshlanmadi,
+    Jarayonda,
+    Tugadi
 }

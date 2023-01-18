@@ -24,4 +24,8 @@ public interface IQuestionService
         long questionId,
         long answerId,
         QuestionAnswerForUpdateDto questionAnswerForUpdateDto);
+
+    ValueTask<QuestionDto> RemoveQuestionAnswerAsync(
+        long questionId,
+        long answerId);
 }

@@ -58,13 +58,13 @@ public class SubmissionService : ISubmissionService
         var submission = await this.submissionRepository
             .SelectSubmissionByIdAsync(submissionId);
 
-        if(submission is null)
+        if (submission is null)
         {
             throw new NotFoundException("Couldn't find submission for given id");
         }
 
         submission.QuestionOptionId = submissionDto.QuestionOptionId;
-        
+
         submission = await this.submissionRepository
             .UpdateSubmissionAsync(submission);
 

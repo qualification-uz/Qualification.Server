@@ -13,8 +13,11 @@ public enum ApplicationStatus
     [Display(Name = "To'lov kutilmoqda")]
     TolovKutilmoqda,
 
-    [Display(Name = "To'lov qilindi")]
+    [Display(Name = "To'lov kutilmoqda")]
     TolovQilindi,
+
+    [Display(Name = "To'lov qilindi")]
+    TolovTasdiqlandi,
 
     [Display(Name = "Test belgilandi")]
     TestBelgilandi,

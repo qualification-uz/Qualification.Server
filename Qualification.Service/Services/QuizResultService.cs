@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Qualification.Data.IRepositories;
+using Qualification.Domain.Entities.Quizes;
 using Qualification.Service.DTOs.Quizzes;
 using Qualification.Service.Exceptions;
 using Qualification.Service.Interfaces;
@@ -30,13 +31,14 @@ public class QuizResultService : IQuizResultService
     {
         var quizResult = await this.quizResultRepository
             .SelectAllQuizResults()
-            .Where(result => result.QuizId == quizId)
             .FirstOrDefaultAsync();
 
         if (quizResult is not null)
         {
             return this.mapper.Map<QuizResultDto>(quizResult);
         }
+
+        quizResult = new QuizResult();
 
         var quiz = await this.quizRepository
             .SelectAllQuizzes()
@@ -64,7 +66,7 @@ public class QuizResultService : IQuizResultService
             .CountAsync();
 
         quizResult.CorrectAnswers = (short)correctAnswers;
-        quizResult.Score = correctAnswers / quiz.Questions.Count * 100;
+        quizResult.Score = correctAnswers * 100 / quiz.Questions.Count;
         quizResult.UserId = quiz.UserId;
         quizResult.QuizId = quiz.Id;
 
