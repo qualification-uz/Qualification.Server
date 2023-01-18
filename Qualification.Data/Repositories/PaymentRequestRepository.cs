@@ -20,8 +20,6 @@ public class PaymentRequestRepository : IPaymentRequestRepository
         EntityEntry<PaymentRequest> paymentEntityEntry =
             await this.appDbContext.PaymentRequests.AddAsync(paymentRequest);
 
-        paymentEntityEntry.Entity.Application.Status = ApplicationStatus.TolovKutilmoqda;
-
         await this.appDbContext.SaveChangesAsync();
 
         return paymentEntityEntry.Entity;
