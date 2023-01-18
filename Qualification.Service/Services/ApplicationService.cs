@@ -202,6 +202,7 @@ public class ApplicationService : IApplicationService
             .OrderBy(filter)
             .Include(application => application.Groups)
             .Include(application => application.Teacher)
+            .OrderByDescending(application => application.CreatedAt)
             .ToPagedList(@params);
 
         return this.mapper.Map<IEnumerable<ApplicationDto>>(applications);
@@ -217,7 +218,7 @@ public class ApplicationService : IApplicationService
             .Include(application => application.Groups)
             .Include(application => application.Teacher)
             .Where(application => application.TeacherId == teacherId)
-            .OrderBy(filter)
+            .OrderByDescending(application => application.CreatedAt)
             .ToPagedList(@params);
 
         return this.mapper.Map<IEnumerable<ApplicationDto>>(applications);

@@ -32,7 +32,8 @@ public class SubmissionService : ISubmissionService
     public IEnumerable<SubmissionDto> RetrieveAllSubmissions()
     {
         var submissions = this.submissionRepository
-            .SelectAllSubmissions();
+            .SelectAllSubmissions()
+            .OrderByDescending(submission => submission.CreatedAt);
 
         return this.mapper.Map<IEnumerable<SubmissionDto>>(submissions);
     }

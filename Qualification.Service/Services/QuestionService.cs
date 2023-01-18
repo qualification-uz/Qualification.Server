@@ -34,6 +34,7 @@ public class QuestionService : IQuestionService
             .SelectAllQuestions()
             .Include(p => p.Answers)
             .Include(p => p.Assets)
+            .OrderByDescending(question => question.CreatedAt)
             .AsQueryable();
 
         questions = filters

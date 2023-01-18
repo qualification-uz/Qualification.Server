@@ -28,7 +28,9 @@ public class SchoolService : ISchoolService
 
     public IEnumerable<UserDto> RetrieveAllTeachers(int schoolId)
     {
-        var users = this.userManager.Users.Where(user => user.SchoolId == schoolId);
+        var users = this.userManager.Users
+            .Where(user => user.SchoolId == schoolId)
+            .OrderByDescending(user => user.Id);
 
         return this.mapper.Map<IEnumerable<UserDto>>(users);
     }

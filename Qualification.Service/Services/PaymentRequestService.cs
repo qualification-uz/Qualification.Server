@@ -12,21 +12,35 @@ namespace Qualification.Service.Services;
 public class PaymentRequestService : IPaymentRequestService
 {
     private readonly IPaymentRequestRepository paymentRequestRepository;
+    private readonly IApplicationRepository applicationRepository;
     private readonly IMapper mapper;
 
     public PaymentRequestService(
         IPaymentRequestRepository paymentRequestRepository,
-        IMapper mapper)
+        IMapper mapper,
+        IApplicationRepository applicationRepository)
     {
         this.paymentRequestRepository = paymentRequestRepository;
         this.mapper = mapper;
+        this.applicationRepository = applicationRepository;
     }
 
     public async ValueTask<PaymentRequestDto> AddPaymentRequestAsync(
         PaymentRequestForCreationDto paymentRequestForCreationDto)
     {
+
+        var application = await this.applicationRepository
+            .SelectApplicationByIdAsync(paymentRequestForCreationDto.ApplicationId);
+
+        if (application is null)
+        {
+            throw new NotFoundException("Application is not found with given id");
+        }
+
         var paymentRequest = this.mapper
             .Map<PaymentRequest>(paymentRequestForCreationDto);
+
+        application.Status = ApplicationStatus.TolovKutilmoqda;
 
         paymentRequest.Assets = new List<PaymentAsset>();
 
@@ -108,6 +122,7 @@ public class PaymentRequestService : IPaymentRequestService
         var paymentAssets = paymentRequests
             .Include(request => request.Assets)
             .Where(payment => payment.Id == paymentRequestId)
+            .OrderByDescending(request => request.CreatedAt)
             .SelectMany(payment => payment.Assets);
 
         return this.mapper.Map<IEnumerable<PaymentAssetDto>>(paymentAssets);
@@ -123,7 +138,8 @@ public class PaymentRequestService : IPaymentRequestService
             .Where(request => request.ApplicationId == applicationId)
             .SelectMany(request => request.Assets)
             .Include(payment => payment.PaymentRequest)
-            .Where(asset => asset.IsFromAdmin == isFromAdmin);
+            .Where(asset => asset.IsFromAdmin == isFromAdmin)
+            .OrderByDescending(request => request.CreatedAt);
 
         return this.mapper.Map<IEnumerable<PaymentAssetDto>>(paymentAssets);
     }
