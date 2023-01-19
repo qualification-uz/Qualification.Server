@@ -27,5 +27,5 @@ public interface IApplicationService
     IEnumerable<ApplicationDto> RetrieveApplicationsForTeacher(
         long teacherId,
         PaginationParams @params,
-        Filter filter);
+        Filters filters);
 }

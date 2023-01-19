@@ -20,9 +20,13 @@ namespace Qualification.Api.Controllers
             SubmissionForCreationDto submissionForCreationDto) =>
             Ok(await this.submissionService.CreateSubmissionAsync(submissionForCreationDto));
 
-        [HttpGet]
+        [HttpGet("all")]
         public IActionResult GetAllSubmissions() =>
             Ok(this.submissionService.RetrieveAllSubmissions());
+
+        [HttpGet("byQuiz/{quizId}")]
+        public IActionResult GetAllSubmissionsByQuizId(long quizId) =>
+            Ok(this.submissionService.RetrieveAllSubmissionsByQuizId(quizId));
 
         [HttpGet("{id}")]
         public async ValueTask<IActionResult> GetSubmissionByIdAsync(long id) =>

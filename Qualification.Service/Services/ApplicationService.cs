@@ -76,8 +76,10 @@ public class ApplicationService : IApplicationService
 
         applications = applications
             .Include(application => application.Groups)
-            .Include(application => application.Teacher);
-
+            .Include(application => application.Teacher)
+            .Include(paymentRequest => paymentRequest.PaymentRequests)
+            .ThenInclude(application => application.Assets);
+        
         return this.mapper.Map<IEnumerable<ApplicationDto>>(applications)
             .ToPagedList(@params);
     }
@@ -211,16 +213,20 @@ public class ApplicationService : IApplicationService
     public IEnumerable<ApplicationDto> RetrieveApplicationsForTeacher(
         long teacherId,
         PaginationParams @params,
-        Filter filter)
+        Filters filters)
     {
         var applications = this.applicationRepository
             .SelectAllApplications()
             .Include(application => application.Groups)
             .Include(application => application.Teacher)
+            .Include(request => request.PaymentRequests)
+            .ThenInclude(payment => payment.Assets)
             .Where(application => application.TeacherId == teacherId)
             .OrderByDescending(application => application.CreatedAt)
-            .ToPagedList(@params);
-
-        return this.mapper.Map<IEnumerable<ApplicationDto>>(applications);
+            .AsQueryable();
+           
+        applications = filters.Aggregate(applications, (current, filter) => current.Filter(filter));
+        
+        return this.mapper.Map<IEnumerable<ApplicationDto>>(applications.ToPagedList(@params));
     }
 }

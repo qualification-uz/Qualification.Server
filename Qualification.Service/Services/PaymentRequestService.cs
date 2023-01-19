@@ -87,16 +87,16 @@ public class PaymentRequestService : IPaymentRequestService
         throw new NotImplementedException();
     }
 
-    public async ValueTask<PaymentAssetDto> AddPaymentAssetAsync(long paymentRequestId, bool isFromAdmin, long assetId)
+    public async ValueTask<PaymentAssetDto> AddPaymentAssetAsync(long applicationId, bool isFromAdmin, long assetId)
     {
         var paymentRequests = this.paymentRequestRepository.SelectAllPaymentRequests();
 
         var paymentRequest = await paymentRequests
             .Include(request => request.Assets)
             .Include(request => request.Application)
-            .Where(payment => payment.Id == paymentRequestId)
+            .Where(payment => payment.ApplicationId == applicationId)
             .FirstOrDefaultAsync();
-
+        
         if (paymentRequest is null)
             throw new NotFoundException("Couldn't find payment request for given id");
 

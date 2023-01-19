@@ -24,10 +24,10 @@ namespace Qualification.Api.Controllers
             [FromBody] PaymentRequestForCreationDto paymentDto) =>
             Ok(await this.paymentRequestService.AddPaymentRequestAsync(paymentDto));
 
-        [HttpPost("{id}/assets")]
+        [HttpPost("{applicationId}/assets")]
         public async ValueTask<IActionResult> PostPaymentAsset(
-            long id, bool isFromAdmin, long assetId) =>
-            Ok(await this.paymentRequestService.AddPaymentAssetAsync(id, isFromAdmin, assetId));
+            long applicationId, bool isFromAdmin, long assetId) =>
+            Ok(await this.paymentRequestService.AddPaymentAssetAsync(applicationId, isFromAdmin, assetId));
 
         [HttpGet("{id}/assets")]
         public IActionResult GetAllPaymentAssets(long id, bool isFromAdmin) =>

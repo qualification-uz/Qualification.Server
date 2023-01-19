@@ -38,6 +38,16 @@ public class SubmissionService : ISubmissionService
         return this.mapper.Map<IEnumerable<SubmissionDto>>(submissions);
     }
 
+    public IEnumerable<SubmissionDto> RetrieveAllSubmissionsByQuizId(long quizId)
+    {
+        var submissions = this.submissionRepository
+            .SelectAllSubmissions()
+            .Where(submission => submission.QuizId == quizId)
+            .OrderByDescending(submission => submission.CreatedAt);
+
+        return this.mapper.Map<IEnumerable<SubmissionDto>>(submissions);
+    }
+
     public async ValueTask<SubmissionDto> RetrieveSubmissionByIdAsync(long submissionId)
     {
         var submission = await this.submissionRepository

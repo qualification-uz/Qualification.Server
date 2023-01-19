@@ -258,8 +258,8 @@ public class QuizService : IQuizService
             .ToDictionaryAsync(question => question.Id);
 
         HashSet<long> questionIds = new HashSet<long>();
-        long minIndex = questions.Keys.Min();
-        long maxIndex = questions.Keys.Max();
+        long minIndex = questions.OrderBy(x => x.Key).FirstOrDefault().Key;
+        long maxIndex = questions.OrderByDescending(x => x.Key).FirstOrDefault().Key;
         var random = new Random();
 
         if (questions.Count < questionCount)
