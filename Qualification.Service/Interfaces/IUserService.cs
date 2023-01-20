@@ -5,5 +5,5 @@ namespace Qualification.Service.Interfaces;
 public interface IUserService
 {
     IEnumerable<RoleDto> RetrieveAllRoles();
-    ValueTask<UserDto> RetrieveCurrentUserAsync();
+    ValueTask<object> RetrieveCurrentUserAsync(string username, string password);
 }
