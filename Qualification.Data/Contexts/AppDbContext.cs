@@ -117,5 +117,3 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
     public DbSet<QuestionOption> QuizQuestionOptions { get; set; }
     public DbSet<QuizResult> Results { get; set; }
 }
-
-    

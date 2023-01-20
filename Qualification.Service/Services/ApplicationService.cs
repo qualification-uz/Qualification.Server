@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Qualification.Data.IRepositories;
-using Qualification.Data.Migrations;
 using Qualification.Domain.Configurations;
 using Qualification.Domain.Entities;
 using Qualification.Domain.Entities.Questions;
