@@ -22,6 +22,6 @@ namespace Qualification.Api.Controllers
         /// <returns></returns>
         [HttpPost]
         public async ValueTask<IActionResult> PostCertificateAsync([FromBody] SertificateForCreationDto sertificateForCreationDto) =>
-            File(await this.sertificateService.GenerateSertificateAsync(sertificateForCreationDto), "octet/stream", "sertificate.png");
+            File(await this.sertificateService.GenerateSertificateAsync(sertificateForCreationDto), "application/octet-stream", "sertificate.png");
     }
 }

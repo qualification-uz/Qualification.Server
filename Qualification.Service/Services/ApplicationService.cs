@@ -143,6 +143,21 @@ public class ApplicationService : IApplicationService
         if (applicationDto.DocumentId.HasValue)
             application.DocumentId = applicationDto.DocumentId.Value;
 
+        if(applicationDto.Groups is not null)
+        {
+            application.Groups = applicationDto.Groups
+            .Select(group => new Group
+            {
+                GradeId =  group.GradeId,
+                GradeLetterId = group.GradeLetterId,
+                GradeLetter = group.GradeLetter,
+                SchoolYear = group.SchoolYear,
+                SchoolYearId = group.SchoolYearId,
+                Grade = group.Grade
+            })
+            .ToList();
+        }
+
         application = await this.applicationRepository
             .UpdateApplicationAsync(application);
 
