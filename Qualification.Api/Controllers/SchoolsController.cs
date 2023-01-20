@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qualification.Domain.Configurations;
 using Qualification.Service.AvloniyClient;
+using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Users;
 using Qualification.Service.Interfaces;
 
@@ -60,8 +61,9 @@ namespace Qualification.Api.Controllers
         [HttpGet("{id}/teachers")]
         public IActionResult GetAllTeachersAsync(
             int id,
-            [FromQuery]PaginationParams paginationParams) =>
-            Ok(this.schoolService.RetrieveAllTeachers(id, paginationParams));
+            [FromQuery]PaginationParams paginationParams,
+            [FromQuery] Filters filter) =>
+            Ok(this.schoolService.RetrieveAllTeachers(id, paginationParams, filter));
 
         /// <summary>
         /// Maktab o'qituvchisini o'chirish

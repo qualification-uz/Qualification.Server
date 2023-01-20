@@ -4,6 +4,7 @@ using Qualification.Domain.Configurations;
 using Qualification.Domain.Entities.Users;
 using Qualification.Domain.Enums;
 using Qualification.Service.AvloniyClient;
+using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Application;
 using Qualification.Service.DTOs.Users;
 using Qualification.Service.Exceptions;
@@ -30,14 +31,19 @@ public class SchoolService : ISchoolService
 
     public IEnumerable<UserDto> RetrieveAllTeachers(
         int schoolId,
-        PaginationParams paginationParams)
+        PaginationParams paginationParams,
+        Filters filters)
     {
-        var users = this.userManager.Users
-            .Where(user => user.SchoolId == schoolId)
+        var users = this.userManager.Users;
+
+        users = filters
+                .Aggregate(users, (current, filter) => current.Filter(filter));
+        
+        var pagedList = users.Where(user => user.SchoolId == schoolId)
             .OrderByDescending(user => user.Id)
             .ToPagedList(paginationParams);
 
-        return this.mapper.Map<IEnumerable<UserDto>>(users);
+        return this.mapper.Map<IEnumerable<UserDto>>(pagedList);
     }
 
     public async ValueTask<IEnumerable<GradeLetterDto>> RetrieveAllGradeLettersAsync()

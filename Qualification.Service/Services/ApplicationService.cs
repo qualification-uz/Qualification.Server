@@ -13,7 +13,9 @@ using Qualification.Service.DTOs.Application;
 using Qualification.Service.DTOs.Users;
 using Qualification.Service.Exceptions;
 using Qualification.Service.Extensions;
+using Qualification.Service.Helpers;
 using Qualification.Service.Interfaces;
+using System.ComponentModel.DataAnnotations;
 
 namespace Qualification.Service.Services;
 
@@ -204,7 +206,8 @@ public class ApplicationService : IApplicationService
             yield return new RoleDto
             {
                 Id = (int)applicationStatusId,
-                Name = Enum.GetName<ApplicationStatus>(applicationStatusId)
+                Name = Enum.GetName<ApplicationStatus>(applicationStatusId),
+                Description = EnumHelper.GetDisplayValue((ApplicationStatus)applicationStatusId)
             };
     }
 

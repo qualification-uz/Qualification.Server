@@ -42,6 +42,8 @@ public static class ServiceExtensions
         services.AddScoped<ISubmissionService, SubmissionService>();
         services.AddScoped<ISertificateService, SertificateService>();
 
+        services.AddScoped<IReportService, ReportService>();
+        
         services.AddAutoMapper(typeof(MapperProfile));
     }
 
