@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Qualification.Domain.Configurations;
+using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Payment;
 using Qualification.Service.Interfaces;
 
@@ -16,8 +18,9 @@ namespace Qualification.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllPaymentRequests() =>
-            Ok(this.paymentRequestService.RetrieveAllPaymentRequests());
+        public IActionResult GetAllPaymentRequests([FromQuery] PaginationParams @params, 
+            [FromQuery] Filters filter) =>
+            Ok(this.paymentRequestService.RetrieveAllPaymentRequests(@params, filter));
 
         [HttpPost]
         public async ValueTask<IActionResult> PostPaymentRequest(

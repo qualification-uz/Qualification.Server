@@ -1,10 +1,13 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Qualification.Data.IRepositories;
+using Qualification.Domain.Configurations;
 using Qualification.Domain.Entities.Payment;
 using Qualification.Domain.Enums;
+using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Payment;
 using Qualification.Service.Exceptions;
+using Qualification.Service.Extensions;
 using Qualification.Service.Interfaces;
 
 namespace Qualification.Service.Services;
@@ -59,9 +62,11 @@ public class PaymentRequestService : IPaymentRequestService
         return this.mapper.Map<PaymentRequestDto>(paymentRequest);
     }
 
-    public IEnumerable<PaymentRequestDto> RetrieveAllPaymentRequests()
+    public IEnumerable<PaymentRequestDto> RetrieveAllPaymentRequests(PaginationParams @params, Filters filters)
     {
         var paymentRequests = this.paymentRequestRepository.SelectAllPaymentRequests();
+
+        paymentRequests = filters.Aggregate(paymentRequests, (current, filter) => current.Filter(filter));
 
         return this.mapper.Map<IEnumerable<PaymentRequestDto>>(paymentRequests);
     }

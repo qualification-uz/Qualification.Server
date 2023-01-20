@@ -22,7 +22,7 @@ public interface IApplicationService
     IEnumerable<ApplicationDto> RetrieveApplicationsForSchool(
         long schoolId,
         PaginationParams @params,
-        Filter filter);
+        Filters filter);
 
     IEnumerable<ApplicationDto> RetrieveApplicationsForTeacher(
         long teacherId,

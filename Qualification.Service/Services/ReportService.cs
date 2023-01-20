@@ -1,6 +1,10 @@
 ﻿using OfficeOpenXml;
 using Qualification.Domain.Configurations;
+using Qualification.Domain.Entities.Users;
+using Qualification.Service.AvloniyClient;
 using Qualification.Service.DTOs;
+using Qualification.Service.DTOs.Application;
+using Qualification.Service.DTOs.Payment;
 using Qualification.Service.DTOs.Users;
 using Qualification.Service.Interfaces;
 using System;
@@ -14,17 +18,23 @@ namespace Qualification.Service.Services
     public class ReportService : IReportService
     {
         private readonly ISchoolService schoolService;
+        private readonly IApplicationService applicationService;
+        private readonly IPaymentRequestService paymentRequestService;
 
-        public ReportService(ISchoolService schoolService)
+        public ReportService(ISchoolService schoolService, IApplicationService applicationService, IPaymentRequestService paymentRequestService)
         {
             this.schoolService = schoolService;
+            this.applicationService=applicationService;
+            this.paymentRequestService = paymentRequestService;
         }
 
         private async Task<MemoryStream> GenerateReportAsync<T>(IEnumerable<T> data, List<string> columnNames = null, string reportName = "Report")
         {
             // Get column name of data
             var systemColumnNames = typeof(T).GetProperties().Select(p => p.Name).ToList();
-            
+
+            columnNames = columnNames ?? systemColumnNames;
+
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             
             // Create a new Excel package
@@ -72,27 +82,18 @@ namespace Qualification.Service.Services
         }
 
         /// <summary>
-        /// Export schools to excel report
-        /// </summary>
-        /// <param name="params"></param>
-        /// <param name="filter"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public Task<MemoryStream> ExportSchoolsToExcelAsync(PaginationParams @params, Filters filter)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Export applications to excel report
         /// </summary>
         /// <param name="params"></param>
         /// <param name="filter"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public Task<MemoryStream> ExportApplicationsToExcelAsync(PaginationParams @params, Filters filter)
+        public async Task<MemoryStream> ExportApplicationsToExcelAsync(PaginationParams @params, Filters filter)
         {
-            throw new NotImplementedException();
+            var applications = applicationService.RetrieveAllApplications(@params, filter);
+            //var columnNames = new List<string> { "Id", "Ism", "Familiya", "Sharif", "Telefon raqami", "Login", "RoleId", "Role" };
+
+            return await GenerateReportAsync<ApplicationDto>(applications, reportName: "Applications");
         }
 
         /// <summary>
@@ -103,9 +104,12 @@ namespace Qualification.Service.Services
         /// <param name="filter"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public Task<MemoryStream> ExportApplicationsBySchoolIdToExcelAsync(int schoolId, PaginationParams @params, Filters filter)
+        public async Task<MemoryStream> ExportApplicationsBySchoolIdToExcelAsync(int schoolId, PaginationParams @params, Filters filter)
         {
-            throw new NotImplementedException();
+            var applications = applicationService.RetrieveApplicationsForSchool(schoolId, @params, filter);
+            //var columnNames = new List<string> { "Id", "Ism", "Familiya", "Sharif", "Telefon raqami", "Login", "RoleId", "Role" };
+
+            return await GenerateReportAsync<ApplicationDto>(applications, reportName: "Applications");
         }
 
         /// <summary>
@@ -116,9 +120,12 @@ namespace Qualification.Service.Services
         /// <param name="filter"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public Task<MemoryStream> ExportApplicationsByTeacherIdToExcelAsync(int teacherId, PaginationParams @params, Filters filter)
+        public async Task<MemoryStream> ExportApplicationsByTeacherIdToExcelAsync(int teacherId, PaginationParams @params, Filters filter)
         {
-            throw new NotImplementedException();
+            var applications = applicationService.RetrieveApplicationsForTeacher(teacherId, @params, filter);
+            //var columnNames = new List<string> { "Id", "Ism", "Familiya", "Sharif", "Telefon raqami", "Login", "RoleId", "Role" };
+
+            return await GenerateReportAsync<ApplicationDto>(applications, reportName: "Applications");
         }
 
         /// <summary>
@@ -128,9 +135,12 @@ namespace Qualification.Service.Services
         /// <param name="filter"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public Task<MemoryStream> ExportPaymentsToExcelAsync(PaginationParams @params, Filters filter)
+        public async Task<MemoryStream> ExportPaymentsToExcelAsync(PaginationParams @params, Filters filter)
         {
-            throw new NotImplementedException();
+            var paymentRequests = paymentRequestService.RetrieveAllPaymentRequests(@params, filter);
+            //var columnNames = new List<string> { "Id", "Ism", "Familiya", "Sharif", "Telefon raqami", "Login", "RoleId", "Role" };
+
+            return await GenerateReportAsync<PaymentRequestDto>(paymentRequests, reportName: "Teachers");
         }
     }
 }

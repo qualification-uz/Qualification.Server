@@ -198,7 +198,6 @@ public class ApplicationService : IApplicationService
 
     public IEnumerable<RoleDto> RetrieveAllApplicationStatus()
     {
-
         var applicationStatusIds = Enum.GetValues<ApplicationStatus>();
 
         foreach (var applicationStatusId in applicationStatusIds)
@@ -213,18 +212,21 @@ public class ApplicationService : IApplicationService
     public IEnumerable<ApplicationDto> RetrieveApplicationsForSchool(
         long schoolId,
         PaginationParams @params,
-        Filter filter)
+        Filters filters)
     {
         var applications = this.applicationRepository
             .SelectAllApplications()
-            .Where(application => application.SchoolId == schoolId)
-            .OrderBy(filter)
-            .Include(application => application.Groups)
-            .Include(application => application.Teacher)
-            .OrderByDescending(application => application.CreatedAt)
-            .ToPagedList(@params);
+            .Where(application => application.SchoolId == schoolId);
 
-        return this.mapper.Map<IEnumerable<ApplicationDto>>(applications);
+        applications = filters
+                .Aggregate(applications, (current, filter) => current.Filter(filter));
+        
+        var pagedList = applications.Include(application => application.Groups)
+        .Include(application => application.Teacher)
+        .OrderByDescending(application => application.CreatedAt)
+        .ToPagedList(@params);
+
+        return this.mapper.Map<IEnumerable<ApplicationDto>>(pagedList);
     }
 
     public IEnumerable<ApplicationDto> RetrieveApplicationsForTeacher(
