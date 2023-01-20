@@ -158,7 +158,7 @@ namespace Qualification.Data.Migrations
 
                     b.HasIndex("TeacherId");
 
-                    b.ToTable("Applications");
+                    b.ToTable("Applications", (string)null);
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Assets.Asset", b =>
@@ -180,7 +180,7 @@ namespace Qualification.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Assets");
+                    b.ToTable("Assets", (string)null);
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Group", b =>
@@ -222,7 +222,7 @@ namespace Qualification.Data.Migrations
 
                     b.HasIndex("ApplicationId");
 
-                    b.ToTable("Groups");
+                    b.ToTable("Groups", (string)null);
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Payment.PaymentAsset", b =>
@@ -252,7 +252,7 @@ namespace Qualification.Data.Migrations
 
                     b.HasIndex("PaymentRequestId");
 
-                    b.ToTable("PaymentAssets");
+                    b.ToTable("PaymentAssets", (string)null);
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Payment.PaymentRequest", b =>
@@ -290,7 +290,7 @@ namespace Qualification.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PaymentRequests");
+                    b.ToTable("PaymentRequests", (string)null);
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Questions.Question", b =>
@@ -330,7 +330,7 @@ namespace Qualification.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Questions");
+                    b.ToTable("Questions", (string)null);
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Questions.QuestionAnswer", b =>
@@ -360,7 +360,7 @@ namespace Qualification.Data.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("QuestionAnswers");
+                    b.ToTable("QuestionAnswers", (string)null);
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Questions.QuestionAnswerAsset", b =>
@@ -387,7 +387,7 @@ namespace Qualification.Data.Migrations
 
                     b.HasIndex("QuestionAnswerId");
 
-                    b.ToTable("QuestionAnswerAssets");
+                    b.ToTable("QuestionAnswerAssets", (string)null);
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Questions.QuestionAsset", b =>
@@ -414,7 +414,7 @@ namespace Qualification.Data.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("QuestionAssets");
+                    b.ToTable("QuestionAssets", (string)null);
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuestionOption", b =>
@@ -444,7 +444,7 @@ namespace Qualification.Data.Migrations
 
                     b.HasIndex("QuizQuestionId");
 
-                    b.ToTable("QuizQuestionOptions");
+                    b.ToTable("QuizQuestionOptions", (string)null);
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.Quiz", b =>
@@ -485,16 +485,11 @@ namespace Qualification.Data.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationId");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Quizes");
+                    b.ToTable("Quizes", (string)null);
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuizQuestion", b =>
@@ -522,9 +517,7 @@ namespace Qualification.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("QuizId");
-
-                    b.ToTable("QuizQuestions");
+                    b.ToTable("QuizQuestions", (string)null);
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuizResult", b =>
@@ -559,7 +552,7 @@ namespace Qualification.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Results");
+                    b.ToTable("Results", (string)null);
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.Submission", b =>
@@ -573,33 +566,17 @@ namespace Qualification.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("QuestionOptionId")
-                        .HasColumnType("bigint");
-
                     b.Property<long>("QuizId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("QuizQuestionId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("QuestionOptionId")
-                        .IsUnique();
 
                     b.HasIndex("QuizId");
 
-                    b.HasIndex("QuizQuestionId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Submissions");
+                    b.ToTable("Submissions", (string)null);
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Users.Role", b =>
@@ -866,24 +843,7 @@ namespace Qualification.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Qualification.Domain.Entities.Users.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Application");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuizQuestion", b =>
-                {
-                    b.HasOne("Qualification.Domain.Entities.Quizes.Quiz", null)
-                        .WithMany("Questions")
-                        .HasForeignKey("QuizId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuizResult", b =>
@@ -907,37 +867,13 @@ namespace Qualification.Data.Migrations
 
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.Submission", b =>
                 {
-                    b.HasOne("Qualification.Domain.Entities.Quizes.QuestionOption", "Option")
-                        .WithOne("Submission")
-                        .HasForeignKey("Qualification.Domain.Entities.Quizes.Submission", "QuestionOptionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Qualification.Domain.Entities.Quizes.Quiz", "Quiz")
                         .WithMany("Submissions")
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Qualification.Domain.Entities.Quizes.QuizQuestion", "Question")
-                        .WithMany()
-                        .HasForeignKey("QuizQuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Qualification.Domain.Entities.Users.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Option");
-
-                    b.Navigation("Question");
-
                     b.Navigation("Quiz");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Application", b =>
@@ -966,15 +902,8 @@ namespace Qualification.Data.Migrations
                     b.Navigation("Assets");
                 });
 
-            modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuestionOption", b =>
-                {
-                    b.Navigation("Submission");
-                });
-
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.Quiz", b =>
                 {
-                    b.Navigation("Questions");
-
                     b.Navigation("Submissions");
                 });
 
