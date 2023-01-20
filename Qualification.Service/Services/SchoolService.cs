@@ -133,4 +133,23 @@ public class SchoolService : ISchoolService
 
         return mappedUser;
     }
+
+    public async ValueTask<bool> RemoveTeacherAsync(int schoolId, long teacherId)
+    {
+        var user = await this.userManager.FindByIdAsync(teacherId.ToString());
+
+        if (user is null)
+            throw new NotFoundException("Coudn't find teacher with this ID");
+
+        if (user.SchoolId != schoolId)
+            throw new Exception("You don't have permission to delete this teacher");
+
+        var result = await this.userManager.DeleteAsync(user);
+
+        if (!result.Succeeded)
+            throw new InvalidOperationException(message:
+                string.Join("", result.Errors.Select(error => error.Description)));
+
+        return true;
+    }
 }

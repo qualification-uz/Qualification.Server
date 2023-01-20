@@ -64,6 +64,18 @@ namespace Qualification.Api.Controllers
             Ok(this.schoolService.RetrieveAllTeachers(id, paginationParams));
 
         /// <summary>
+        /// Maktab o'qituvchisini o'chirish
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="teacherId"></param>
+        /// <returns></returns>
+        [HttpDelete("{id}/teachers/{teacherId}")]
+        public async ValueTask<IActionResult> DeleteTeacherAsync(
+            int id,
+            int teacherId) =>
+            Ok(await this.schoolService.RemoveTeacherAsync(id, teacherId));
+
+        /// <summary>
         /// O'qituvchini PINFL orqali ro'yxatga olish 
         /// </summary>
         /// <param name="id"></param>

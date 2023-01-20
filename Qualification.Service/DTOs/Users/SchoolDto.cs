@@ -13,8 +13,14 @@ public class SchoolDto
     [JsonProperty("oblastid")]
     public int RegionId { get; set; }
 
+    [JsonProperty("oblastname")]
+    public string RegionName { get; set; }
+
     [JsonProperty("regionid")]
     public int DistrictId { get; set; }
+
+    [JsonProperty("regionname")]
+    public string DistrictName { get; set; }
 
     [JsonProperty("organizationtypeid")]
     public int TypeId { get; set; }
