@@ -1,17 +1,10 @@
 ﻿using OfficeOpenXml;
 using Qualification.Domain.Configurations;
-using Qualification.Domain.Entities.Users;
-using Qualification.Service.AvloniyClient;
 using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Application;
 using Qualification.Service.DTOs.Payment;
 using Qualification.Service.DTOs.Users;
 using Qualification.Service.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Qualification.Service.Services
 {
@@ -36,7 +29,7 @@ namespace Qualification.Service.Services
             columnNames = columnNames ?? systemColumnNames;
 
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-            
+
             // Create a new Excel package
             var package = new ExcelPackage();
 
@@ -77,7 +70,7 @@ namespace Qualification.Service.Services
         {
             var teachers = schoolService.RetrieveAllTeachers(schoolId, @params, filters);
             var columnNames = new List<string> { "Id", "Ism", "Familiya", "Sharif", "Telefon raqami", "Login", "RoleId", "Role" };
-            
+
             return await GenerateReportAsync<UserDto>(teachers, columnNames, "Teachers");
         }
 

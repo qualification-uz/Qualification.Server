@@ -1,11 +1,5 @@
-﻿using Qualification.Domain.Enums;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using System.ComponentModel.DataAnnotations;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Qualification.Service.Helpers
 {
@@ -23,7 +17,7 @@ namespace Qualification.Service.Helpers
 
             return resourceKey; // Fallback with the key name
         }
-        
+
         public static string GetDisplayValue<TEnum>(TEnum value)
         {
             var fieldInfo = value.GetType().GetField(value.ToString());

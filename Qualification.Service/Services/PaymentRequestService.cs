@@ -76,7 +76,7 @@ public class PaymentRequestService : IPaymentRequestService
         var paymentRequest = await this.paymentRequestRepository
             .SelectPaymentRequestByIdAsync(paymentRequestId);
 
-        if(paymentRequest is null)
+        if (paymentRequest is null)
             throw new NotFoundException("Couldn't find payment request for given id");
 
         return this.mapper.Map<PaymentRequestDto>(paymentRequest);
@@ -101,7 +101,7 @@ public class PaymentRequestService : IPaymentRequestService
             .Include(request => request.Application)
             .Where(payment => payment.ApplicationId == applicationId)
             .FirstOrDefaultAsync();
-        
+
         if (paymentRequest is null)
             throw new NotFoundException("Couldn't find payment request for given id");
 

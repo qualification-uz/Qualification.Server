@@ -2,7 +2,6 @@
 using Qualification.Data.Contexts;
 using Qualification.Data.IRepositories;
 using Qualification.Domain.Entities.Payment;
-using Qualification.Domain.Enums;
 
 namespace Qualification.Data.Repositories;
 

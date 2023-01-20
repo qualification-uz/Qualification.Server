@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Qualification.Domain.Configurations;
-using Qualification.Domain.Entities.Users;
 using Qualification.Service.DTOs;
 using Qualification.Service.Interfaces;
 
@@ -16,7 +15,7 @@ namespace Qualification.Api.Controllers
         {
             this.reportService=reportService;
         }
-        
+
         /// <summary>
         /// Export filtered teachers to excel
         /// </summary>
@@ -26,8 +25,8 @@ namespace Qualification.Api.Controllers
         /// <returns></returns>
         [HttpGet("teachers/{schoolId}")]
         public async ValueTask<IActionResult> GetTeachersReportAsync(
-            int schoolId, 
-            [FromQuery]PaginationParams @params,
+            int schoolId,
+            [FromQuery] PaginationParams @params,
             [FromQuery] Filters filter) =>
             File(await this.reportService.ExportTeachersToExcelAsync(schoolId, @params, filter),
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

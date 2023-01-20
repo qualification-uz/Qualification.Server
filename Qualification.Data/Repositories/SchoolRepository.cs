@@ -1,12 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
-using Qualification.Data.Contexts;
+﻿using Qualification.Data.Contexts;
 using Qualification.Data.IRepositories;
 using Qualification.Domain.Entities.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Qualification.Data.Repositories
 {

@@ -17,7 +17,7 @@ public class AuthController : ControllerBase
 
     [HttpPost]
     [Route("login")]
-    public async ValueTask<IActionResult> Login([FromBody] UserLoginDto loginDto, [FromQuery] bool isExternal = false) 
+    public async ValueTask<IActionResult> Login([FromBody] UserLoginDto loginDto, [FromQuery] bool isExternal = false)
         => Ok(await authService.LoginAsync(loginDto, isExternal));
 
 

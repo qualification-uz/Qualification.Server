@@ -6,10 +6,10 @@ namespace Qualification.Service.DTOs.Users
     {
         [JsonProperty("firstname")]
         public string FirstName { get; set; }
-        
+
         [JsonProperty("familyname")]
         public string LastName { get; set; }
-        
+
         [JsonProperty("lastname")]
         public string MiddleName { get; set; }
 

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Qualification.Domain.Entities.Assets;
 using Qualification.Domain.Entities.Payment;
 
 namespace Qualification.Domain.Entities.Users;

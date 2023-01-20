@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Qualification.Data.IRepositories;
 using Qualification.Domain.Configurations;
 using Qualification.Domain.Entities;
-using Qualification.Domain.Entities.Questions;
 using Qualification.Domain.Entities.Users;
 using Qualification.Domain.Enums;
 using Qualification.Service.DTOs;
@@ -14,7 +13,6 @@ using Qualification.Service.Exceptions;
 using Qualification.Service.Extensions;
 using Qualification.Service.Helpers;
 using Qualification.Service.Interfaces;
-using System.ComponentModel.DataAnnotations;
 
 namespace Qualification.Service.Services;
 
@@ -46,7 +44,7 @@ public class ApplicationService : IApplicationService
             .FirstOrDefaultAsync(teacher =>
                 teacher.Id == applicationDto.TeacherId);
 
-        if(teacher is null)
+        if (teacher is null)
             throw new NotFoundException("Couldn't find teacher for given id");
 
         bool isExpectedTeacher = await this.userManager
@@ -54,7 +52,7 @@ public class ApplicationService : IApplicationService
 
         if (!isExpectedTeacher)
             throw new InvalidOperationException("Not allowed user");
-        
+
         teacher.Applications.Add(application);
 
         application =
@@ -80,7 +78,7 @@ public class ApplicationService : IApplicationService
             .Include(application => application.Teacher)
             .Include(paymentRequest => paymentRequest.PaymentRequests)
             .ThenInclude(application => application.Assets);
-        
+
         return this.mapper.Map<IEnumerable<ApplicationDto>>(applications)
             .ToPagedList(@params);
     }
@@ -100,18 +98,18 @@ public class ApplicationService : IApplicationService
 
         return this.mapper.Map<ApplicationDto>(application);
     }
-    
+
     public async ValueTask<ApplicationDto> ModifyApplicationAsync(
         long applicationId,
         ApplicationForUpdateDto applicationDto)
     {
         var application =
-            await this.applicationRepository.SelectApplicationByIdAsync(applicationId, new[] {"Teacher"});
+            await this.applicationRepository.SelectApplicationByIdAsync(applicationId, new[] { "Teacher" });
 
         if (application is null)
             throw new NotFoundException("Couldn't find application for given id");
 
-        if(applicationDto.TeacherId.HasValue)
+        if (applicationDto.TeacherId.HasValue)
         {
             var teacher = await this.userManager.Users
                 .Include(teacher => teacher.Applications)
@@ -139,12 +137,12 @@ public class ApplicationService : IApplicationService
             await this.userManager.UpdateAsync(teacher);
         }
 
-        if(applicationDto.SubjectId.HasValue)
+        if (applicationDto.SubjectId.HasValue)
             application.SubjectId = applicationDto.SubjectId.Value;
         if (applicationDto.DocumentId.HasValue)
             application.DocumentId = applicationDto.DocumentId.Value;
 
-        if(applicationDto.Groups is not null)
+        if (applicationDto.Groups is not null)
         {
             application.Groups = applicationDto.Groups
             .Select(group => new Group
@@ -182,7 +180,7 @@ public class ApplicationService : IApplicationService
         long applicationId,
         ApplicationStatus status)
     {
-        var application = 
+        var application =
             await this.applicationRepository.SelectApplicationByIdAsync(applicationId);
 
         if (application is null)
@@ -220,7 +218,7 @@ public class ApplicationService : IApplicationService
 
         applications = filters
                 .Aggregate(applications, (current, filter) => current.Filter(filter));
-        
+
         var pagedList = applications.Include(application => application.Groups)
         .Include(application => application.Teacher)
         .OrderByDescending(application => application.CreatedAt)
@@ -243,9 +241,9 @@ public class ApplicationService : IApplicationService
             .Where(application => application.TeacherId == teacherId)
             .OrderByDescending(application => application.CreatedAt)
             .AsQueryable();
-           
+
         applications = filters.Aggregate(applications, (current, filter) => current.Filter(filter));
-        
+
         return this.mapper.Map<IEnumerable<ApplicationDto>>(applications.ToPagedList(@params));
     }
 }

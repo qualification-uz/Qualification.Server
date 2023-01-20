@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Qualification.Domain.Enums;
+﻿using Qualification.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Qualification.Service.DTOs.Question;
 
@@ -21,7 +19,7 @@ public class QuestionForCreationDto
 
     [Required]
     public short CorrectAnswers { get; set; }
-    
+
     [Required]
     public short Level { get; set; }
 

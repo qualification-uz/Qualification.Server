@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace Qualification.Service.DTOs.Question;
+﻿namespace Qualification.Service.DTOs.Question;
 
 public class QuestionAnswerDto
 {

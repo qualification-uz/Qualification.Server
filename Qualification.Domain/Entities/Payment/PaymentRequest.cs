@@ -8,10 +8,10 @@ public class PaymentRequest : Auditable
     public string Description { get; set; }
     public decimal Amount { get; set; }
     public bool IsPaid { get; set; }
-    
+
     public long ApplicationId { get; set; }
     public Application Application { get; }
-    
+
     public long UserId { get; set; }
     public User User { get; }
 

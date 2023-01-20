@@ -1,6 +1,3 @@
-using System.Net.Http.Headers;
-using System.Reflection;
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -10,6 +7,9 @@ using Qualification.Service.AvloniyClient;
 using Qualification.Service.Interfaces;
 using Qualification.Service.Mappers;
 using Qualification.Service.Services;
+using System.Net.Http.Headers;
+using System.Reflection;
+using System.Text;
 
 namespace Qualification.Api.Extensions;
 
@@ -43,7 +43,7 @@ public static class ServiceExtensions
         services.AddScoped<ISertificateService, SertificateService>();
 
         services.AddScoped<IReportService, ReportService>();
-        
+
         services.AddAutoMapper(typeof(MapperProfile));
     }
 
@@ -59,7 +59,7 @@ public static class ServiceExtensions
             config.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", svcCredentials);
         });
     }
-    
+
     public static void AddJwtService(this IServiceCollection services, IConfiguration config)
     {
         services.AddAuthentication();
@@ -85,7 +85,7 @@ public static class ServiceExtensions
         services.AddMvc().AddNewtonsoftJson(options =>
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
     }
-    
+
     public static void AddCorsService(this IServiceCollection services)
     {
         services.AddCors(options =>
@@ -96,7 +96,7 @@ public static class ServiceExtensions
             });
         });
     }
-    
+
     public static void AddSwaggerService(this IServiceCollection services)
     {
         services.AddSwaggerGen(c =>

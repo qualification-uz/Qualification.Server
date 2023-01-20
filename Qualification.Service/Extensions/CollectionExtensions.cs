@@ -1,9 +1,7 @@
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using Qualification.Domain.Configurations;
 using Qualification.Service.DTOs;
 using Qualification.Service.Helpers;
-using System.Linq;
 using System.Linq.Expressions;
 
 namespace Qualification.Service.Extensions;
@@ -12,7 +10,7 @@ public static class CollectionExtensions
 {
     public static IEnumerable<T> ToPagedList<T>(this IEnumerable<T> source, PaginationParams @params)
     {
-        if(@params is null)
+        if (@params is null)
         {
             return source;
         }
@@ -55,20 +53,20 @@ public static class CollectionExtensions
 
         var parameter = Expression.Parameter(typeof(T), "x");
         var selector = Expression.PropertyOrField(parameter, filter?.OrderBy ?? "Id");
-        
+
         var method = string.Equals(filter?.OrderType ?? "asc", "desc", StringComparison.OrdinalIgnoreCase) ? "OrderByDescending" : "OrderBy";
-        
+
         expression = Expression.Call(typeof(Queryable), method,
             new Type[] { source.ElementType, selector.Type },
             expression, Expression.Quote(Expression.Lambda(selector, parameter)));
 
         return source.Provider.CreateQuery<T>(expression);
     }
-    
-    public static void Shuffle<T> (this Random random, T[] array)
+
+    public static void Shuffle<T>(this Random random, T[] array)
     {
         int length = array.Length;
-        while (length > 1) 
+        while (length > 1)
         {
             int k = random.Next(length--);
             T temp = array[length];

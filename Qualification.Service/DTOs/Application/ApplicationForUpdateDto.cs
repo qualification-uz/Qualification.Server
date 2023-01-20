@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace Qualification.Service.DTOs.Application;
+﻿namespace Qualification.Service.DTOs.Application;
 
 public class ApplicationForUpdateDto
 {

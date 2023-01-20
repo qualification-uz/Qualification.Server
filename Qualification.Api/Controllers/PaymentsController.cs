@@ -18,7 +18,7 @@ namespace Qualification.Api.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllPaymentRequests([FromQuery] PaginationParams @params, 
+        public IActionResult GetAllPaymentRequests([FromQuery] PaginationParams @params,
             [FromQuery] Filters filter) =>
             Ok(this.paymentRequestService.RetrieveAllPaymentRequests(@params, filter));
 
@@ -45,7 +45,7 @@ namespace Qualification.Api.Controllers
             Ok(await this.paymentRequestService.RemovePaymentRequestAsync(id));
 
         [HttpGet("applications/{id}")]
-        public IActionResult GetAllPaymentAssetsForTeacher(long id, [FromQuery]bool isFromAdmin) =>
+        public IActionResult GetAllPaymentAssetsForTeacher(long id, [FromQuery] bool isFromAdmin) =>
             Ok(this.paymentRequestService.RetrievePaymentsForApplication(id, isFromAdmin));
     }
 }

@@ -1,6 +1,4 @@
-﻿using Qualification.Service.DTOs.Users;
-
-namespace Qualification.Service.DTOs.Quizzes;
+﻿namespace Qualification.Service.DTOs.Quizzes;
 
 public class QuizResultDto
 {

@@ -1,5 +1,3 @@
-using System.Net.Http.Headers;
-using System.Text;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Qualification.Service.DTOs;
@@ -12,7 +10,7 @@ public class AvloniyClientService : IAvloniyClientService
 {
     private readonly IConfiguration configuration;
     private readonly IHttpClientFactory httpClientFactory;
-    
+
     public AvloniyClientService(
         IConfiguration configuration,
         IHttpClientFactory httpClientFactory)
@@ -90,7 +88,7 @@ public class AvloniyClientService : IAvloniyClientService
             return eRPResponse;
         }
     }
-    
+
     public async ValueTask<ERPResponse<TeacherFromErpDto>> SelectTeacherByPinflAsync(string pinfl)
     {
         using (var httpClient = this.httpClientFactory.CreateClient("avloniy"))
@@ -104,7 +102,7 @@ public class AvloniyClientService : IAvloniyClientService
             return eRPResponse;
         }
     }
-    
+
     private string GetSchoolSubjectUrl() => $"GetSchoolSubject";
     private string GetSchoolGradeUrl() => $"GetAllschoolgrade";
     private string GetSchoolGradeLetterUrl() => $"GetAllSchoolgradeletter";

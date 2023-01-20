@@ -19,21 +19,21 @@ public class CustomExceptionMiddleware
         {
             await next(context);
         }
-        catch(AlreadyExistsException alreadyExistsException)
+        catch (AlreadyExistsException alreadyExistsException)
         {
             var httpStatusCodeException =
                 new HttpStatusCodeException(400, alreadyExistsException.Message);
 
             await HandleExceptionAsync(context, httpStatusCodeException);
         }
-        catch(NotFoundException notFoundException)
+        catch (NotFoundException notFoundException)
         {
             var httpStatusCodeException =
                 new HttpStatusCodeException(404, notFoundException.Message);
 
             await HandleExceptionAsync(context, httpStatusCodeException);
         }
-        catch(InvalidOperationException invalidOperationException)
+        catch (InvalidOperationException invalidOperationException)
         {
             var httpStatusCodeException =
                 new HttpStatusCodeException(400, invalidOperationException.Message);
@@ -41,7 +41,7 @@ public class CustomExceptionMiddleware
             await HandleExceptionAsync(context, httpStatusCodeException);
         }
         catch (HttpStatusCodeException ex)
-        {            
+        {
             await HandleExceptionAsync(context, ex);
         }
         catch (Exception ex)
@@ -53,7 +53,7 @@ public class CustomExceptionMiddleware
     private Task HandleExceptionAsync(HttpContext context, HttpStatusCodeException exception)
     {
         context.Response.ContentType = "application/json";
-        
+
         var result = new ErrorDetails()
         {
             Message = exception.Message,

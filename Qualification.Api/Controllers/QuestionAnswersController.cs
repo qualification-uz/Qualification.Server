@@ -37,7 +37,7 @@ namespace Qualification.Api.Controllers
         /// <param name="questionAnswerForUpdateDto"></param>
         /// <returns></returns>
         [HttpPatch("{answerId}")]
-        public  async ValueTask<IActionResult> PatchQuestionAnswerAsync(
+        public async ValueTask<IActionResult> PatchQuestionAnswerAsync(
             long id,
             long answerId,
             [FromBody] QuestionAnswerForUpdateDto questionAnswerForUpdateDto) =>

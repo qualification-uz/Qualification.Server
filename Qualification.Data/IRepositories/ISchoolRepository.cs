@@ -1,10 +1,4 @@
-﻿using Qualification.Domain.Entities.Quizes;
-using Qualification.Domain.Entities.Users;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Qualification.Domain.Entities.Users;
 
 namespace Qualification.Data.IRepositories
 {

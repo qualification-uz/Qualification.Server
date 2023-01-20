@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Qualification.Domain.Enums;
+﻿using Qualification.Domain.Enums;
 
 namespace Qualification.Service.DTOs.Question;
 

@@ -11,7 +11,7 @@ public interface IQuestionService
     ValueTask<QuestionDto> AddQuestionAsync(QuestionForCreationDto questionForCreationDto);
     ValueTask<QuestionDto> ModifyQuestionAsync(long questionId, QuestionForUpdateDto questionForUpdateDto);
     ValueTask<QuestionDto> RemoveQuestionAsync(long questionId);
-    
+
     ValueTask<QuestionDto> AddQuestionAnswersAsync(
         long questionId,
         IReadOnlyList<QuestionAnswerForCreationDto> questionAnswerForCreationDto);

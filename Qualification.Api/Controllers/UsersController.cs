@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Qualification.Service.DTOs.Users;
 using Qualification.Service.Interfaces;
@@ -19,7 +18,7 @@ namespace Qualification.Api.Controllers
         }
 
         [HttpGet("roles")]
-        public IActionResult GetAllRoles() 
+        public IActionResult GetAllRoles()
             => Ok(this.userService.RetrieveAllRoles());
 
         /// <summary>

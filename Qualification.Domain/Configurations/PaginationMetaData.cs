@@ -5,7 +5,7 @@ public class PaginationMetaData
     public PaginationMetaData(int totalCount, PaginationParams @params)
     {
         TotalCount = totalCount;
-        TotalPages = (int) Math.Ceiling(totalCount / (double) @params.PageSize);
+        TotalPages = (int)Math.Ceiling(totalCount / (double)@params.PageSize);
         CurrentPage = @params.PageNumber;
     }
 

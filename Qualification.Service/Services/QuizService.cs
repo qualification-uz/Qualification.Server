@@ -87,15 +87,15 @@ public class QuizService : IQuizService
             .GetUsersInRoleAsync(Enum.GetName<UserRole>(UserRole.Teacher))
             ).ToDictionary(user => user.Id);
 
-        foreach(var user in users)
+        foreach (var user in users)
         {
-            if(!roleRelatedUsers.ContainsKey(user.Id))
+            if (!roleRelatedUsers.ContainsKey(user.Id))
                 throw new InvalidOperationException("Some users have no access. Change the role");
         }
 
         var quizzes = new List<Quiz>();
 
-        foreach(var data in quizForBulkCreationDto.Datas)
+        foreach (var data in quizForBulkCreationDto.Datas)
         {
             var quiz = new Quiz
             {
@@ -204,13 +204,13 @@ public class QuizService : IQuizService
             throw new NotFoundException("Couldn't find quiz for given id");
 
         // Select questions if haven't created yet
-        if(quiz.Questions.Count == 0)
+        if (quiz.Questions.Count == 0)
         {
             var shuffledQuestions = await RetrieveShuffledQuestions(
                 subjectId: quiz.Application.SubjectId,
                 isForTeacher: true);
 
-            foreach(var question in shuffledQuestions)
+            foreach (var question in shuffledQuestions)
             {
                 quiz.Questions.Add(new QuizQuestion
                 {

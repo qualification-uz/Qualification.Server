@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Qualification.Service.DTOs.Users;
 
 namespace Qualification.Service.DTOs;
 

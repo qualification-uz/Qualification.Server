@@ -30,9 +30,11 @@ public class UserService : IUserService
         var roleIds = Enum.GetValues<UserRole>();
 
         foreach (var roleId in roleIds)
-            yield return new RoleDto {
+            yield return new RoleDto
+            {
                 Id = (int)roleId,
-                Name = Enum.GetName<UserRole>(roleId) };
+                Name = Enum.GetName<UserRole>(roleId)
+            };
     }
 
     public async ValueTask<object> RetrieveCurrentUserAsync(string username, string password)
@@ -50,7 +52,7 @@ public class UserService : IUserService
         if (userId is null)
             throw new InvalidOperationException("Couldn't find user id");
 
-        if(role == "school")
+        if (role == "school")
         {
             var erpResponse = await this.avloniyClientService.IsUserRegistered(username, password);
             if (!erpResponse.Success)

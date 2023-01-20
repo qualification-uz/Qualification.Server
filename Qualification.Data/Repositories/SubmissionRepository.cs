@@ -18,7 +18,7 @@ public class SubmissionRepository : ISubmissionRepository
     {
         EntityEntry<Submission> submissionEntityEntry =
             await this.appDbContext.Submissions.AddAsync(submission);
-        
+
         await this.appDbContext.SaveChangesAsync();
 
         return submissionEntityEntry.Entity;

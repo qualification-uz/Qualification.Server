@@ -1,5 +1,4 @@
 ﻿using Qualification.Domain.Commons;
-using Qualification.Domain.Entities.Assets;
 using Qualification.Domain.Entities.Payment;
 using Qualification.Domain.Entities.Quizes;
 using Qualification.Domain.Entities.Users;

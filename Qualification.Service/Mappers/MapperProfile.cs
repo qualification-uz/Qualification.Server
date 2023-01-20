@@ -35,7 +35,7 @@ public class MapperProfile : Profile
 
         CreateMap<QuestionForCreationDto, Question>().ReverseMap();
         CreateMap<QuestionAnswerForCreationDto, QuestionAnswer>().ReverseMap();
-        
+
         CreateMap<QuestionAnswer, QuestionAnswerDto>()
             .ForMember(dto => dto.AssetIds, src => src
                 .MapFrom(dest => dest.Assets

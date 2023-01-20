@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Qualification.Domain.Entities.Users;
+using Qualification.Domain.Enums;
 using Qualification.Service.AvloniyClient;
 using Qualification.Service.DTOs.Users;
 using Qualification.Service.Exceptions;
@@ -10,9 +11,6 @@ using Qualification.Service.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using Qualification.Domain.Enums;
 
 namespace Qualification.Service.Services;
 
@@ -90,7 +88,7 @@ public class AuthService : IAuthService
 
         if (!IsValidRole(userDto.RoleId))
             throw new InvalidOperationException("Given role is not valid");
-        
+
         User user = GenerateNewUser(userDto);
         var result = await userManager.CreateAsync(user, userDto.Password);
 

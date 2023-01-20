@@ -4,7 +4,6 @@ using Qualification.Service.Interfaces;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
-using System.Runtime.ConstrainedExecution;
 
 namespace Qualification.Service.Services;
 
@@ -21,9 +20,9 @@ public class SertificateService : ISertificateService
     public async ValueTask<byte[]> GenerateSertificateAsync(SertificateForCreationDto sertificateForCreationDto)
     {
         string filePath = Path.Combine(_env.WebRootPath, "Templates/certificate.jpg");
-        
+
         Bitmap bitmap = new Bitmap(filePath); // inputFile must be absolute path
-        
+
         // Initialize Graphics class object
         Graphics graphics = Graphics.FromImage(bitmap);
         graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
@@ -32,7 +31,7 @@ public class SertificateService : ISertificateService
         // Set text font
         Font defaultFont = new Font("Arial", 50, FontStyle.Regular);
         Font fullNameFont = new Font("Arial", 50, FontStyle.Bold);
-        
+
         // Set text size
         SizeF sizeOfCertNumber = graphics.MeasureString(sertificateForCreationDto.SertificateNumber, defaultFont);
         SizeF sizeOfFullName = graphics.MeasureString(sertificateForCreationDto.FullName, fullNameFont);
@@ -52,10 +51,10 @@ public class SertificateService : ISertificateService
         // Save output image
         string outputFileName = Guid.NewGuid().ToString("N") + ".png";
         string outputFilePath = Path.Combine(_env.WebRootPath, @$"Certificates\{outputFileName}");
-        
+
         bitmap.Save(outputFilePath, ImageFormat.Png);
 
-        if(File.Exists(outputFilePath))
+        if (File.Exists(outputFilePath))
             return await File.ReadAllBytesAsync(outputFilePath);
 
         return null;

@@ -44,7 +44,7 @@ namespace Qualification.Api.Controllers
         /// <param name="questionForCreationDto"></param>
         /// <returns></returns>
         [HttpPost]
-        public async ValueTask<IActionResult> PostQuestionAsync([FromBody]QuestionForCreationDto questionForCreationDto) =>
+        public async ValueTask<IActionResult> PostQuestionAsync([FromBody] QuestionForCreationDto questionForCreationDto) =>
             Ok(await this.questionService.AddQuestionAsync(questionForCreationDto));
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Qualification.Api.Controllers
         /// <returns></returns>
         [HttpPatch("{id}")]
         public async ValueTask<IActionResult> PatchQuestionAsync(
-            long id, [FromBody]QuestionForUpdateDto questionForUpdateDto) =>
+            long id, [FromBody] QuestionForUpdateDto questionForUpdateDto) =>
             Ok(await this.questionService.ModifyQuestionAsync(id, questionForUpdateDto));
 
         /// <summary>

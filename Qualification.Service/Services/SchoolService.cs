@@ -38,7 +38,7 @@ public class SchoolService : ISchoolService
 
         users = filters
                 .Aggregate(users, (current, filter) => current.Filter(filter));
-        
+
         var pagedList = users.Where(user => user.SchoolId == schoolId)
             .OrderByDescending(user => user.Id)
             .ToPagedList(paginationParams);
@@ -100,7 +100,7 @@ public class SchoolService : ISchoolService
     }
 
     public async ValueTask<UserDto> RetrieveTeacherByPinflAsync(
-        int schoolId, 
+        int schoolId,
         TeacherPinflDto teacherPinflDto)
     {
         var eRPResponse = await this.avloniyClientService

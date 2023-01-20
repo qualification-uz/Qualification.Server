@@ -25,8 +25,8 @@ public class QuestionAnswerRepository : IQuestionAnswerRepository
         IReadOnlyList<string> includes)
     {
         IQueryable<QuestionAnswer> questionAnswers = this.appDbContext.QuestionAnswers;
-        
-        foreach(var include in includes)
+
+        foreach (var include in includes)
             questionAnswers = questionAnswers.Include(include);
 
         return await questionAnswers
