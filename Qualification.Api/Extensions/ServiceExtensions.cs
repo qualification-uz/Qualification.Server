@@ -41,6 +41,7 @@ public static class ServiceExtensions
         services.AddScoped<IQuizResultService, QuizResultService>();
         services.AddScoped<ISubmissionService, SubmissionService>();
         services.AddScoped<ISertificateService, SertificateService>();
+        services.AddScoped<IInsightService, InsightService>();
 
         services.AddScoped<IReportService, ReportService>();
 
