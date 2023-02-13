@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace Qualification.Data.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -352,12 +353,6 @@ namespace Qualification.Data.Migrations
                         principalTable: "Applications",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Quizes_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -378,6 +373,32 @@ namespace Qualification.Data.Migrations
                         name: "FK_QuestionAnswerAssets_QuestionAnswers_QuestionAnswerId",
                         column: x => x.QuestionAnswerId,
                         principalTable: "QuestionAnswers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Student",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false),
+                    ApplicationId = table.Column<long>(type: "bigint", nullable: false),
+                    GroupId = table.Column<long>(type: "bigint", nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Student", x => new { x.Id, x.ApplicationId });
+                    table.ForeignKey(
+                        name: "FK_Student_Applications_ApplicationId",
+                        column: x => x.ApplicationId,
+                        principalTable: "Applications",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Student_Groups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "Groups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -491,6 +512,7 @@ namespace Qualification.Data.Migrations
                     QuizQuestionId = table.Column<long>(type: "bigint", nullable: false),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
                     QuestionOptionId = table.Column<long>(type: "bigint", nullable: false),
+                    IsCorrect = table.Column<bool>(type: "boolean", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
@@ -606,11 +628,6 @@ namespace Qualification.Data.Migrations
                 column: "ApplicationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Quizes_UserId",
-                table: "Quizes",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_QuizQuestionOptions_QuizQuestionId",
                 table: "QuizQuestionOptions",
                 column: "QuizQuestionId");
@@ -629,6 +646,16 @@ namespace Qualification.Data.Migrations
                 name: "IX_Results_UserId",
                 table: "Results",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Student_ApplicationId",
+                table: "Student",
+                column: "ApplicationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Student_GroupId",
+                table: "Student",
+                column: "GroupId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Submissions_QuestionOptionId",
@@ -673,9 +700,6 @@ namespace Qualification.Data.Migrations
                 name: "Assets");
 
             migrationBuilder.DropTable(
-                name: "Groups");
-
-            migrationBuilder.DropTable(
                 name: "PaymentAssets");
 
             migrationBuilder.DropTable(
@@ -688,6 +712,9 @@ namespace Qualification.Data.Migrations
                 name: "Results");
 
             migrationBuilder.DropTable(
+                name: "Student");
+
+            migrationBuilder.DropTable(
                 name: "Submissions");
 
             migrationBuilder.DropTable(
@@ -698,6 +725,9 @@ namespace Qualification.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "QuestionAnswers");
+
+            migrationBuilder.DropTable(
+                name: "Groups");
 
             migrationBuilder.DropTable(
                 name: "QuizQuestionOptions");

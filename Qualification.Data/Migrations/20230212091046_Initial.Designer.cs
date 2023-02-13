@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Qualification.Data.Contexts;
@@ -11,9 +12,10 @@ using Qualification.Data.Contexts;
 namespace Qualification.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230212091046_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -640,12 +642,17 @@ namespace Qualification.Data.Migrations
                     b.Property<long>("ApplicationId")
                         .HasColumnType("bigint");
 
+                    b.Property<long>("GroupId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");
 
                     b.HasKey("Id", "ApplicationId");
 
                     b.HasIndex("ApplicationId");
+
+                    b.HasIndex("GroupId");
 
                     b.ToTable("Student");
                 });
@@ -954,12 +961,20 @@ namespace Qualification.Data.Migrations
             modelBuilder.Entity("Qualification.Domain.Entities.Users.Student", b =>
                 {
                     b.HasOne("Qualification.Domain.Entities.Application", "Application")
-                        .WithMany("Students")
+                        .WithMany()
                         .HasForeignKey("ApplicationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Qualification.Domain.Entities.Group", "Group")
+                        .WithMany("Students")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Application");
+
+                    b.Navigation("Group");
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Application", b =>
@@ -969,7 +984,10 @@ namespace Qualification.Data.Migrations
                     b.Navigation("PaymentRequests");
 
                     b.Navigation("Quizes");
+                });
 
+            modelBuilder.Entity("Qualification.Domain.Entities.Group", b =>
+                {
                     b.Navigation("Students");
                 });
 

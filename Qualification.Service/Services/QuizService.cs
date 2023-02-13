@@ -63,7 +63,7 @@ public class QuizService : IQuizService
         if (application is null)
             throw new NotFoundException("Couldn't find application for given id");
         application.Status = ApplicationStatus.TestBelgilandi;
-        quiz.User = user;
+        quiz.UserId = user.Id;
         quiz.Application = application;
         quiz = await this.quizRepository.InsertQuizAync(quiz);
 
@@ -125,7 +125,6 @@ public class QuizService : IQuizService
 
         quizzes = quizzes
             .Include(quiz => quiz.Application)
-            .Include(quiz => quiz.User)
             .OrderBy(quiz => quiz.CreatedAt);
 
         return this.mapper.Map<IEnumerable<QuizDto>>(quizzes)
@@ -137,7 +136,6 @@ public class QuizService : IQuizService
         var quiz = await this.quizRepository
             .SelectAllQuizzes()
             .Include(quiz => quiz.Application)
-            .Include(quiz => quiz.User)
             .FirstOrDefaultAsync(quiz => quiz.Id == quizId);
 
         if (quiz is null)
@@ -302,7 +300,6 @@ public class QuizService : IQuizService
 
         var quiz = await quizes
             .Include(quiz => quiz.Application)
-            .Include(quiz => quiz.User)
             .FirstOrDefaultAsync();
 
         if (quiz is null)
@@ -318,16 +315,10 @@ public class QuizService : IQuizService
         var quizzes = await this.quizRepository
             .SelectAllQuizzes()
             .Include(quiz => quiz.Application)
-            .Include(quiz => quiz.User)
             .Where(quiz => quiz.UserId == teacherId)
             .ToListAsync();
 
         return this.mapper.Map<IEnumerable<QuizDto>>(quizzes
             .ToPagedList(paginationParams));
     }
-
-    //private async Task<CheckedQuizResultDto> CheckQuizAsync(CheckedQuizInputDto[] answers)
-    //{
-    //    return null;
-    //}
 }

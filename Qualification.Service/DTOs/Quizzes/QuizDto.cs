@@ -12,6 +12,6 @@ public class QuizDto
     public DateTime StartsAt { get; set; }
     public DateTime EndsAt { get; set; }
     public QuizStatus Status { get; set; }
-    public UserDto User { get; set; }
+    public long UserId { get; set; }
     public ApplicationDto Application { get; set; }
 }
