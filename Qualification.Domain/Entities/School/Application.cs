@@ -20,6 +20,7 @@ public class Application : Auditable
 
     public ICollection<Group> Groups { get; set; }
     public ICollection<Quiz> Quizes { get; set; }
+    public List<Student> Students { get; set; } = new List<Student>();
 
     public ICollection<PaymentRequest> PaymentRequests { get; set; }
 }

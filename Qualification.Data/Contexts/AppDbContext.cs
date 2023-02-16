@@ -97,6 +97,13 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
             .WithOne(option => option.Submission)
             .HasForeignKey<Submission>(submission => submission.QuestionOptionId);
 
+        modelBuilder.Entity<Student>()
+            .Property(student => student.Id)
+            .ValueGeneratedNever();
+
+        modelBuilder.Entity<Student>()
+            .HasKey(student => new { student.Id, student.ApplicationId });
+
         base.OnModelCreating(modelBuilder);
     }
 

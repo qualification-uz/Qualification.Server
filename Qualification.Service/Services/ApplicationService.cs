@@ -6,6 +6,7 @@ using Qualification.Domain.Configurations;
 using Qualification.Domain.Entities;
 using Qualification.Domain.Entities.Users;
 using Qualification.Domain.Enums;
+using Qualification.Service.AvloniyClient;
 using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Application;
 using Qualification.Service.DTOs.Users;
@@ -22,17 +23,23 @@ public class ApplicationService : IApplicationService
     private readonly IMapper mapper;
     private readonly IAssetService assetService;
     private readonly UserManager<User> userManager;
+    private readonly IAvloniyClientService avloniyClientService;
+    private readonly IExcelService excelService;
 
     public ApplicationService(
         IApplicationRepository applicationRepository,
         IMapper mapper,
         IAssetService assetService,
-        UserManager<User> userManager)
+        UserManager<User> userManager,
+        IAvloniyClientService avloniyClientService,
+        IExcelService excelService)
     {
         this.applicationRepository = applicationRepository;
         this.mapper = mapper;
         this.assetService = assetService;
         this.userManager = userManager;
+        this.avloniyClientService = avloniyClientService;
+        this.excelService = excelService;
     }
 
     public async ValueTask<ApplicationDto> AddApplicationAsync(ApplicationForCreationDto applicationDto)
@@ -52,6 +59,24 @@ public class ApplicationService : IApplicationService
 
         if (!isExpectedTeacher)
             throw new InvalidOperationException("Not allowed user");
+
+        var students = await this.avloniyClientService
+            .SelectStudentsAsync(
+                schoolId: applicationDto.SchoolId,
+                groups: applicationDto.Groups.ToList());
+        if (students.Count <= 0)
+        {
+            throw new InvalidOperationException("There is no any students in provided groups");
+        }
+
+        int targetStudents = (int)(0.3 * students.Count);
+        var selectedStudents = students.OrderBy(x => Guid.NewGuid()).Take(targetStudents);
+
+        application.Students.AddRange(selectedStudents.Select(student => new Student
+        {
+            Id = student.Id,
+            PasswordHash = PasswordHelper.Encrypt(student.Id.ToString())
+        }));
 
         teacher.Applications.Add(application);
 
@@ -245,5 +270,21 @@ public class ApplicationService : IApplicationService
         applications = filters.Aggregate(applications, (current, filter) => current.Filter(filter));
 
         return this.mapper.Map<IEnumerable<ApplicationDto>>(applications.ToPagedList(@params));
+    }
+
+    public async Task<byte[]> ExportStudentsAsync(long applicationId)
+    {
+        var application = await this.applicationRepository
+            .SelectAllApplications()
+            .Include(application => application.Students)
+            .FirstOrDefaultAsync(application => application.Id == applicationId);
+
+        if (application is null)
+            throw new NotFoundException("Couldn't find application for given id");
+
+        byte[] bytes = await this.excelService
+            .ExportStudentsAsync(application.Students);
+
+        return bytes;
     }
 }

@@ -12,8 +12,8 @@ using Qualification.Data.Contexts;
 namespace Qualification.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230120211700_InitialMigration")]
-    partial class InitialMigration
+    [Migration("20230212104835_RemovedGroupConstraint")]
+    partial class RemovedGroupConstraint
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -494,8 +494,6 @@ namespace Qualification.Data.Migrations
 
                     b.HasIndex("ApplicationId");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("Quizes");
                 });
 
@@ -575,6 +573,9 @@ namespace Qualification.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("boolean");
+
                     b.Property<long>("QuestionOptionId")
                         .HasColumnType("bigint");
 
@@ -631,6 +632,24 @@ namespace Qualification.Data.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Qualification.Domain.Entities.Users.Student", b =>
+                {
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ApplicationId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id", "ApplicationId");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.ToTable("Student");
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Users.User", b =>
@@ -868,15 +887,7 @@ namespace Qualification.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Qualification.Domain.Entities.Users.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Application");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuizQuestion", b =>
@@ -942,6 +953,17 @@ namespace Qualification.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Qualification.Domain.Entities.Users.Student", b =>
+                {
+                    b.HasOne("Qualification.Domain.Entities.Application", "Application")
+                        .WithMany("Students")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Application");
+                });
+
             modelBuilder.Entity("Qualification.Domain.Entities.Application", b =>
                 {
                     b.Navigation("Groups");
@@ -949,6 +971,8 @@ namespace Qualification.Data.Migrations
                     b.Navigation("PaymentRequests");
 
                     b.Navigation("Quizes");
+
+                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Payment.PaymentRequest", b =>

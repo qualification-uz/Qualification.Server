@@ -16,4 +16,6 @@ public class Submission : Auditable
 
     public long QuestionOptionId { get; set; }
     public QuestionOption Option { get; set; }
+
+    public bool IsCorrect { get; set; }
 }

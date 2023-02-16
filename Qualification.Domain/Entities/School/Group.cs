@@ -1,4 +1,5 @@
 ﻿using Qualification.Domain.Commons;
+using Qualification.Domain.Entities.Users;
 
 namespace Qualification.Domain.Entities;
 

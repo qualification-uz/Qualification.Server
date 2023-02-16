@@ -28,4 +28,6 @@ public interface IApplicationService
         long teacherId,
         PaginationParams @params,
         Filters filters);
+
+    Task<byte[]> ExportStudentsAsync(long applicationId);
 }

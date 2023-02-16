@@ -46,7 +46,6 @@ public class QuizResultService : IQuizResultService
             .Include(quiz => quiz.Questions)
             .Include(quiz => quiz.Submissions)
             .ThenInclude(submission => submission.Option)
-            .Include(quiz => quiz.User)
             .FirstOrDefaultAsync();
 
         if (quiz is null)
