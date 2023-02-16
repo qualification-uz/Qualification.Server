@@ -16,5 +16,12 @@ namespace Qualification.Service.Helpers
             // Print the string.   
             return hash;
         }
+
+        public static bool CompareHash(string password, string hash)
+        {
+            var hashedBytes = SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(password));
+            var hash2 = BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
+            return hash == hash2;
+        }
     }
 }
