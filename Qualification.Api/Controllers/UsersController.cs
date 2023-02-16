@@ -5,7 +5,7 @@ using Qualification.Service.Interfaces;
 
 namespace Qualification.Api.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/users")]
     [ApiController]
     [Authorize(Policy = "All")]
     public class UsersController : ControllerBase
@@ -29,5 +29,15 @@ namespace Qualification.Api.Controllers
         [HttpPost("current")]
         public async Task<IActionResult> GetCurrentUser(UserLoginDto loginDto)
             => Ok(await this.userService.RetrieveCurrentUserAsync(loginDto.Login, loginDto.Password));
+
+        /// <summary>
+        /// Post user
+        /// </summary>
+        /// <param name="userDto"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize(Roles = "SuperAdmin")]
+        public async Task<IActionResult> PostUserAsync(UserForCreationDto userDto)
+            => Ok(await this.userService.CreateUserAsync(userDto));
     }
 }

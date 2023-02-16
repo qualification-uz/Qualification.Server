@@ -58,6 +58,9 @@ public class QuestionService : IQuestionService
 
     public async ValueTask<QuestionDto> AddQuestionAsync(QuestionForCreationDto questionForCreationDto)
     {
+        if (!questionForCreationDto.IsForTeacher && questionForCreationDto.StudentGradeId == null)
+            throw new ArgumentException("Question for teacher cannot have student grade id");
+
         var question = this.mapper.Map<Question>(questionForCreationDto);
         var assets = new List<QuestionAsset>();
 

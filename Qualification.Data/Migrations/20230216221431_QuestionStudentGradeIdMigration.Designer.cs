@@ -12,8 +12,8 @@ using Qualification.Data.Contexts;
 namespace Qualification.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230212104835_RemovedGroupConstraint")]
-    partial class RemovedGroupConstraint
+    [Migration("20230216221431_QuestionStudentGradeIdMigration")]
+    partial class QuestionStudentGradeIdMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -320,6 +320,9 @@ namespace Qualification.Data.Migrations
 
                     b.Property<short>("Level")
                         .HasColumnType("smallint");
+
+                    b.Property<long?>("StudentGradeId")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("SubjectId")
                         .HasColumnType("integer");
@@ -641,6 +644,21 @@ namespace Qualification.Data.Migrations
 
                     b.Property<long>("ApplicationId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("text");
+
+                    b.Property<long?>("GradeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("GradeLetter")
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("MiddleName")
+                        .HasColumnType("text");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");

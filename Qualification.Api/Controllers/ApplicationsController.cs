@@ -98,8 +98,8 @@ namespace Qualification.Api.Controllers
             [FromQuery(Name = "filter")] Filters filters) =>
             Ok(this.applicationService.RetrieveApplicationsForTeacher(id, @params, filters));
 
-        [HttpGet("{id}/students/export")]
-        public async ValueTask<IActionResult> ExportStudents(long id) =>
-            File(await this.applicationService.ExportStudentsAsync(id), "application/octet-stream", "passwords.csv");
+        //[HttpGet("{id}/students/export")]
+        //public async ValueTask<IActionResult> ExportStudents(long id) =>
+        //    File(await this.applicationService.ExportStudentsAsync(id), "application/octet-stream", "passwords.csv");
     }
 }

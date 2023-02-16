@@ -45,7 +45,7 @@ public class ApplicationService : IApplicationService
     public async ValueTask<ApplicationDto> AddApplicationAsync(ApplicationForCreationDto applicationDto)
     {
         var application = this.mapper.Map<Application>(applicationDto);
-
+        
         var teacher = await this.userManager.Users
             .Include(teacher => teacher.Applications)
             .FirstOrDefaultAsync(teacher =>
@@ -75,7 +75,12 @@ public class ApplicationService : IApplicationService
         application.Students.AddRange(selectedStudents.Select(student => new Student
         {
             Id = student.Id,
-            PasswordHash = PasswordHelper.Encrypt(student.Id.ToString())
+            FirstName = student.FirstName,
+            LastName = student.LastName,
+            MiddleName = student.MiddleName,
+            GradeId = student.GradeId,
+            GradeLetter = student.GradeLetter,
+            PasswordHash = PasswordHelper.Encrypt(student.Id.ToString()).Substring(0, 8)
         }));
 
         teacher.Applications.Add(application);

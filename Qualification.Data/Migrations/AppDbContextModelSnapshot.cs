@@ -319,6 +319,9 @@ namespace Qualification.Data.Migrations
                     b.Property<short>("Level")
                         .HasColumnType("smallint");
 
+                    b.Property<long?>("StudentGradeId")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("SubjectId")
                         .HasColumnType("integer");
 
@@ -639,6 +642,21 @@ namespace Qualification.Data.Migrations
 
                     b.Property<long>("ApplicationId")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("text");
+
+                    b.Property<long?>("GradeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("GradeLetter")
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("MiddleName")
+                        .HasColumnType("text");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");

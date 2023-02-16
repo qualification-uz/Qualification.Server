@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Qualification.Data.Migrations
 {
-    public partial class Initial : Migration
+    public partial class InitialMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -356,6 +356,30 @@ namespace Qualification.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Student",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false),
+                    ApplicationId = table.Column<long>(type: "bigint", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: true),
+                    LastName = table.Column<string>(type: "text", nullable: true),
+                    MiddleName = table.Column<string>(type: "text", nullable: true),
+                    GradeId = table.Column<long>(type: "bigint", nullable: true),
+                    GradeLetter = table.Column<string>(type: "text", nullable: true),
+                    PasswordHash = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Student", x => new { x.Id, x.ApplicationId });
+                    table.ForeignKey(
+                        name: "FK_Student_Applications_ApplicationId",
+                        column: x => x.ApplicationId,
+                        principalTable: "Applications",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "QuestionAnswerAssets",
                 columns: table => new
                 {
@@ -373,32 +397,6 @@ namespace Qualification.Data.Migrations
                         name: "FK_QuestionAnswerAssets_QuestionAnswers_QuestionAnswerId",
                         column: x => x.QuestionAnswerId,
                         principalTable: "QuestionAnswers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Student",
-                columns: table => new
-                {
-                    Id = table.Column<long>(type: "bigint", nullable: false),
-                    ApplicationId = table.Column<long>(type: "bigint", nullable: false),
-                    GroupId = table.Column<long>(type: "bigint", nullable: false),
-                    PasswordHash = table.Column<string>(type: "text", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Student", x => new { x.Id, x.ApplicationId });
-                    table.ForeignKey(
-                        name: "FK_Student_Applications_ApplicationId",
-                        column: x => x.ApplicationId,
-                        principalTable: "Applications",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Student_Groups_GroupId",
-                        column: x => x.GroupId,
-                        principalTable: "Groups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -653,11 +651,6 @@ namespace Qualification.Data.Migrations
                 column: "ApplicationId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Student_GroupId",
-                table: "Student",
-                column: "GroupId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Submissions_QuestionOptionId",
                 table: "Submissions",
                 column: "QuestionOptionId",
@@ -700,6 +693,9 @@ namespace Qualification.Data.Migrations
                 name: "Assets");
 
             migrationBuilder.DropTable(
+                name: "Groups");
+
+            migrationBuilder.DropTable(
                 name: "PaymentAssets");
 
             migrationBuilder.DropTable(
@@ -725,9 +721,6 @@ namespace Qualification.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "QuestionAnswers");
-
-            migrationBuilder.DropTable(
-                name: "Groups");
 
             migrationBuilder.DropTable(
                 name: "QuizQuestionOptions");

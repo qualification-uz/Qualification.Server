@@ -17,6 +17,8 @@ public class QuestionForCreationDto
     [Required]
     public bool IsForTeacher { get; set; }
 
+    public long? StudentGradeId { get; set; }
+
     [Required]
     public short CorrectAnswers { get; set; }
 

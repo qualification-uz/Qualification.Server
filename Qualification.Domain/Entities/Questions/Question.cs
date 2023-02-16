@@ -9,6 +9,7 @@ public class Question : Auditable
     public QuestionType Type { get; set; }
     public int SubjectId { get; set; }
     public bool IsForTeacher { get; set; }
+    public long? StudentGradeId { get; set; }
     public short CorrectAnswers { get; set; }
     public short Level { get; set; }
     public bool IsActive { get; set; }

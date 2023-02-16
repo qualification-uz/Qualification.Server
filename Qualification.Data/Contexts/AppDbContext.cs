@@ -114,7 +114,7 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
     public DbSet<QuestionAnswer> QuestionAnswers { get; set; }
     public DbSet<QuestionAnswerAsset> QuestionAnswerAssets { get; set; }
     public DbSet<Asset> Assets { get; set; }
-
+    public DbSet<Student> Student { get; set; }
     public DbSet<PaymentRequest> PaymentRequests { get; set; }
     public DbSet<PaymentAsset> PaymentAssets { get; set; }
     public DbSet<Quiz> Quizes { get; set; }

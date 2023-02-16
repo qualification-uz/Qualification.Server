@@ -5,6 +5,7 @@ using Qualification.Domain.Entities.Users;
 using Qualification.Domain.Enums;
 using Qualification.Service.AvloniyClient;
 using Qualification.Service.DTOs.Users;
+using Qualification.Service.Exceptions;
 using Qualification.Service.Interfaces;
 using System.Security.Claims;
 
@@ -64,5 +65,42 @@ public class UserService : IUserService
         var user = await this.userManager.FindByIdAsync(userId);
 
         return this.mapper.Map<UserDto>(user);
+    }
+    
+    private static User GenerateNewUser(UserForCreationDto teacherDto)
+    {
+        return new User()
+        {
+            FirstName = teacherDto.FirstName,
+            LastName = teacherDto.LastName,
+            MiddleName = teacherDto.MiddleName,
+            PhoneNumber = teacherDto.PhoneNumber,
+            SecurityStamp = Guid.NewGuid().ToString(),
+            UserName = teacherDto.Login
+        };
+    }
+
+    public async ValueTask<UserDto> CreateUserAsync(UserForCreationDto userDto)
+    {
+        var userExists = await this.userManager.FindByNameAsync(userDto.Login);
+
+        if (userExists is not null)
+            throw new AlreadyExistsException("User already exists with this login");
+
+        User user = GenerateNewUser(userDto);
+        
+        var result = await this.userManager.CreateAsync(user, userDto.Password);
+
+        if (!result.Succeeded)
+            throw new InvalidOperationException(message:
+                string.Join("", result.Errors.Select(error => error.Description)));
+
+        await this.userManager.AddToRoleAsync(user, Enum.GetName(userDto.RoleId));
+        
+        var mappedUser = this.mapper.Map<UserDto>(user);
+        mappedUser.RoleId = userDto.RoleId;
+        mappedUser.Role = Enum.GetName(userDto.RoleId);
+
+        return mappedUser;
     }
 }
