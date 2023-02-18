@@ -92,5 +92,19 @@ namespace Qualification.Api.Controllers
                 "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 "paymentRequests.xlsx");
 
+        /// <summary>
+        /// Export students by schoolId and applicationId to excel
+        /// </summary>
+        /// <param name="schoolId"></param>
+        /// <param name="applicationId"></param>
+        /// <returns></returns>
+        [HttpGet("students/{schoolId}/{applicationId}")]
+        public async ValueTask<IActionResult> GetStudentsReportAsync(
+            int schoolId,
+            int applicationId) =>
+            File(await this.reportService.ExportStudentsToExcelAsync(schoolId, applicationId),
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "students.xlsx");
+
     }
 }

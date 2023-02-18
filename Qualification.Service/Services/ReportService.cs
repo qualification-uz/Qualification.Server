@@ -1,5 +1,6 @@
 ﻿using OfficeOpenXml;
 using Qualification.Domain.Configurations;
+using Qualification.Domain.Entities.Users;
 using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Application;
 using Qualification.Service.DTOs.Payment;
@@ -13,12 +14,16 @@ namespace Qualification.Service.Services
         private readonly ISchoolService schoolService;
         private readonly IApplicationService applicationService;
         private readonly IPaymentRequestService paymentRequestService;
+        private readonly IStudentService studentService;
 
-        public ReportService(ISchoolService schoolService, IApplicationService applicationService, IPaymentRequestService paymentRequestService)
+        public ReportService(ISchoolService schoolService, IApplicationService applicationService, 
+            IPaymentRequestService paymentRequestService, 
+            IStudentService studentService)
         {
             this.schoolService = schoolService;
             this.applicationService=applicationService;
             this.paymentRequestService = paymentRequestService;
+            this.studentService = studentService;
         }
 
         private async Task<MemoryStream> GenerateReportAsync<T>(IEnumerable<T> data, List<string> columnNames = null, string reportName = "Report")
@@ -134,6 +139,20 @@ namespace Qualification.Service.Services
             //var columnNames = new List<string> { "Id", "Ism", "Familiya", "Sharif", "Telefon raqami", "Login", "RoleId", "Role" };
 
             return await GenerateReportAsync<PaymentRequestDto>(paymentRequests, reportName: "Teachers");
+        }
+
+        /// <summary>
+        /// Generate students by schoolId to excel reports
+        /// </summary>
+        /// <param name="schoolId"></param>
+        /// <param name="applicationId"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<MemoryStream> ExportStudentsToExcelAsync(int schoolId, int applicationId)
+        {
+            var students = await studentService.RetrieveAllAsync(schoolId, applicationId);
+
+            return await GenerateReportAsync<Student>(students, reportName: "Students");
         }
     }
 }

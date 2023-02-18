@@ -12,5 +12,6 @@ namespace Qualification.Service.Interfaces
         Task<MemoryStream> ExportApplicationsByTeacherIdToExcelAsync(int teacherId, PaginationParams @params, Filters filter);
 
         Task<MemoryStream> ExportPaymentsToExcelAsync(PaginationParams @params, Filters filter);
+        Task<MemoryStream> ExportStudentsToExcelAsync(int schoolId, int applicationId);
     }
 }
