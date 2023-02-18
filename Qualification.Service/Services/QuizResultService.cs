@@ -27,7 +27,7 @@ public class QuizResultService : IQuizResultService
         this.questionAnswerRepository = questionAnswerRepository;
     }
 
-    public async ValueTask<QuizResultDto> RetrieveQuizResultAsync(long quizId)
+    public async ValueTask<QuizResultDto> RetrieveQuizResultAsync(long quizId, long? studentId = null)
     {
         var quizResult = await this.quizResultRepository
             .SelectAllQuizResults()
@@ -68,6 +68,7 @@ public class QuizResultService : IQuizResultService
         quizResult.Score = correctAnswers * 100 / quiz.Questions.Count;
         quizResult.UserId = quiz.UserId;
         quizResult.QuizId = quiz.Id;
+        quizResult.StudentId = studentId;
 
         quizResult = await this.quizResultRepository
             .UpdateQuizResultAsync(quizResult);

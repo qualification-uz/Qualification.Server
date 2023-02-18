@@ -8,6 +8,9 @@ public class QuizResult : Auditable
     public long UserId { get; set; }
     public User User { get; set; }
 
+    public long? StudentId { get; set; }
+    public Student Student { get; set; }
+
     public long QuizId { get; set; }
     public Quiz Quiz { get; set; }
 

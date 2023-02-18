@@ -12,8 +12,8 @@ using Qualification.Data.Contexts;
 namespace Qualification.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20230216221431_QuestionStudentGradeIdMigration")]
-    partial class QuestionStudentGradeIdMigration
+    [Migration("20230218162541_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,6 +23,69 @@ namespace Qualification.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NormalizedName")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("IdentityRole");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "35c2711b-3baa-44d1-af6d-c89bab5f00b1",
+                            ConcurrencyStamp = "81275999-3157-4332-93c6-a25004623640",
+                            Name = "Student",
+                            NormalizedName = "STUDENT"
+                        },
+                        new
+                        {
+                            Id = "89758b7d-63a9-4b6d-8747-bd565fb41a22",
+                            ConcurrencyStamp = "27283eda-775b-4b82-81fd-ac03e1bdc95f",
+                            Name = "Teacher",
+                            NormalizedName = "TEACHER"
+                        },
+                        new
+                        {
+                            Id = "42838ee5-9d22-4afc-90d8-d67794790da0",
+                            ConcurrencyStamp = "d3cd1d69-3ca5-4f69-9f5e-ebf6767f8caa",
+                            Name = "School",
+                            NormalizedName = "SCHOOL"
+                        },
+                        new
+                        {
+                            Id = "9a821ed4-65c3-41c4-bbad-565372bf3733",
+                            ConcurrencyStamp = "c7688177-a1bc-4d3c-a528-93400fdc2e6f",
+                            Name = "Tester",
+                            NormalizedName = "TESTER"
+                        },
+                        new
+                        {
+                            Id = "5439eea6-4378-45df-9ac8-c376121b843b",
+                            ConcurrencyStamp = "c6988673-73d6-47a9-8163-5437bd9aca48",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "22ec759d-d1d8-47aa-a7c8-d3dcead2c8f5",
+                            ConcurrencyStamp = "737621f5-6a2c-4bfc-b366-6a81669e90f2",
+                            Name = "SuperAdmin",
+                            NormalizedName = "SUPERADMIN"
+                        });
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<long>", b =>
                 {
@@ -550,6 +613,9 @@ namespace Qualification.Data.Migrations
                     b.Property<int>("Score")
                         .HasColumnType("integer");
 
+                    b.Property<long?>("StudentId")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -559,6 +625,8 @@ namespace Qualification.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("QuizId");
+
+                    b.HasIndex("StudentId");
 
                     b.HasIndex("UserId");
 
@@ -640,10 +708,16 @@ namespace Qualification.Data.Migrations
             modelBuilder.Entity("Qualification.Domain.Entities.Users.Student", b =>
                 {
                     b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    b.Property<long>("ApplicationId")
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long?>("ApplicationId")
                         .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("FirstName")
                         .HasColumnType("text");
@@ -663,7 +737,10 @@ namespace Qualification.Data.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");
 
-                    b.HasKey("Id", "ApplicationId");
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("ApplicationId");
 
@@ -925,6 +1002,10 @@ namespace Qualification.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Qualification.Domain.Entities.Users.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId");
+
                     b.HasOne("Qualification.Domain.Entities.Users.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
@@ -932,6 +1013,8 @@ namespace Qualification.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Quiz");
+
+                    b.Navigation("Student");
 
                     b.Navigation("User");
                 });
@@ -976,8 +1059,7 @@ namespace Qualification.Data.Migrations
                     b.HasOne("Qualification.Domain.Entities.Application", "Application")
                         .WithMany("Students")
                         .HasForeignKey("ApplicationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Application");
                 });

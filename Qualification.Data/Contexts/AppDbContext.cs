@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Qualification.Domain.Entities;
@@ -6,6 +7,7 @@ using Qualification.Domain.Entities.Payment;
 using Qualification.Domain.Entities.Questions;
 using Qualification.Domain.Entities.Quizes;
 using Qualification.Domain.Entities.Users;
+using System.Diagnostics.Metrics;
 
 namespace Qualification.Data.Contexts;
 
@@ -20,6 +22,45 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        #region Seed data
+
+        // Seed data for IdentityRole
+        modelBuilder.Entity<IdentityRole>().HasData(new List<IdentityRole>
+        {
+            new IdentityRole
+            {
+                Name = "Student",
+                NormalizedName = "STUDENT"
+            },
+            new IdentityRole
+            {
+                Name = "Teacher",
+                NormalizedName = "TEACHER"
+            },
+            new IdentityRole
+            {
+                Name = "School",
+                NormalizedName = "SCHOOL"
+            },
+            new IdentityRole
+            {
+                Name = "Tester",
+                NormalizedName = "TESTER"
+            },
+            new IdentityRole
+            {
+                Name = "Admin",
+                NormalizedName = "ADMIN"
+            },
+            new IdentityRole
+            {
+                Name = "SuperAdmin",
+                NormalizedName = "SUPERADMIN"
+            }
+        });
+
+        #endregion
+
         #region Application request
 
         modelBuilder.Entity<Application>()
@@ -97,12 +138,11 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
             .WithOne(option => option.Submission)
             .HasForeignKey<Submission>(submission => submission.QuestionOptionId);
 
-        modelBuilder.Entity<Student>()
-            .Property(student => student.Id)
-            .ValueGeneratedNever();
-
-        modelBuilder.Entity<Student>()
-            .HasKey(student => new { student.Id, student.ApplicationId });
+        modelBuilder.Entity<Application>()
+            .HasMany(application => application.Students)
+            .WithOne(student => student.Application)
+            .HasForeignKey(student => student.ApplicationId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         base.OnModelCreating(modelBuilder);
     }

@@ -15,7 +15,7 @@ namespace Qualification.Api.Controllers
         }
 
         [HttpGet("{quizId}")]
-        public async ValueTask<IActionResult> GetQuizResultAsync(long quizId) =>
-            Ok(await this.quizResultService.RetrieveQuizResultAsync(quizId));
+        public async ValueTask<IActionResult> GetQuizResultAsync(long quizId, long? studentId = null) =>
+            Ok(await this.quizResultService.RetrieveQuizResultAsync(quizId, studentId));
     }
 }

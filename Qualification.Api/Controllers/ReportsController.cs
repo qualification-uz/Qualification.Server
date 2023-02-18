@@ -13,8 +13,8 @@ namespace Qualification.Api.Controllers
         private readonly IReportService reportService;
         public ReportsController(IReportService reportService)
         {
-            this.reportService=reportService;
-        }
+            this.reportService = reportService;
+        } 
 
         /// <summary>
         /// Export filtered teachers to excel

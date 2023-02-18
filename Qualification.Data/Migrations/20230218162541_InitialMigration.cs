@@ -72,6 +72,20 @@ namespace Qualification.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "IdentityRole",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    NormalizedName = table.Column<string>(type: "text", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_IdentityRole", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Questions",
                 columns: table => new
                 {
@@ -81,6 +95,7 @@ namespace Qualification.Data.Migrations
                     Type = table.Column<int>(type: "integer", nullable: false),
                     SubjectId = table.Column<int>(type: "integer", nullable: false),
                     IsForTeacher = table.Column<bool>(type: "boolean", nullable: false),
+                    StudentGradeId = table.Column<long>(type: "bigint", nullable: true),
                     CorrectAnswers = table.Column<short>(type: "smallint", nullable: false),
                     Level = table.Column<short>(type: "smallint", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
@@ -359,18 +374,21 @@ namespace Qualification.Data.Migrations
                 name: "Student",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false),
-                    ApplicationId = table.Column<long>(type: "bigint", nullable: false),
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     FirstName = table.Column<string>(type: "text", nullable: true),
                     LastName = table.Column<string>(type: "text", nullable: true),
                     MiddleName = table.Column<string>(type: "text", nullable: true),
                     GradeId = table.Column<long>(type: "bigint", nullable: true),
                     GradeLetter = table.Column<string>(type: "text", nullable: true),
-                    PasswordHash = table.Column<string>(type: "text", nullable: true)
+                    ApplicationId = table.Column<long>(type: "bigint", nullable: true),
+                    PasswordHash = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Student", x => new { x.Id, x.ApplicationId });
+                    table.PrimaryKey("PK_Student", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Student_Applications_ApplicationId",
                         column: x => x.ApplicationId,
@@ -454,6 +472,7 @@ namespace Qualification.Data.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
+                    StudentId = table.Column<long>(type: "bigint", nullable: true),
                     QuizId = table.Column<long>(type: "bigint", nullable: false),
                     CorrectAnswers = table.Column<short>(type: "smallint", nullable: false),
                     Score = table.Column<int>(type: "integer", nullable: false),
@@ -475,6 +494,11 @@ namespace Qualification.Data.Migrations
                         principalTable: "Quizes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Results_Student_StudentId",
+                        column: x => x.StudentId,
+                        principalTable: "Student",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -541,6 +565,19 @@ namespace Qualification.Data.Migrations
                         principalTable: "QuizQuestions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "IdentityRole",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "22ec759d-d1d8-47aa-a7c8-d3dcead2c8f5", "737621f5-6a2c-4bfc-b366-6a81669e90f2", "SuperAdmin", "SUPERADMIN" },
+                    { "35c2711b-3baa-44d1-af6d-c89bab5f00b1", "81275999-3157-4332-93c6-a25004623640", "Student", "STUDENT" },
+                    { "42838ee5-9d22-4afc-90d8-d67794790da0", "d3cd1d69-3ca5-4f69-9f5e-ebf6767f8caa", "School", "SCHOOL" },
+                    { "5439eea6-4378-45df-9ac8-c376121b843b", "c6988673-73d6-47a9-8163-5437bd9aca48", "Admin", "ADMIN" },
+                    { "89758b7d-63a9-4b6d-8747-bd565fb41a22", "27283eda-775b-4b82-81fd-ac03e1bdc95f", "Teacher", "TEACHER" },
+                    { "9a821ed4-65c3-41c4-bbad-565372bf3733", "c7688177-a1bc-4d3c-a528-93400fdc2e6f", "Tester", "TESTER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -641,6 +678,11 @@ namespace Qualification.Data.Migrations
                 column: "QuizId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Results_StudentId",
+                table: "Results",
+                column: "StudentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Results_UserId",
                 table: "Results",
                 column: "UserId");
@@ -696,6 +738,9 @@ namespace Qualification.Data.Migrations
                 name: "Groups");
 
             migrationBuilder.DropTable(
+                name: "IdentityRole");
+
+            migrationBuilder.DropTable(
                 name: "PaymentAssets");
 
             migrationBuilder.DropTable(
@@ -708,9 +753,6 @@ namespace Qualification.Data.Migrations
                 name: "Results");
 
             migrationBuilder.DropTable(
-                name: "Student");
-
-            migrationBuilder.DropTable(
                 name: "Submissions");
 
             migrationBuilder.DropTable(
@@ -721,6 +763,9 @@ namespace Qualification.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "QuestionAnswers");
+
+            migrationBuilder.DropTable(
+                name: "Student");
 
             migrationBuilder.DropTable(
                 name: "QuizQuestionOptions");

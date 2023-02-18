@@ -10,6 +10,7 @@ using Qualification.Domain.Entities.Users;
 using Qualification.Domain.Enums;
 using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Quizzes;
+using Qualification.Service.DTOs.Sertificate;
 using Qualification.Service.DTOs.Users;
 using Qualification.Service.Exceptions;
 using Qualification.Service.Extensions;
@@ -23,6 +24,7 @@ public class QuizService : IQuizService
     private readonly IQuestionRepository questionRepository;
     private readonly IConfiguration configuration;
     private readonly UserManager<User> userManager;
+    private readonly ISertificateService sertificateService;
     private IMapper mapper;
 
     public QuizService(
@@ -30,13 +32,15 @@ public class QuizService : IQuizService
         IMapper mapper,
         IQuizRepository quizRepository,
         UserManager<User> userManager,
-        IQuestionRepository questionRepository)
+        IQuestionRepository questionRepository,
+        ISertificateService sertificateService)
     {
         this.configuration = configuration;
         this.mapper = mapper;
         this.quizRepository = quizRepository;
         this.userManager = userManager;
         this.questionRepository = questionRepository;
+        this.sertificateService = sertificateService;
     }
 
     public async ValueTask<QuizDto> CreateQuizAsync(QuizForCreationDto quizDto)
@@ -320,5 +324,10 @@ public class QuizService : IQuizService
 
         return this.mapper.Map<IEnumerable<QuizDto>>(quizzes
             .ToPagedList(paginationParams));
+    }
+
+    public ValueTask<byte[]> GenerateSertificateAsync( SertificateForCreationDto sertificateDto)
+    {
+        throw new NotImplementedException();
     }
 }

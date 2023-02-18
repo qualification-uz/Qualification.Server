@@ -2,6 +2,7 @@ using Qualification.Domain.Configurations;
 using Qualification.Domain.Enums;
 using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Quizzes;
+using Qualification.Service.DTOs.Sertificate;
 using Qualification.Service.DTOs.Users;
 
 namespace Qualification.Service.Interfaces;
@@ -19,4 +20,5 @@ public interface IQuizService
     ValueTask<IEnumerable<QuizQuestionDto>> RetrieveQuizQuestions(long quizId);
     IEnumerable<RoleDto> RetrieveQuizStatuses();
     ValueTask<IEnumerable<QuizDto>> RetrieveQuizByTeacherId(long teacherId, PaginationParams paginationParams);
+    ValueTask<byte[]> GenerateSertificateAsync(SertificateForCreationDto sertificateDto);
 }
