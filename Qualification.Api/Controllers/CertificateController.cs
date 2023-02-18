@@ -8,20 +8,20 @@ namespace Qualification.Api.Controllers
     [Route("api/certificate")]
     public class CertificateController : ControllerBase
     {
-        private readonly ISertificateService sertificateService;
+        private readonly IQuizService quizService;
 
-        public CertificateController(ISertificateService sertificateService)
+        public CertificateController(IQuizService quizService)
         {
-            this.sertificateService = sertificateService;
+            this.quizService = quizService;
         }
 
         /// <summary>
-        /// Generate certificate
+        /// Get certificate by quizId
         /// </summary>
-        /// <param name="sertificateForCreationDto"></param>
+        /// <param name="quizId"></param>
         /// <returns></returns>
         [HttpPost]
-        public async ValueTask<IActionResult> PostCertificateAsync([FromBody] SertificateForCreationDto sertificateForCreationDto) =>
-            File(await this.sertificateService.GenerateSertificateAsync(sertificateForCreationDto), "application/octet-stream", "sertificate.png");
+        public async ValueTask<IActionResult> PostCertificateAsync(long quizId) =>
+            File(await this.quizService.GenerateSertificateAsync(quizId), "application/octet-stream", "sertificate.png");
     }
 }

@@ -8,6 +8,7 @@ using Qualification.Domain.Entities.Questions;
 using Qualification.Domain.Entities.Quizes;
 using Qualification.Domain.Entities.Users;
 using Qualification.Domain.Enums;
+using Qualification.Service.AvloniyClient;
 using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Quizzes;
 using Qualification.Service.DTOs.Sertificate;
@@ -25,6 +26,8 @@ public class QuizService : IQuizService
     private readonly IConfiguration configuration;
     private readonly UserManager<User> userManager;
     private readonly ISertificateService sertificateService;
+    private readonly IQuizResultRepository quizResultRepository;
+    private readonly IAvloniyClientService avloniyService;
     private IMapper mapper;
 
     public QuizService(
@@ -33,7 +36,9 @@ public class QuizService : IQuizService
         IQuizRepository quizRepository,
         UserManager<User> userManager,
         IQuestionRepository questionRepository,
-        ISertificateService sertificateService)
+        ISertificateService sertificateService,
+        IQuizResultRepository quizResultRepository,
+        IAvloniyClientService avloniyService)
     {
         this.configuration = configuration;
         this.mapper = mapper;
@@ -41,6 +46,8 @@ public class QuizService : IQuizService
         this.userManager = userManager;
         this.questionRepository = questionRepository;
         this.sertificateService = sertificateService;
+        this.quizResultRepository = quizResultRepository;
+        this.avloniyService = avloniyService;
     }
 
     public async ValueTask<QuizDto> CreateQuizAsync(QuizForCreationDto quizDto)
@@ -326,8 +333,43 @@ public class QuizService : IQuizService
             .ToPagedList(paginationParams));
     }
 
-    public ValueTask<byte[]> GenerateSertificateAsync( SertificateForCreationDto sertificateDto)
+    public async ValueTask<byte[]> GenerateSertificateAsync(long quizId)
     {
-        throw new NotImplementedException();
+        var quiz = await this.quizRepository
+            .SelectAllQuizzes()
+            .Include(quiz => quiz.Application)
+            .FirstOrDefaultAsync(quiz => quiz.Id == quizId);
+
+        if (quiz is null)
+            throw new NotFoundException("Couldn't find quiz for given id");
+
+        var quizResults = await this.quizResultRepository.SelectAllQuizResults()
+            .Where(quizResult => quizResult.QuizId == quizId)
+            .Include(quizResult => quizResult.Quiz)
+            .Include(quizResult => quizResult.User)
+            .ToListAsync();
+
+        var subjectScore = quizResults.FirstOrDefault(p => p.QuizId == quizId && p.StudentId == null)?.Score ?? 0;
+        var pedagogicalScore = quizResults.Where(p => p.QuizId == quizId && p.StudentId != null).Average(p => p.Score);
+        var total = pedagogicalScore == 0 ? subjectScore : (subjectScore + pedagogicalScore) / 2;
+        // create sertificate
+        var subjectsResponse = await this.avloniyService.SelectAllSubjectsAsync();
+        if(subjectsResponse.Success)
+        {
+            var subject = subjectsResponse.Result.FirstOrDefault(subject => subject.Id == quiz.Application?.SubjectId);
+            var sertificate = await this.sertificateService.GenerateSertificateAsync(new SertificateForCreationDto
+            {
+                FullName = quizResults.FirstOrDefault().User?.FirstName + " " + quizResults.FirstOrDefault().User?.LastName,
+                SertificateNumber = Guid.NewGuid().ToString("N"),
+                Subject = subject.Name,
+                SubjectScore = subjectScore,
+                PedagogicalScore = pedagogicalScore,
+                TotalScore = (subjectScore + pedagogicalScore) / 2
+            });
+
+            return sertificate;
+        }
+
+        throw new Exception("Couldn't get subject");
     }
 }

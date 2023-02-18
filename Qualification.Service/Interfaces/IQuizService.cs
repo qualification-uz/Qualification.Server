@@ -20,5 +20,5 @@ public interface IQuizService
     ValueTask<IEnumerable<QuizQuestionDto>> RetrieveQuizQuestions(long quizId);
     IEnumerable<RoleDto> RetrieveQuizStatuses();
     ValueTask<IEnumerable<QuizDto>> RetrieveQuizByTeacherId(long teacherId, PaginationParams paginationParams);
-    ValueTask<byte[]> GenerateSertificateAsync(SertificateForCreationDto sertificateDto);
+    ValueTask<byte[]> GenerateSertificateAsync(long quizId);
 }
