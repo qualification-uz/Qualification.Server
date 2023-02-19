@@ -1,10 +1,15 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Qualification.Data.IRepositories;
 using Qualification.Domain.Entities.Users;
+using Qualification.Domain.Enums;
+using Qualification.Service.AvloniyClient;
 using Qualification.Service.DTOs.Users;
 using Qualification.Service.Exceptions;
 using Qualification.Service.Interfaces;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Qualification.Service.Services
 {
@@ -13,15 +18,20 @@ namespace Qualification.Service.Services
         private readonly IApplicationRepository applicationRepository;
         private readonly ISchoolRepository schoolRepository;
         private readonly IStudentRepository studentRepository;
+        private readonly IAuthService authService;
         private readonly IMapper mapper;
 
-        public StudentService(IApplicationRepository applicationRepository, ISchoolRepository schoolRepository,
-            IMapper mapper, IStudentRepository studentRepository)
+        public StudentService(IApplicationRepository applicationRepository, 
+            ISchoolRepository schoolRepository,
+            IMapper mapper, 
+            IStudentRepository studentRepository, 
+            IAuthService authService)
         {
             this.applicationRepository = applicationRepository;
             this.schoolRepository = schoolRepository;
             this.mapper = mapper;
             this.studentRepository = studentRepository;
+            this.authService = authService;
         }
 
         public async ValueTask<IEnumerable<Student>> RetrieveAllAsync(long schoolId, long applicationId)
@@ -39,14 +49,27 @@ namespace Qualification.Service.Services
             return application.Students;
         }
 
-        public async ValueTask<StudentResultDto> RetrieveByPasswordAsync(string password)
+        public async ValueTask<object> RetrieveByPasswordAsync(string password)
         {
-            var student = await studentRepository.SelectAllStudents()
+            var studentExist = await studentRepository.SelectAllStudents()
                 .FirstOrDefaultAsync(student => student.PasswordHash == password);
-            if (student == null)
-                throw new NotFoundException("Student not found");
+            if (studentExist is null)
+                throw new NotFoundException("Coudn't find student for given credentials.");
 
-            return mapper.Map<StudentResultDto>(student);
+            // TODO: Get claims from student
+            var authClaims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.NameIdentifier, studentExist.Id.ToString()),
+                new Claim(ClaimTypes.Role, Enum.GetName(UserRole.Student)),
+            };
+            var token = this.authService.GenerateJwtToken(authClaims);
+
+            return new
+            {
+                Student = mapper.Map<StudentResultDto>(studentExist),
+                Auth = token
+            };
         }
     }
 }

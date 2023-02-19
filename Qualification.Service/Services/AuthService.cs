@@ -155,7 +155,7 @@ public class AuthService : IAuthService
         return authClaims;
     }
 
-    private object GenerateJwtToken(IReadOnlyList<Claim> authClaims)
+    public object GenerateJwtToken(IReadOnlyList<Claim> authClaims)
     {
         var authSigningKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(this.configuration["JWT:Secret"]));

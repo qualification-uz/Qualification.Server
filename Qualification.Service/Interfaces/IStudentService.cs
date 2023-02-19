@@ -11,6 +11,6 @@ namespace Qualification.Service.Interfaces
     public interface IStudentService
     {
         ValueTask<IEnumerable<Student>> RetrieveAllAsync(long schoolId, long applicationId);
-        ValueTask<StudentResultDto> RetrieveByPasswordAsync(string password);
+        ValueTask<object> RetrieveByPasswordAsync(string password);
     }
 }

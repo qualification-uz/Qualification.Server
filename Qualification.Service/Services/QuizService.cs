@@ -136,6 +136,7 @@ public class QuizService : IQuizService
 
         quizzes = quizzes
             .Include(quiz => quiz.Application)
+            .Include(quiz => quiz.User)
             .OrderBy(quiz => quiz.CreatedAt);
 
         return this.mapper.Map<IEnumerable<QuizDto>>(quizzes)
@@ -147,6 +148,7 @@ public class QuizService : IQuizService
         var quiz = await this.quizRepository
             .SelectAllQuizzes()
             .Include(quiz => quiz.Application)
+            .Include(quiz => quiz.User)
             .FirstOrDefaultAsync(quiz => quiz.Id == quizId);
 
         if (quiz is null)

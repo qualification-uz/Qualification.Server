@@ -15,6 +15,7 @@ public class Quiz : Auditable
     public QuizStatus Status { get; set; }
 
     public long UserId { get; set; }
+    public User User { get; set; }
 
     public long ApplicationId { get; set; }
     public Application Application { get; set; }

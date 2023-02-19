@@ -38,14 +38,16 @@ builder.Services.AddAuthorization(options =>
         Enum.GetName(UserRole.SuperAdmin),
         Enum.GetName(UserRole.Teacher),
         Enum.GetName(UserRole.School),
-        Enum.GetName(UserRole.Admin)));
+        Enum.GetName(UserRole.Admin),
+        Enum.GetName(UserRole.Student)));
 
     options.AddPolicy("All", policy => policy.RequireRole(
         Enum.GetName(UserRole.SuperAdmin),
         Enum.GetName(UserRole.Admin),
         Enum.GetName(UserRole.Tester),
         Enum.GetName(UserRole.Teacher),
-        Enum.GetName(UserRole.School)));
+        Enum.GetName(UserRole.School),
+        Enum.GetName(UserRole.Student)));
 
     options.AddPolicy("TestPolicy", policy => policy.RequireRole(
         Enum.GetName(UserRole.SuperAdmin),
