@@ -17,7 +17,7 @@ public interface IQuizService
     ValueTask<QuizDto> ModifyQuizAsync(long quizId, QuizForUpdateDto quizDto);
     ValueTask<QuizDto> RemoveQuizAsync(long quizId);
     ValueTask<QuizDto> ModifyQuizStatusAsync(long quizId, QuizStatus quizStatus);
-    ValueTask<IEnumerable<QuizQuestionDto>> RetrieveQuizQuestions(long quizId);
+    ValueTask<IEnumerable<QuizQuestionDto>> RetrieveQuizQuestions(long quizId, long? applicationId = null);
     IEnumerable<RoleDto> RetrieveQuizStatuses();
     ValueTask<IEnumerable<QuizDto>> RetrieveQuizByTeacherId(long teacherId, PaginationParams paginationParams);
     ValueTask<byte[]> GenerateSertificateAsync(long quizId);

@@ -32,7 +32,7 @@ namespace Qualification.Api.Controllers
         /// Sinflar raqamlari ro'yxatini olish
         /// </summary>
         /// <returns></returns>
-        [HttpGet("grades"), Authorize(Roles = "All")]
+        [HttpGet("grades"), AllowAnonymous]
         public async ValueTask<IActionResult> GetAllGradesAsync() =>
             Ok(await this.schoolService.RetrieveAllGradesAsync());
 

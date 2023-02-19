@@ -203,14 +203,26 @@ public class QuizService : IQuizService
         return this.mapper.Map<QuizDto>(quiz);
     }
 
-    public async ValueTask<IEnumerable<QuizQuestionDto>> RetrieveQuizQuestions(long quizId)
+    public async ValueTask<IEnumerable<QuizQuestionDto>> RetrieveQuizQuestions(long quizId, long? applicationId = null)
     {
-        var quiz = await this.quizRepository
-            .SelectAllQuizzes()
-            .Include(quiz => quiz.Questions)
-            .Include(quiz => quiz.Application)
-            .FirstOrDefaultAsync(quiz => quiz.Id == quizId);
-
+        Quiz quiz = null;
+        if (applicationId is null)
+        {
+            quiz = await this.quizRepository
+                .SelectAllQuizzes()
+                .Include(quiz => quiz.Questions)
+                .Include(quiz => quiz.Application)
+                .FirstOrDefaultAsync(quiz => quiz.Id == quizId);
+        }
+        else
+        {
+            quiz = await this.quizRepository
+                .SelectAllQuizzes()
+                .Include(quiz => quiz.Questions)
+                .Include(quiz => quiz.Application)
+                .FirstOrDefaultAsync(quiz => quiz.ApplicationId == applicationId);
+        }
+        
         if (quiz is null)
             throw new NotFoundException("Couldn't find quiz for given id");
 
@@ -219,7 +231,7 @@ public class QuizService : IQuizService
         {
             var shuffledQuestions = await RetrieveShuffledQuestions(
                 subjectId: quiz.Application.SubjectId,
-                isForTeacher: true);
+                isForTeacher: quiz.IsForTeacher);
 
             foreach (var question in shuffledQuestions)
             {

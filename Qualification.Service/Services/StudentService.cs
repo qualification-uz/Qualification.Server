@@ -52,6 +52,7 @@ namespace Qualification.Service.Services
         public async ValueTask<object> RetrieveByPasswordAsync(string password)
         {
             var studentExist = await studentRepository.SelectAllStudents()
+                .Include(p => p.Application)
                 .FirstOrDefaultAsync(student => student.PasswordHash == password);
             if (studentExist is null)
                 throw new NotFoundException("Coudn't find student for given credentials.");
@@ -61,7 +62,7 @@ namespace Qualification.Service.Services
             {
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier, studentExist.Id.ToString()),
-                new Claim(ClaimTypes.Role, Enum.GetName(UserRole.Student)),
+                new Claim("role", Enum.GetName(UserRole.Student)),
             };
             var token = this.authService.GenerateJwtToken(authClaims);
 

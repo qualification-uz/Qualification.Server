@@ -53,8 +53,8 @@ public class QuizzesController : ControllerBase
         Ok(await this.quizService.RemoveQuizAsync(id));
 
     [HttpGet("{id}/questions")]
-    public async ValueTask<IActionResult> GetQuizRelatedQuestions(long id) =>
-        Ok(await this.quizService.RetrieveQuizQuestions(id));
+    public async ValueTask<IActionResult> GetQuizRelatedQuestions(long id, long? applicationId = null) =>
+        Ok(await this.quizService.RetrieveQuizQuestions(id, applicationId));
 
     [HttpGet("status")]
     public IActionResult GetQuizStatuses() =>
