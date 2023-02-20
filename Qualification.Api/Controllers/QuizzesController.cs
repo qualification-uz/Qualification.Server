@@ -39,6 +39,10 @@ public class QuizzesController : ControllerBase
     [HttpGet("{id}")]
     public async ValueTask<IActionResult> GetQuizByIdAsync(long id) =>
         Ok(await this.quizService.RetrieveQuizByIdAsync(id));
+    
+    [HttpGet("{applicationId}/for-student")]
+    public async ValueTask<IActionResult> GetQuizByApplicationIdAsync(long applicationId) =>
+        Ok(await this.quizService.RetrieveQuizByApplicationIdAsync(applicationId));
 
     [HttpPut("{id}")]
     public async ValueTask<IActionResult> PutQuizAsync(long id, QuizForUpdateDto quizForUpdateDto) =>
@@ -53,8 +57,17 @@ public class QuizzesController : ControllerBase
         Ok(await this.quizService.RemoveQuizAsync(id));
 
     [HttpGet("{id}/questions")]
-    public async ValueTask<IActionResult> GetQuizRelatedQuestions(long id, long? applicationId = null) =>
-        Ok(await this.quizService.RetrieveQuizQuestions(id, applicationId));
+    public async ValueTask<IActionResult> GetQuizRelatedQuestions(long id) =>
+        Ok(await this.quizService.RetrieveQuizQuestions(id));
+
+    /// <summary>
+    /// Studentlar uchun quizga oid savollar
+    /// </summary>
+    /// <param name="applicationId"></param>
+    /// <returns></returns>
+    [HttpGet("{applicationId}/{studentGradeId}/questions")]
+    public async ValueTask<IActionResult> GetQuizRelatedQuestionsByApplicationId(long applicationId, long studentGradeId) =>
+        Ok(await this.quizService.RetrieveQuizQuestionsByApplicationId(applicationId, studentGradeId));
 
     [HttpGet("status")]
     public IActionResult GetQuizStatuses() =>

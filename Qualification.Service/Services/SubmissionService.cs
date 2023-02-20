@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Qualification.Data.Contexts;
 using Qualification.Data.IRepositories;
 using Qualification.Domain.Entities.Quizes;
 using Qualification.Service.DTOs.Quizzes;
@@ -10,19 +12,40 @@ namespace Qualification.Service.Services;
 public class SubmissionService : ISubmissionService
 {
     private readonly ISubmissionRepository submissionRepository;
+    private readonly IQuizQuestionRepository quizQuestionRepository;
+    private readonly IQuizQuestionOptionRepository questionOptionRepository;
     private readonly IMapper mapper;
     public SubmissionService(
         ISubmissionRepository submissionRepository,
-        IMapper mapper)
+        IMapper mapper,
+        IQuizQuestionRepository quizQuestionRepository,
+        IQuizQuestionOptionRepository questionOptionRepository)
     {
         this.submissionRepository = submissionRepository;
         this.mapper = mapper;
+        this.quizQuestionRepository = quizQuestionRepository;
+        this.questionOptionRepository = questionOptionRepository;
     }
 
     public async ValueTask<SubmissionDto> CreateSubmissionAsync(SubmissionForCreationDto submissionDto)
     {
-        var submission = this.mapper.Map<Submission>(submissionDto);
+        var quizQuestion = await this.quizQuestionRepository
+            .SelectAllQuizQuestions()
+            .FirstOrDefaultAsync(qq => qq.QuestionId == submissionDto.QuizQuestionId);
+        if (quizQuestion is null)
+            throw new NotFoundException("Couldn't find quiz question for given id");
 
+        var quizQuestionOption = await this.questionOptionRepository
+            .SelectAllQuizQuestions()
+            .FirstOrDefaultAsync(p => p.QuizOptionId == submissionDto.QuestionOptionId);
+        if (quizQuestionOption is null)
+            throw new NotFoundException("Couldn't find quiz question option for given id");
+            
+        submissionDto.QuestionOptionId = quizQuestionOption.Id;
+        submissionDto.QuizQuestionId = quizQuestion.Id;
+
+        var submission = this.mapper.Map<Submission>(submissionDto);
+        
         submission = await this.submissionRepository
             .InsertSubmissionAsync(submission);
 

@@ -29,6 +29,7 @@ public static class ServiceExtensions
         services.AddScoped<IQuizResultRepository, QuizResultRepository>();
         services.AddScoped<ISchoolRepository, SchoolRepository>();
         services.AddScoped<IStudentRepository, StudentRepository>();
+        services.AddScoped<IQuizQuestionOptionRepository, QuizQuestionOptionRepository>();
 
         services.AddScoped<IAvloniyClientService, AvloniyClientService>();
         services.AddScoped<IAuthService, AuthService>();

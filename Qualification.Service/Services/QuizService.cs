@@ -157,6 +157,20 @@ public class QuizService : IQuizService
         return this.mapper.Map<QuizDto>(quiz);
     }
 
+    public async ValueTask<QuizDto> RetrieveQuizByApplicationIdAsync(long applicationId)
+    {
+        var quiz = await this.quizRepository
+            .SelectAllQuizzes()
+            .Include(quiz => quiz.Application)
+            .Include(quiz => quiz.User)
+            .FirstOrDefaultAsync(quiz => quiz.ApplicationId == applicationId);
+
+        if (quiz is null)
+            throw new NotFoundException("Couldn't find quiz for given id");
+
+        return this.mapper.Map<QuizDto>(quiz);
+    }
+
     public async ValueTask<QuizDto> ModifyQuizAsync(long quizId, QuizForUpdateDto quizDto)
     {
         var quiz = await this.quizRepository
@@ -203,26 +217,14 @@ public class QuizService : IQuizService
         return this.mapper.Map<QuizDto>(quiz);
     }
 
-    public async ValueTask<IEnumerable<QuizQuestionDto>> RetrieveQuizQuestions(long quizId, long? applicationId = null)
+    public async ValueTask<IEnumerable<QuizQuestionDto>> RetrieveQuizQuestions(long quizId)
     {
-        Quiz quiz = null;
-        if (applicationId is null)
-        {
-            quiz = await this.quizRepository
+        var quiz = await this.quizRepository
                 .SelectAllQuizzes()
                 .Include(quiz => quiz.Questions)
                 .Include(quiz => quiz.Application)
                 .FirstOrDefaultAsync(quiz => quiz.Id == quizId);
-        }
-        else
-        {
-            quiz = await this.quizRepository
-                .SelectAllQuizzes()
-                .Include(quiz => quiz.Questions)
-                .Include(quiz => quiz.Application)
-                .FirstOrDefaultAsync(quiz => quiz.ApplicationId == applicationId);
-        }
-        
+
         if (quiz is null)
             throw new NotFoundException("Couldn't find quiz for given id");
 
@@ -231,7 +233,7 @@ public class QuizService : IQuizService
         {
             var shuffledQuestions = await RetrieveShuffledQuestions(
                 subjectId: quiz.Application.SubjectId,
-                isForTeacher: quiz.IsForTeacher);
+                isForTeacher: true);
 
             foreach (var question in shuffledQuestions)
             {
@@ -260,6 +262,59 @@ public class QuizService : IQuizService
             .Where(question => quiz.Questions
                 .Select(question => question.QuestionId)
                 .Any(id => id == question.Id))
+            .Include(question => question.Assets)
+            .Include(question => question.Answers)
+            .ThenInclude(answer => answer.Assets)
+            .ToListAsync();
+
+        return this.mapper.Map<IEnumerable<QuizQuestionDto>>(questions);
+    }
+
+    public async ValueTask<IEnumerable<QuizQuestionDto>> RetrieveQuizQuestionsByApplicationId(long applicationId, long studentGradeId)
+    {
+        var quiz = await this.quizRepository
+                .SelectAllQuizzes()
+                .Include(quiz => quiz.Questions)
+                .Include(quiz => quiz.Application)
+                .FirstOrDefaultAsync(quiz => quiz.ApplicationId == applicationId);
+
+        if (quiz is null)
+            throw new NotFoundException("Couldn't find quiz for given id");
+
+        // Select questions if haven't created yet
+        if (quiz.Questions.Count == 0)
+        {
+            var shuffledQuestions = await RetrieveShuffledQuestions(
+                subjectId: quiz.Application.SubjectId,
+                isForTeacher: false);
+
+            foreach (var question in shuffledQuestions)
+            {
+                quiz.Questions.Add(new QuizQuestion
+                {
+                    QuestionId = question.Id,
+                    QuizId = quiz.Id,
+                    CreatedAt = DateTime.UtcNow,
+                    Options = question.Answers.Select(option => new QuestionOption
+                    {
+                        QuizOptionId = option.Id,
+                        QuizQuestionId = question.Id,
+                        CreatedAt = DateTime.UtcNow,
+                    }).ToList()
+                });
+            }
+
+            await this.quizRepository.UpdateQuizAsync(quiz);
+
+            return this.mapper.Map<IEnumerable<QuizQuestionDto>>(shuffledQuestions);
+        }
+
+        // Questions have already exist
+        var questions = await questionRepository
+            .SelectAllQuestions()
+            .Where(question => quiz.Questions
+                .Select(question => question.QuestionId)
+                .Any(id => id == question.Id) && question.StudentGradeId == studentGradeId)
             .Include(question => question.Assets)
             .Include(question => question.Answers)
             .ThenInclude(answer => answer.Assets)
