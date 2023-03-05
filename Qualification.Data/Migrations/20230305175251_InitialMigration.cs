@@ -368,6 +368,12 @@ namespace Qualification.Data.Migrations
                         principalTable: "Applications",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Quizes_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -572,12 +578,12 @@ namespace Qualification.Data.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "22ec759d-d1d8-47aa-a7c8-d3dcead2c8f5", "737621f5-6a2c-4bfc-b366-6a81669e90f2", "SuperAdmin", "SUPERADMIN" },
-                    { "35c2711b-3baa-44d1-af6d-c89bab5f00b1", "81275999-3157-4332-93c6-a25004623640", "Student", "STUDENT" },
-                    { "42838ee5-9d22-4afc-90d8-d67794790da0", "d3cd1d69-3ca5-4f69-9f5e-ebf6767f8caa", "School", "SCHOOL" },
-                    { "5439eea6-4378-45df-9ac8-c376121b843b", "c6988673-73d6-47a9-8163-5437bd9aca48", "Admin", "ADMIN" },
-                    { "89758b7d-63a9-4b6d-8747-bd565fb41a22", "27283eda-775b-4b82-81fd-ac03e1bdc95f", "Teacher", "TEACHER" },
-                    { "9a821ed4-65c3-41c4-bbad-565372bf3733", "c7688177-a1bc-4d3c-a528-93400fdc2e6f", "Tester", "TESTER" }
+                    { "07f2e0d6-cbf3-4479-91e2-e5e45f1da9bd", "705515e8-e8f5-4729-8d88-dea737ca063f", "SuperAdmin", "SUPERADMIN" },
+                    { "1e1ae2f5-3f12-4339-adb0-c8e85d322162", "7d38f437-a85f-48b8-a034-8c97e3838cb7", "Teacher", "TEACHER" },
+                    { "246c3bbb-4e7d-4577-9373-29f25508b98b", "92ab49d9-fd2a-4b95-93f1-130ace73b432", "School", "SCHOOL" },
+                    { "2a7a669a-8eae-45fc-92d5-fa09d2ced96e", "ff32f051-e05c-4916-ab4d-b7690df34a4a", "Admin", "ADMIN" },
+                    { "4473b991-1c0a-4079-9115-82e99b35f3a3", "ffa7562b-e5af-4633-97d5-f9154d25d07c", "Student", "STUDENT" },
+                    { "44d4107e-98bc-4818-a12c-60fe4fdaecc1", "89ccd9de-8425-4ebc-899c-56945ffc54c3", "Tester", "TESTER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -661,6 +667,11 @@ namespace Qualification.Data.Migrations
                 name: "IX_Quizes_ApplicationId",
                 table: "Quizes",
                 column: "ApplicationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Quizes_UserId",
+                table: "Quizes",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_QuizQuestionOptions_QuizQuestionId",
