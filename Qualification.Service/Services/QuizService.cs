@@ -76,6 +76,7 @@ public class QuizService : IQuizService
         application.Status = ApplicationStatus.TestBelgilandi;
         quiz.UserId = user.Id;
         quiz.Application = application;
+        quiz.IsForTeacher = true;
         quiz = await this.quizRepository.InsertQuizAync(quiz);
 
         return this.mapper.Map<QuizDto>(quiz);

@@ -43,43 +43,43 @@ namespace Qualification.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "35c2711b-3baa-44d1-af6d-c89bab5f00b1",
-                            ConcurrencyStamp = "81275999-3157-4332-93c6-a25004623640",
+                            Id = "4473b991-1c0a-4079-9115-82e99b35f3a3",
+                            ConcurrencyStamp = "ffa7562b-e5af-4633-97d5-f9154d25d07c",
                             Name = "Student",
                             NormalizedName = "STUDENT"
                         },
                         new
                         {
-                            Id = "89758b7d-63a9-4b6d-8747-bd565fb41a22",
-                            ConcurrencyStamp = "27283eda-775b-4b82-81fd-ac03e1bdc95f",
+                            Id = "1e1ae2f5-3f12-4339-adb0-c8e85d322162",
+                            ConcurrencyStamp = "7d38f437-a85f-48b8-a034-8c97e3838cb7",
                             Name = "Teacher",
                             NormalizedName = "TEACHER"
                         },
                         new
                         {
-                            Id = "42838ee5-9d22-4afc-90d8-d67794790da0",
-                            ConcurrencyStamp = "d3cd1d69-3ca5-4f69-9f5e-ebf6767f8caa",
+                            Id = "246c3bbb-4e7d-4577-9373-29f25508b98b",
+                            ConcurrencyStamp = "92ab49d9-fd2a-4b95-93f1-130ace73b432",
                             Name = "School",
                             NormalizedName = "SCHOOL"
                         },
                         new
                         {
-                            Id = "9a821ed4-65c3-41c4-bbad-565372bf3733",
-                            ConcurrencyStamp = "c7688177-a1bc-4d3c-a528-93400fdc2e6f",
+                            Id = "44d4107e-98bc-4818-a12c-60fe4fdaecc1",
+                            ConcurrencyStamp = "89ccd9de-8425-4ebc-899c-56945ffc54c3",
                             Name = "Tester",
                             NormalizedName = "TESTER"
                         },
                         new
                         {
-                            Id = "5439eea6-4378-45df-9ac8-c376121b843b",
-                            ConcurrencyStamp = "c6988673-73d6-47a9-8163-5437bd9aca48",
+                            Id = "2a7a669a-8eae-45fc-92d5-fa09d2ced96e",
+                            ConcurrencyStamp = "ff32f051-e05c-4916-ab4d-b7690df34a4a",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "22ec759d-d1d8-47aa-a7c8-d3dcead2c8f5",
-                            ConcurrencyStamp = "737621f5-6a2c-4bfc-b366-6a81669e90f2",
+                            Id = "07f2e0d6-cbf3-4479-91e2-e5e45f1da9bd",
+                            ConcurrencyStamp = "705515e8-e8f5-4729-8d88-dea737ca063f",
                             Name = "SuperAdmin",
                             NormalizedName = "SUPERADMIN"
                         });
@@ -558,6 +558,8 @@ namespace Qualification.Data.Migrations
 
                     b.HasIndex("ApplicationId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Quizes");
                 });
 
@@ -980,7 +982,15 @@ namespace Qualification.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Qualification.Domain.Entities.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Application");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuizQuestion", b =>

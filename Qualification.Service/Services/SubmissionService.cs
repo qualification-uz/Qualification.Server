@@ -13,18 +13,21 @@ public class SubmissionService : ISubmissionService
 {
     private readonly ISubmissionRepository submissionRepository;
     private readonly IQuizQuestionRepository quizQuestionRepository;
+    private readonly IQuestionAnswerRepository questionAnswerRepository;
     private readonly IQuizQuestionOptionRepository questionOptionRepository;
     private readonly IMapper mapper;
     public SubmissionService(
         ISubmissionRepository submissionRepository,
         IMapper mapper,
         IQuizQuestionRepository quizQuestionRepository,
-        IQuizQuestionOptionRepository questionOptionRepository)
+        IQuizQuestionOptionRepository questionOptionRepository,
+        IQuestionAnswerRepository questionAnswerRepository)
     {
         this.submissionRepository = submissionRepository;
         this.mapper = mapper;
         this.quizQuestionRepository = quizQuestionRepository;
         this.questionOptionRepository = questionOptionRepository;
+        this.questionAnswerRepository = questionAnswerRepository;
     }
 
     public async ValueTask<SubmissionDto> CreateSubmissionAsync(SubmissionForCreationDto submissionDto)
@@ -41,11 +44,17 @@ public class SubmissionService : ISubmissionService
             .LastOrDefaultAsync(p => p.QuizOptionId == submissionDto.QuestionOptionId);
         if (quizQuestionOption is null)
             throw new NotFoundException("Couldn't find quiz question option for given id");
+
+        var questionAnswers = await this.questionAnswerRepository.SelectAllQuestions().ToListAsync();
+        var quizQuestionAnswer = questionAnswers.Find(t => t.Id == quizQuestionOption.QuizOptionId);
             
         //submissionDto.QuestionOptionId = quizQuestionOption.Id;
         submissionDto.QuizQuestionId = quizQuestion.Id;
 
         var submission = this.mapper.Map<Submission>(submissionDto);
+        
+        if(quizQuestionAnswer.IsCorrect)
+            submission.IsCorrect = true;
         
         submission = await this.submissionRepository
             .InsertSubmissionAsync(submission);
