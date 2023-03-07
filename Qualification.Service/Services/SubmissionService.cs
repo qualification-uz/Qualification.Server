@@ -37,11 +37,12 @@ public class SubmissionService : ISubmissionService
 
         var quizQuestionOption = await this.questionOptionRepository
             .SelectAllQuizQuestions()
-            .FirstOrDefaultAsync(p => p.QuizOptionId == submissionDto.QuestionOptionId);
+            .OrderBy(p => p.Id)
+            .LastOrDefaultAsync(p => p.QuizOptionId == submissionDto.QuestionOptionId);
         if (quizQuestionOption is null)
             throw new NotFoundException("Couldn't find quiz question option for given id");
             
-        submissionDto.QuestionOptionId = quizQuestionOption.Id;
+        //submissionDto.QuestionOptionId = quizQuestionOption.Id;
         submissionDto.QuizQuestionId = quizQuestion.Id;
 
         var submission = this.mapper.Map<Submission>(submissionDto);
