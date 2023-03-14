@@ -4,5 +4,6 @@ namespace Qualification.Service.Interfaces;
 
 public interface IQuizResultService
 {
-    ValueTask<QuizResultDto> RetrieveQuizResultAsync(long quizId, long? studentId = null);
+    ValueTask<QuizResultDto> RetrieveTeacherQuizResultAsync(long quizId, long? studentId = null);
+    ValueTask<QuizResultDto> RetrieveStudentQuizResultAsync(long quizId, long studentId);
 }

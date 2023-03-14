@@ -60,28 +60,28 @@ public class ApplicationService : IApplicationService
         if (!isExpectedTeacher)
             throw new InvalidOperationException("Not allowed user");
 
-        var students = await this.avloniyClientService
-            .SelectStudentsAsync(
-                schoolId: applicationDto.SchoolId,
-                groups: applicationDto.Groups.ToList());
-        if (students.Count <= 0)
-        {
-            throw new InvalidOperationException("There is no any students in provided groups");
-        }
+        //var students = await this.avloniyClientService
+        //    .SelectStudentsAsync(
+        //        schoolId: applicationDto.SchoolId,
+        //        groups: applicationDto.Groups.ToList());
+        //if (students.Count <= 0)
+        //{
+        //    throw new InvalidOperationException("There is no any students in provided groups");
+        //}
 
-        int targetStudents = (int)(0.3 * students.Count);
-        var selectedStudents = students.OrderBy(x => Guid.NewGuid()).Take(targetStudents);
+        //int targetStudents = (int)(0.3 * students.Count);
+        //var selectedStudents = students.OrderBy(x => Guid.NewGuid()).Take(targetStudents);
 
-        application.Students.AddRange(selectedStudents.Select(student => new Student
-        {
-            Id = student.Id,
-            FirstName = student.FirstName,
-            LastName = student.LastName,
-            MiddleName = student.MiddleName,
-            GradeId = student.GradeId,
-            GradeLetter = student.GradeLetter,
-            PasswordHash = PasswordHelper.Encrypt(student.Id.ToString()).Substring(0, 8)
-        }));
+        //application.Students.AddRange(selectedStudents.Select(student => new Student
+        //{
+        //    Id = student.Id,
+        //    FirstName = student.FirstName,
+        //    LastName = student.LastName,
+        //    MiddleName = student.MiddleName,
+        //    GradeId = student.GradeId,
+        //    GradeLetter = student.GradeLetter,
+        //    PasswordHash = PasswordHelper.Encrypt(student.Id.ToString()).Substring(0, 8)
+        //}));
 
         teacher.Applications.Add(application);
 

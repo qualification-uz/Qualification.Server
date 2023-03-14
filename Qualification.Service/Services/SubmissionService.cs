@@ -11,20 +11,23 @@ namespace Qualification.Service.Services;
 
 public class SubmissionService : ISubmissionService
 {
+    private readonly IMapper mapper;
+    private readonly IStudentRepository studentRepository;
     private readonly ISubmissionRepository submissionRepository;
     private readonly IQuizQuestionRepository quizQuestionRepository;
     private readonly IQuestionAnswerRepository questionAnswerRepository;
     private readonly IQuizQuestionOptionRepository questionOptionRepository;
-    private readonly IMapper mapper;
     public SubmissionService(
-        ISubmissionRepository submissionRepository,
         IMapper mapper,
+        IStudentRepository studentRepository,
+        ISubmissionRepository submissionRepository,
         IQuizQuestionRepository quizQuestionRepository,
         IQuizQuestionOptionRepository questionOptionRepository,
         IQuestionAnswerRepository questionAnswerRepository)
     {
-        this.submissionRepository = submissionRepository;
         this.mapper = mapper;
+        this.studentRepository = studentRepository;
+        this.submissionRepository = submissionRepository;
         this.quizQuestionRepository = quizQuestionRepository;
         this.questionOptionRepository = questionOptionRepository;
         this.questionAnswerRepository = questionAnswerRepository;
@@ -55,11 +58,49 @@ public class SubmissionService : ISubmissionService
         
         if(quizQuestionAnswer.IsCorrect)
             submission.IsCorrect = true;
-        
+
+        submission.IsForStudent = false;
         submission = await this.submissionRepository
             .InsertSubmissionAsync(submission);
 
         return this.mapper.Map<SubmissionDto>(submission);
+    }
+
+    public async ValueTask<SubmissionForStudentDto> CreateSubmissionForStudentAsync(SubmissionForStudentForCreationDto submissionDto)
+    {
+        var quizQuestion = await this.quizQuestionRepository
+            .SelectAllQuizQuestions()
+            .FirstOrDefaultAsync(qq => qq.QuestionId == submissionDto.QuizQuestionId);
+        if (quizQuestion is null)
+            throw new NotFoundException("Couldn't find quiz question for given id");
+
+        var quizQuestionOption = await this.questionOptionRepository
+            .SelectAllQuizQuestions()
+            .OrderBy(p => p.Id)
+            .LastOrDefaultAsync(p => p.QuizOptionId == submissionDto.QuestionOptionId);
+        if (quizQuestionOption is null)
+            throw new NotFoundException("Couldn't find quiz question option for given id");
+
+        var student = await this.studentRepository.SelectStudentByIdAsync(submissionDto.StudentId);
+        if (student is null)
+            throw new NotFoundException("Couldn't student for given id");
+
+        var questionAnswers = await this.questionAnswerRepository.SelectAllQuestions().ToListAsync();
+        var quizQuestionAnswer = questionAnswers.Find(t => t.Id == quizQuestionOption.QuizOptionId);
+
+        //submissionDto.QuestionOptionId = quizQuestionOption.Id;
+        submissionDto.QuizQuestionId = quizQuestion.Id;
+
+        var submission = this.mapper.Map<Submission>(submissionDto);
+
+        if (quizQuestionAnswer.IsCorrect)
+            submission.IsCorrect = true;
+
+        submission.IsForStudent = true;
+        submission = await this.submissionRepository
+            .InsertSubmissionAsync(submission);
+
+        return this.mapper.Map<SubmissionForStudentDto>(submission);
     }
 
     public IEnumerable<SubmissionDto> RetrieveAllSubmissions()
@@ -129,4 +170,5 @@ public class SubmissionService : ISubmissionService
 
         return this.mapper.Map<SubmissionDto>(submission);
     }
+
 }

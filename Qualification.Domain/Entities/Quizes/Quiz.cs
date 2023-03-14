@@ -10,6 +10,7 @@ public class Quiz : Auditable
     public string Content { get; set; }
     public int QuestionCount { get; set; }
     public bool IsForTeacher { get; set; }
+    public bool IsCompleted { get; set; }
     public DateTime StartsAt { get; set; }
     public DateTime EndsAt { get; set; }
     public QuizStatus Status { get; set; }
