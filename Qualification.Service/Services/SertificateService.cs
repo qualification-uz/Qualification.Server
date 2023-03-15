@@ -4,6 +4,7 @@ using Qualification.Service.Interfaces;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
+using MessagingToolkit.QRCode.Codec;
 
 namespace Qualification.Service.Services;
 
@@ -11,10 +12,12 @@ namespace Qualification.Service.Services;
 public class SertificateService : ISertificateService
 {
     private readonly IWebHostEnvironment _env;
+    private readonly QRCodeEncoder encoder;
 
     public SertificateService(IWebHostEnvironment env)
     {
         _env = env;
+        encoder = new QRCodeEncoder();
     }
 
     public async ValueTask<byte[]> GenerateSertificateAsync(SertificateForCreationDto sertificateForCreationDto)
@@ -47,11 +50,16 @@ public class SertificateService : ISertificateService
         graphics.DrawString(sertificateForCreationDto.SubjectScore.ToString(), defaultFont, brush, new PointF((bitmap.Width - sizeOfSubjectScore.Width) / 5 * 4.2f, 2140));
         graphics.DrawString(sertificateForCreationDto.PedagogicalScore.ToString(), defaultFont, brush, new PointF((bitmap.Width - sizeOfPedagogicalScore.Width) / 5 * 4.2f, 2490));
         graphics.DrawString(sertificateForCreationDto.TotalScore.ToString(), defaultFont, brush, new PointF((bitmap.Width - sizeOfTotalScore.Width) / 4.2f, 2570));
-
+        
         // Save output image
         string outputFileName = Guid.NewGuid().ToString("N") + ".png";
         string outputFilePath = Path.Combine(_env.WebRootPath, @$"Certificates\{outputFileName}");
 
+        // generate QrCode
+        encoder.QRCodeScale = 9;
+        var qrBitmap = encoder.Encode(Path.Combine($"qualification.visualstudio.uz/Certificates/{outputFileName}"));
+        graphics.DrawImage(qrBitmap, bitmap.Width - 375, 75);
+        
         bitmap.Save(outputFilePath, ImageFormat.Png);
 
         if (File.Exists(outputFilePath))
