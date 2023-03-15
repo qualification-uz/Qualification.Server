@@ -37,10 +37,23 @@ namespace Qualification.Api.Controllers
         /// <param name="questionAnswerForUpdateDto"></param>
         /// <returns></returns>
         [HttpPatch("{answerId}")]
-        public  async ValueTask<IActionResult> PatchQuestionAnswerAsync(
+        public async ValueTask<IActionResult> PatchQuestionAnswerAsync(
             long id,
             long answerId,
             [FromBody] QuestionAnswerForUpdateDto questionAnswerForUpdateDto) =>
                 Ok(await this.questionService.ModifyQuestionAnswerAsync(id, answerId, questionAnswerForUpdateDto));
+
+        /// <summary>
+        /// Test javobini o'chirish
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="answerId"></param>
+        /// <param name="questionAnswerForUpdateDto"></param>
+        /// <returns></returns>
+        [HttpPut("{answerId}")]
+        public async ValueTask<IActionResult> PatchQuestionAnswerAsync(
+            long id,
+            long answerId) =>
+                Ok(await this.questionService.RemoveQuestionAnswerAsync(id, answerId));
     }
 }

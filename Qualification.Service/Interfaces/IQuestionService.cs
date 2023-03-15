@@ -1,16 +1,17 @@
 ﻿using Qualification.Domain.Configurations;
+using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Question;
 
 namespace Qualification.Service.Interfaces;
 
 public interface IQuestionService
 {
-    IEnumerable<QuestionDto> RetrieveAllQuestions(PaginationParams @params);
+    IEnumerable<QuestionDto> RetrieveAllQuestions(Filters filters, PaginationParams @params);
     ValueTask<QuestionDto> RetrieveQuestionByIdAsync(long questionId);
     ValueTask<QuestionDto> AddQuestionAsync(QuestionForCreationDto questionForCreationDto);
     ValueTask<QuestionDto> ModifyQuestionAsync(long questionId, QuestionForUpdateDto questionForUpdateDto);
     ValueTask<QuestionDto> RemoveQuestionAsync(long questionId);
-    
+
     ValueTask<QuestionDto> AddQuestionAnswersAsync(
         long questionId,
         IReadOnlyList<QuestionAnswerForCreationDto> questionAnswerForCreationDto);
@@ -23,4 +24,8 @@ public interface IQuestionService
         long questionId,
         long answerId,
         QuestionAnswerForUpdateDto questionAnswerForUpdateDto);
+
+    ValueTask<QuestionDto> RemoveQuestionAnswerAsync(
+        long questionId,
+        long answerId);
 }

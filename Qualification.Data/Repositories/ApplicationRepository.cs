@@ -42,7 +42,7 @@ public class ApplicationRepository : IApplicationRepository
 
         return await applications.FirstOrDefaultAsync(application => application.Id == applicationId);
     }
-    
+
     public async ValueTask<Application> UpdateApplicationAsync(Application application)
     {
         EntityEntry<Application> applicationEntityEntry =
@@ -52,7 +52,7 @@ public class ApplicationRepository : IApplicationRepository
 
         return applicationEntityEntry.Entity;
     }
-    
+
     public async ValueTask<Application> DeleteApplicationAsync(Application application)
     {
         EntityEntry<Application> applicationEntityEntry =

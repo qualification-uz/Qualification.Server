@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Qualification.Data.IRepositories;
 using Qualification.Domain.Configurations;
 using Qualification.Domain.Entities.Questions;
+using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Question;
 using Qualification.Service.Exceptions;
 using Qualification.Service.Extensions;
@@ -25,9 +27,20 @@ public class QuestionService : IQuestionService
         this.assetService = assetService;
     }
 
-    public IEnumerable<QuestionDto> RetrieveAllQuestions(PaginationParams @params)
+    public IEnumerable<QuestionDto> RetrieveAllQuestions(
+        Filters filters, PaginationParams @params)
     {
-        var questions = this.questionRepository.SelectAllQuestions();
+        var questions = this.questionRepository
+            .SelectAllQuestions()
+            .Include(p => p.Answers)
+            .ThenInclude(p => p.Assets)
+            .Include(p => p.Assets)
+            .OrderByDescending(question => question.CreatedAt)
+            .AsQueryable();
+
+        questions = filters
+                .Aggregate(questions, (current, filter) => current.Filter(filter));
+
         return this.mapper.Map<IEnumerable<QuestionDto>>(questions)
             .ToPagedList(@params);
     }
@@ -45,10 +58,13 @@ public class QuestionService : IQuestionService
 
     public async ValueTask<QuestionDto> AddQuestionAsync(QuestionForCreationDto questionForCreationDto)
     {
+        if (!questionForCreationDto.IsForTeacher && questionForCreationDto.StudentGradeId == null)
+            throw new ArgumentException("Question for teacher cannot have student grade id");
+
         var question = this.mapper.Map<Question>(questionForCreationDto);
         var assets = new List<QuestionAsset>();
 
-        if(questionForCreationDto.AssetIds is not null)
+        if (questionForCreationDto.AssetIds is not null)
         {
             foreach (var assetId in questionForCreationDto.AssetIds)
             {
@@ -78,16 +94,16 @@ public class QuestionService : IQuestionService
         if (questionForUpdateDto.Type.HasValue)
             question.Type = questionForUpdateDto.Type.Value;
 
-        if(questionForUpdateDto.SubjectId.HasValue)
+        if (questionForUpdateDto.SubjectId.HasValue)
             question.SubjectId = questionForUpdateDto.SubjectId.Value;
-        
-        if(questionForUpdateDto.Level.HasValue)
+
+        if (questionForUpdateDto.Level.HasValue)
             question.Level = questionForUpdateDto.Level.Value;
 
-        if(questionForUpdateDto.CorrectAnswers.HasValue)
+        if (questionForUpdateDto.CorrectAnswers.HasValue)
             question.CorrectAnswers = questionForUpdateDto.CorrectAnswers.Value;
 
-        if(questionForUpdateDto.IsForTeacher.HasValue)
+        if (questionForUpdateDto.IsForTeacher.HasValue)
             question.IsForTeacher = questionForUpdateDto.IsForTeacher.Value;
 
         question.UpdatedAt = DateTime.UtcNow;
@@ -125,10 +141,10 @@ public class QuestionService : IQuestionService
         if (question.Answers is null)
             question.Answers = new List<QuestionAnswer>();
 
-        foreach(var answerDto in questionAnswerForCreationDtos)
+        foreach (var answerDto in questionAnswerForCreationDtos)
         {
             var answer = this.mapper.Map<QuestionAnswer>(answerDto);
-            
+
             if (answer.Assets is null)
                 answer.Assets = new List<QuestionAnswerAsset>();
 
@@ -142,7 +158,7 @@ public class QuestionService : IQuestionService
             }
             question.Answers.Add(answer);
         }
-        
+
         question.UpdatedAt = DateTime.UtcNow;
 
         question = await this.questionRepository.UpdateQuestionAsync(question);
@@ -168,7 +184,7 @@ public class QuestionService : IQuestionService
         if (answer.Assets is null)
             answer.Assets = new List<QuestionAnswerAsset>();
 
-       if(questionAnswerForCreationDto.AssetIds is not null)
+        if (questionAnswerForCreationDto.AssetIds is not null)
         {
             foreach (var assetId in questionAnswerForCreationDto.AssetIds)
             {
@@ -201,11 +217,34 @@ public class QuestionService : IQuestionService
         if (questionAnswer is null)
             throw new NotFoundException("Couldn't find any answer for given id");
 
-        if(!string.IsNullOrEmpty(questionAnswerForUpdateDto.Content))
+        if (!string.IsNullOrEmpty(questionAnswerForUpdateDto.Content))
             questionAnswer.Content = questionAnswerForUpdateDto.Content;
 
-        if(questionAnswerForUpdateDto.IsCorrect.HasValue)
+        if (questionAnswerForUpdateDto.IsCorrect.HasValue)
             questionAnswer.IsCorrect = questionAnswerForUpdateDto.IsCorrect.Value;
+
+        question.UpdatedAt = DateTime.UtcNow;
+
+        question = await this.questionRepository.UpdateQuestionAsync(question);
+
+        return this.mapper.Map<QuestionDto>(question);
+    }
+
+    public async ValueTask<QuestionDto> RemoveQuestionAnswerAsync(long questionId, long answerId)
+    {
+        var question = await this.questionRepository
+            .SelectQuestionByIdAsync(questionId, new[] { "Answers" });
+
+        if (question is null)
+            throw new NotFoundException("Couldn't find any question for given id");
+
+        var questionAnswer = question.Answers
+            .FirstOrDefault(answer => answer.Id == answerId);
+
+        if (questionAnswer is null)
+            throw new NotFoundException("Couldn't find any answer for given id");
+
+        question.Answers.Remove(questionAnswer);
 
         question.UpdatedAt = DateTime.UtcNow;
 

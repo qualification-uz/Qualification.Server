@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Qualification.Domain.Configurations;
+using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Question;
 using Qualification.Service.Interfaces;
 
@@ -23,8 +24,10 @@ namespace Qualification.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public IActionResult GetAllQuestions([FromQuery] PaginationParams @params) =>
-            Ok(this.questionService.RetrieveAllQuestions(@params));
+        public IActionResult GetAllQuestions(
+            [FromQuery(Name = "filter")] Filters filters,
+            [FromQuery] PaginationParams @params) =>
+            Ok(this.questionService.RetrieveAllQuestions(filters, @params));
 
         /// <summary>
         /// Id bo'yicha test olish
@@ -41,7 +44,7 @@ namespace Qualification.Api.Controllers
         /// <param name="questionForCreationDto"></param>
         /// <returns></returns>
         [HttpPost]
-        public async ValueTask<IActionResult> PostQuestionAsync([FromBody]QuestionForCreationDto questionForCreationDto) =>
+        public async ValueTask<IActionResult> PostQuestionAsync([FromBody] QuestionForCreationDto questionForCreationDto) =>
             Ok(await this.questionService.AddQuestionAsync(questionForCreationDto));
 
         /// <summary>
@@ -52,7 +55,7 @@ namespace Qualification.Api.Controllers
         /// <returns></returns>
         [HttpPatch("{id}")]
         public async ValueTask<IActionResult> PatchQuestionAsync(
-            long id, [FromBody]QuestionForUpdateDto questionForUpdateDto) =>
+            long id, [FromBody] QuestionForUpdateDto questionForUpdateDto) =>
             Ok(await this.questionService.ModifyQuestionAsync(id, questionForUpdateDto));
 
         /// <summary>

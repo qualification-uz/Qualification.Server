@@ -10,6 +10,11 @@ public static class CollectionExtensions
 {
     public static IEnumerable<T> ToPagedList<T>(this IEnumerable<T> source, PaginationParams @params)
     {
+        if (@params is null)
+        {
+            return source;
+        }
+
         var metaData = new PaginationMetaData(source.Count(), @params);
 
         var json = JsonConvert.SerializeObject(metaData);
@@ -48,25 +53,69 @@ public static class CollectionExtensions
 
         var parameter = Expression.Parameter(typeof(T), "x");
         var selector = Expression.PropertyOrField(parameter, filter?.OrderBy ?? "Id");
-        
+
         var method = string.Equals(filter?.OrderType ?? "asc", "desc", StringComparison.OrdinalIgnoreCase) ? "OrderByDescending" : "OrderBy";
-        
+
         expression = Expression.Call(typeof(Queryable), method,
             new Type[] { source.ElementType, selector.Type },
             expression, Expression.Quote(Expression.Lambda(selector, parameter)));
 
         return source.Provider.CreateQuery<T>(expression);
     }
-    
-    public static void Shuffle<T> (this Random rng, T[] array)
+
+    public static void Shuffle<T>(this Random random, T[] array)
     {
-        int n = array.Length;
-        while (n > 1) 
+        int length = array.Length;
+        while (length > 1)
         {
-            int k = rng.Next(n--);
-            T temp = array[n];
-            array[n] = array[k];
+            int k = random.Next(length--);
+            T temp = array[length];
+            array[length] = array[k];
             array[k] = temp;
         }
+    }
+
+    public static IQueryable<T> Filter<T>(this IQueryable<T> source, Filter filter)
+    {
+        if (filter is null ||
+            filter.Property is null ||
+            filter.Value is null)
+        {
+            return source;
+        }
+
+        return source
+            .Where(BuildPredicate<T>(filter.Property, filter.Value));
+    }
+
+    private static Expression<Func<T, bool>> BuildPredicate<T>(string propertyName, string value)
+    {
+        var parameter = Expression.Parameter(typeof(T), "x");
+        var left = propertyName.Split('.').Aggregate((Expression)parameter, Expression.Property);
+        var body = MakeBinary(ExpressionType.Equal, left, value);
+        return Expression.Lambda<Func<T, bool>>(body, parameter);
+    }
+
+    private static Expression MakeBinary(ExpressionType type, Expression left, string value)
+    {
+        object typedValue = value.ToString();
+        if (left.Type != typeof(string))
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                typedValue = null;
+                if (Nullable.GetUnderlyingType(left.Type) == null)
+                    left = Expression.Convert(left, typeof(Nullable<>).MakeGenericType(left.Type));
+            }
+            else
+            {
+                var valueType = Nullable.GetUnderlyingType(left.Type) ?? left.Type;
+                typedValue = valueType.IsEnum ? Enum.Parse(valueType, value) :
+                    valueType == typeof(Guid) ? Guid.Parse(value) :
+                    Convert.ChangeType(value, valueType);
+            }
+        }
+        var right = Expression.Constant(typedValue, left.Type);
+        return Expression.MakeBinary(type, left, right);
     }
 }

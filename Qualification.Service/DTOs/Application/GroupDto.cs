@@ -3,7 +3,7 @@
 public class GroupDto
 {
     public long Id { get; set; }
-    
+
     public string Grade { get; set; }
     public int GradeId { get; set; }
 

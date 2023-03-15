@@ -6,6 +6,7 @@ using Qualification.Domain.Entities.Payments;
 using Qualification.Domain.Entities.Questions;
 using Qualification.Domain.Entities.Quizes;
 using Qualification.Domain.Entities.Users;
+using System.Diagnostics.Metrics;
 
 namespace Qualification.Data.Contexts;
 
@@ -20,6 +21,45 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        #region Seed data
+
+        // Seed data for IdentityRole
+        modelBuilder.Entity<IdentityRole>().HasData(new List<IdentityRole>
+        {
+            new IdentityRole
+            {
+                Name = "Student",
+                NormalizedName = "STUDENT"
+            },
+            new IdentityRole
+            {
+                Name = "Teacher",
+                NormalizedName = "TEACHER"
+            },
+            new IdentityRole
+            {
+                Name = "School",
+                NormalizedName = "SCHOOL"
+            },
+            new IdentityRole
+            {
+                Name = "Tester",
+                NormalizedName = "TESTER"
+            },
+            new IdentityRole
+            {
+                Name = "Admin",
+                NormalizedName = "ADMIN"
+            },
+            new IdentityRole
+            {
+                Name = "SuperAdmin",
+                NormalizedName = "SUPERADMIN"
+            }
+        });
+
+        #endregion
+
         #region Application request
 
         modelBuilder.Entity<Application>()
@@ -74,6 +114,35 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
 
         #endregion
 
+        modelBuilder.Entity<User>()
+            .HasMany(teacher => teacher.PaymentRequests)
+            .WithOne(paymentRequest => paymentRequest.User)
+            .HasForeignKey(paymentRequest => paymentRequest.UserId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<PaymentRequest>()
+            .HasMany(paymentRequest => paymentRequest.Assets)
+            .WithOne(asset => asset.PaymentRequest)
+            .HasForeignKey(asset => asset.PaymentRequestId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Application>()
+            .HasMany(application => application.PaymentRequests)
+            .WithOne(paymentRequest => paymentRequest.Application)
+            .HasForeignKey(paymentRequest => paymentRequest.ApplicationId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Submission>()
+            .HasOne(submission => submission.Option)
+            .WithOne(option => option.Submission)
+            .HasForeignKey<Submission>(submission => submission.QuestionOptionId);
+
+        modelBuilder.Entity<Application>()
+            .HasMany(application => application.Students)
+            .WithOne(student => student.Application)
+            .HasForeignKey(student => student.ApplicationId)
+            .OnDelete(DeleteBehavior.Cascade);
+
         base.OnModelCreating(modelBuilder);
     }
 
@@ -85,8 +154,12 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
     public DbSet<QuestionAnswer> QuestionAnswers { get; set; }
     public DbSet<QuestionAnswerAsset> QuestionAnswerAssets { get; set; }
     public DbSet<Asset> Assets { get; set; }
-
+    public DbSet<Student> Student { get; set; }
+    public DbSet<PaymentRequest> PaymentRequests { get; set; }
+    public DbSet<PaymentAsset> PaymentAssets { get; set; }
     public DbSet<Quiz> Quizes { get; set; }
     public DbSet<Submission> Submissions { get; set; }
+    public DbSet<QuizQuestion> QuizQuestions { get; set; }
+    public DbSet<QuestionOption> QuizQuestionOptions { get; set; }
+    public DbSet<QuizResult> Results { get; set; }
 }
-

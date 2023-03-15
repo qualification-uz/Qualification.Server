@@ -1,18 +1,15 @@
-using System.Net.Http.Headers;
-using System.Reflection;
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Qualification.Data.IRepositories;
 using Qualification.Data.Repositories;
-using Qualification.Domain.Entities.Questions;
-using Qualification.Domain.Entities.Users;
 using Qualification.Service.AvloniyClient;
 using Qualification.Service.Interfaces;
 using Qualification.Service.Mappers;
 using Qualification.Service.Services;
+using System.Net.Http.Headers;
+using System.Reflection;
+using System.Text;
 
 namespace Qualification.Api.Extensions;
 
@@ -20,22 +17,40 @@ public static class ServiceExtensions
 {
     public static void AddCustomServices(this IServiceCollection services)
     {
-        services.AddTransient<IApplicationRepository, ApplicationRepository>();
-        services.AddTransient<IApplicationRepository, ApplicationRepository>();
-        services.AddTransient<IFileUploadRepository, FileUploadRepository>();
-        services.AddTransient<IQuestionRepository, QuestionRepository>();
+        services.AddScoped<IPaymentRequestRepository, PaymentRequestRepository>();
+        services.AddScoped<IApplicationRepository, ApplicationRepository>();
+        services.AddScoped<IApplicationRepository, ApplicationRepository>();
+        services.AddScoped<IFileUploadRepository, FileUploadRepository>();
+        services.AddScoped<IQuestionRepository, QuestionRepository>();
         services.AddScoped<IQuestionAnswerRepository, QuestionAnswerRepository>();
+        services.AddScoped<IQuizRepository, QuizRepository>();
+        services.AddScoped<IQuizQuestionRepository, QuizQuestionRepository>();
+        services.AddScoped<ISubmissionRepository, SubmissionRepository>();
+        services.AddScoped<IQuizResultRepository, QuizResultRepository>();
+        services.AddScoped<ISchoolRepository, SchoolRepository>();
+        services.AddScoped<IStudentRepository, StudentRepository>();
+        services.AddScoped<IQuizQuestionOptionRepository, QuizQuestionOptionRepository>();
 
-        services.AddTransient<IAvloniyClientService, AvloniyClientService>();
-        services.AddTransient<IAuthService, AuthService>();
-        services.AddTransient<IUserService, UserService>();
-        services.AddTransient<IApplicationService, ApplicationService>();
-        services.AddTransient<IAssetService, AssetService>();
-        services.AddTransient<ISchoolService, SchoolService>();
-        services.AddTransient<IQuestionService, QuestionService>();
-        services.AddTransient<IFileUploadService, FileUploadService>();
+        services.AddScoped<IAvloniyClientService, AvloniyClientService>();
+        services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IApplicationService, ApplicationService>();
+        services.AddScoped<IAssetService, AssetService>();
+        services.AddScoped<ISchoolService, SchoolService>();
+        services.AddScoped<IQuestionService, QuestionService>();
+        services.AddScoped<IFileUploadService, FileUploadService>();
         services.AddScoped<IQuizService, QuizService>();
-        
+        services.AddScoped<IPaymentRequestService, PaymentRequestService>();
+        services.AddScoped<IQuizResultService, QuizResultService>();
+        services.AddScoped<ISubmissionService, SubmissionService>();
+        services.AddScoped<ISertificateService, SertificateService>();
+        services.AddScoped<IInsightService, InsightService>();
+        services.AddScoped<IExcelService, ExcelService>();
+        services.AddScoped<IStudentService, StudentService>();
+
+
+        services.AddScoped<IReportService, ReportService>();
+
         services.AddAutoMapper(typeof(MapperProfile));
     }
 
@@ -51,7 +66,7 @@ public static class ServiceExtensions
             config.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", svcCredentials);
         });
     }
-    
+
     public static void AddJwtService(this IServiceCollection services, IConfiguration config)
     {
         services.AddAuthentication();
@@ -77,7 +92,7 @@ public static class ServiceExtensions
         services.AddMvc().AddNewtonsoftJson(options =>
             options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
     }
-    
+
     public static void AddCorsService(this IServiceCollection services)
     {
         services.AddCors(options =>
@@ -88,7 +103,7 @@ public static class ServiceExtensions
             });
         });
     }
-    
+
     public static void AddSwaggerService(this IServiceCollection services)
     {
         services.AddSwaggerGen(c =>

@@ -40,7 +40,7 @@ public class FileUploadService : IFileUploadService
     {
         var assets = new List<Asset>();
 
-        foreach(var file in formFiles)
+        foreach (var file in formFiles)
         {
             (var fileName, var filePath) = await this.assetService
                 .SaveFileAsync(file);

@@ -1,6 +1,6 @@
-﻿using Qualification.Service.Interfaces;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Qualification.Service.Interfaces;
 
 namespace Qualification.Service.Services;
 

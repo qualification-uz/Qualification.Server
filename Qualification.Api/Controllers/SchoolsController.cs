@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Qualification.Service.AvloniyClient;
+using Qualification.Domain.Configurations;
+using Qualification.Service.DTOs;
 using Qualification.Service.DTOs.Users;
 using Qualification.Service.Interfaces;
 
@@ -32,7 +32,7 @@ namespace Qualification.Api.Controllers
         /// Sinflar raqamlari ro'yxatini olish
         /// </summary>
         /// <returns></returns>
-        [HttpGet("grades")]
+        [HttpGet("grades"), AllowAnonymous]
         public async ValueTask<IActionResult> GetAllGradesAsync() =>
             Ok(await this.schoolService.RetrieveAllGradesAsync());
 
@@ -57,15 +57,33 @@ namespace Qualification.Api.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("{id}/teachers")]
-        public IActionResult GetAllTeachersAsync(int id) =>
-            Ok(this.schoolService.RetrieveAllTeachers(id));
+        public IActionResult GetAllTeachersAsync(
+            int id,
+            [FromQuery] PaginationParams paginationParams,
+            [FromQuery] Filters filter) =>
+            Ok(this.schoolService.RetrieveAllTeachers(id, paginationParams, filter));
 
         /// <summary>
-        /// Yangi o'qituvchini ro'yxatga olish
+        /// Maktab o'qituvchisini o'chirish
         /// </summary>
+        /// <param name="id"></param>
+        /// <param name="teacherId"></param>
         /// <returns></returns>
-        [HttpPost("{id}/teachers")]
-        public async ValueTask<IActionResult> PostTeacherAsync(int id, [FromBody] TeacherForCreationDto teacherDto) =>
-            Ok(await this.schoolService.AddTeacherAsync(id, teacherDto));
+        [HttpDelete("{id}/teachers/{teacherId}")]
+        public async ValueTask<IActionResult> DeleteTeacherAsync(
+            int id,
+            int teacherId) =>
+            Ok(await this.schoolService.RemoveTeacherAsync(id, teacherId));
+
+        /// <summary>
+        /// O'qituvchini PINFL orqali ro'yxatga olish 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="teacherPinflDto"></param>
+        /// <returns></returns>
+        [HttpPost("{id}/teachers/pinfl")]
+        public async ValueTask<IActionResult> PostTeacherByPinflAsync(
+            int id, [FromQuery] TeacherPinflDto teacherPinflDto) =>
+                Ok(await this.schoolService.RetrieveTeacherByPinflAsync(id, teacherPinflDto));
     }
 }

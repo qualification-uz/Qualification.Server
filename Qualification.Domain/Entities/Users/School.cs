@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-namespace Qualification.Domain.Entities.Users;
+﻿namespace Qualification.Domain.Entities.Users;
 
 public class School : User
 {

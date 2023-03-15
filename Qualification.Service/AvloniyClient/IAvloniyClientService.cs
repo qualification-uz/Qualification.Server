@@ -11,4 +11,6 @@ public interface IAvloniyClientService
     ValueTask<ERPResponse<IEnumerable<GradeDto>>> SelectAllGradesAsync();
     ValueTask<ERPResponse<IEnumerable<GradeLetterDto>>> SelectAllGradeLettersAsync();
     ValueTask<ERPResponse<IEnumerable<SchoolYearDto>>> SelectAllSchoolYearsAsync();
+    ValueTask<ERPResponse<TeacherFromErpDto>> SelectTeacherByPinflAsync(string pinfl);
+    ValueTask<List<StudentDto>> SelectStudentsAsync(long schoolId, List<GroupForCreationDto> groups);
 }

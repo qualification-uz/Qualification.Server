@@ -1,5 +1,3 @@
-using System.Net.Http.Headers;
-using System.Text;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Qualification.Service.DTOs;
@@ -12,7 +10,7 @@ public class AvloniyClientService : IAvloniyClientService
 {
     private readonly IConfiguration configuration;
     private readonly IHttpClientFactory httpClientFactory;
-    
+
     public AvloniyClientService(
         IConfiguration configuration,
         IHttpClientFactory httpClientFactory)
@@ -90,12 +88,63 @@ public class AvloniyClientService : IAvloniyClientService
             return eRPResponse;
         }
     }
-    
+
+    public async ValueTask<ERPResponse<TeacherFromErpDto>> SelectTeacherByPinflAsync(string pinfl)
+    {
+        using (var httpClient = this.httpClientFactory.CreateClient("avloniy"))
+        {
+            var content = await httpClient.
+                GetStringAsync(GetUserInfoWithPinfl(pinfl));
+
+            var eRPResponse = JsonConvert
+                .DeserializeObject<ERPResponse<TeacherFromErpDto>>(content);
+
+            return eRPResponse;
+        }
+    }
+
+    public async ValueTask<List<StudentDto>> SelectStudentsAsync(
+        long schoolId,
+        List<GroupForCreationDto> groups)
+    {
+        using (var httpClient = this.httpClientFactory.CreateClient("avloniy"))
+        {
+            var tasks = new Task<ERPResponse<IEnumerable<StudentDto>>>[groups.Count];
+
+            for (int i = 0; i < groups.Count; i++)
+            {
+                string url = string.Format(
+                    GetStudentsUrl(),
+                    schoolId,
+                    groups[i].GradeId,
+                    groups[i].GradeLetterId,
+                    groups[i].SchoolYearId);
+
+                tasks[i] = httpClient
+                    .GetStringAsync(url)
+                    .ContinueWith(response => JsonConvert
+                        .DeserializeObject<ERPResponse<IEnumerable<StudentDto>>>(response.Result));
+            }
+
+            var responses = await Task.WhenAll(tasks);
+
+            return responses
+                .Where(r => r.ResultCount > 0)
+                .SelectMany(r => r.Result)
+                .ToList();
+        }
+    }
+
     private string GetSchoolSubjectUrl() => $"GetSchoolSubject";
     private string GetSchoolGradeUrl() => $"GetAllschoolgrade";
     private string GetSchoolGradeLetterUrl() => $"GetAllSchoolgradeletter";
     private string GetSchoolYeaUrl() => $"GetAllSchoolyear";
+    private string GetUserInfoWithPinfl(string pinfl) =>
+        $"GetPersonInfoWithPINFL?pinfl={pinfl}";
 
     private string GetUserRegistrationUrl(string username, string password) =>
         $"IsUserRegistered?username={username}&password={password}";
+
+    private string GetStudentsUrl() =>
+        "GetOrgChildren?schoolid={0}&schoolgradeid={1}&schoolgradeletterid={2}&schoolyearid={3}";
 }

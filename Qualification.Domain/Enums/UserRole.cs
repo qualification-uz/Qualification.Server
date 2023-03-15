@@ -2,7 +2,7 @@ namespace Qualification.Domain.Enums;
 
 public enum UserRole
 {
-    Student, 
+    Student,
     Teacher,
     School,
     Tester,
