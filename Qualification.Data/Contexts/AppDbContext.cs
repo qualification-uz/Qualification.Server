@@ -103,6 +103,12 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
         #region Quiz
 
         modelBuilder.Entity<Quiz>()
+            .HasOne(quiz => quiz.User)
+            .WithMany()
+            .HasForeignKey(quiz => quiz.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Quiz>()
             .HasMany(quiz => quiz.Submissions)
             .WithOne(submission => submission.Quiz)
             .HasForeignKey(submission => submission.QuizId)
@@ -121,6 +127,7 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
             .WithOne(paymentRequest => paymentRequest.User)
             .HasForeignKey(paymentRequest => paymentRequest.UserId)
             .OnDelete(DeleteBehavior.SetNull);
+
 
         modelBuilder.Entity<PaymentRequest>()
             .HasMany(paymentRequest => paymentRequest.Assets)
