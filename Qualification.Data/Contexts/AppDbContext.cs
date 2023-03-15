@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Qualification.Domain.Entities;
 using Qualification.Domain.Entities.Assets;
+using Qualification.Domain.Entities.Payment;
 using Qualification.Domain.Entities.Payments;
 using Qualification.Domain.Entities.Questions;
 using Qualification.Domain.Entities.Quizes;

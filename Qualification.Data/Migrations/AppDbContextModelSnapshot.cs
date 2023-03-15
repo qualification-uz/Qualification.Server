@@ -43,43 +43,43 @@ namespace Qualification.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "89e1d34f-3dd4-4fa2-b33b-f01d8a416431",
-                            ConcurrencyStamp = "f92d2ad5-205b-4f80-94c5-f7cc3564b6c7",
+                            Id = "48cea509-69f4-4ffd-a6eb-004aaabe9c3f",
+                            ConcurrencyStamp = "fd0fd71d-322f-4804-9ace-5ac40b2e7e5b",
                             Name = "Student",
                             NormalizedName = "STUDENT"
                         },
                         new
                         {
-                            Id = "693f67e2-6f85-4202-b33e-232ed011d33f",
-                            ConcurrencyStamp = "b91f7ee1-2f0c-4147-90da-9c41f9f54788",
+                            Id = "c4ed67cc-e86d-47d5-8dea-4730a1182d32",
+                            ConcurrencyStamp = "dd7c5d81-2a72-491f-afc5-f233de5d4ddb",
                             Name = "Teacher",
                             NormalizedName = "TEACHER"
                         },
                         new
                         {
-                            Id = "a5d1466c-a5ac-49fd-8776-a9d175c9c3f3",
-                            ConcurrencyStamp = "7e99a012-3019-4692-8a70-273bfd965934",
+                            Id = "0113e77c-0055-4ff8-8f3a-6107f145a720",
+                            ConcurrencyStamp = "5761f488-c0e6-4c41-8291-8664c4b2009d",
                             Name = "School",
                             NormalizedName = "SCHOOL"
                         },
                         new
                         {
-                            Id = "a75dbfb9-ba0c-4647-8db7-4cb2a2e440ac",
-                            ConcurrencyStamp = "89af5d58-5714-4c4d-9345-fc3a958c2f4f",
+                            Id = "44d4c4bb-b070-45fc-aa80-ae4da3457376",
+                            ConcurrencyStamp = "5de96a1c-781d-4417-bf31-c5227a9d8f8f",
                             Name = "Tester",
                             NormalizedName = "TESTER"
                         },
                         new
                         {
-                            Id = "d68d6c12-47ef-4f18-acbb-1dd04b82c01b",
-                            ConcurrencyStamp = "b4b801d4-1362-4e3f-9746-4d1f82d148bd",
+                            Id = "381a168f-1e33-486a-bfa9-44e6dbf10f20",
+                            ConcurrencyStamp = "212ce08a-2e6b-4a22-88d3-d88821d5ef01",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "ecbb4068-5719-444a-92fc-a6fb0cab3e71",
-                            ConcurrencyStamp = "e158efe7-97df-4118-aa83-1321245217f9",
+                            Id = "a6326edd-3898-4466-8cc2-a4500e1c66c7",
+                            ConcurrencyStamp = "0a4bb00f-5543-4929-ab3a-a0969873a864",
                             Name = "SuperAdmin",
                             NormalizedName = "SUPERADMIN"
                         });
@@ -354,6 +354,36 @@ namespace Qualification.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("PaymentRequests");
+                });
+
+            modelBuilder.Entity("Qualification.Domain.Entities.Payments.Payment", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("ApplicationId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("AssetId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Questions.Question", b =>
@@ -941,6 +971,17 @@ namespace Qualification.Data.Migrations
                     b.Navigation("Application");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Qualification.Domain.Entities.Payments.Payment", b =>
+                {
+                    b.HasOne("Qualification.Domain.Entities.Application", "Application")
+                        .WithMany()
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Application");
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Questions.QuestionAnswer", b =>

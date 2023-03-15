@@ -21,7 +21,6 @@ namespace Qualification.Api.Controllers
         /// Get certificate by quizId
         /// </summary>
         /// <param name="sertDto"></param>
-        /// <param name="quizId"></param>
         /// <returns></returns>
         [HttpPost]
         public async ValueTask<IActionResult> PostCertificateAsync(SertificateForCreationDto sertDto) =>
