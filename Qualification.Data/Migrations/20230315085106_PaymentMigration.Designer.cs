@@ -12,7 +12,7 @@ using Qualification.Data.Contexts;
 namespace Qualification.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20220926105644_PaymentMigration")]
+    [Migration("20230315085106_PaymentMigration")]
     partial class PaymentMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,69 @@ namespace Qualification.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<string>("NormalizedName")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("IdentityRole");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "48cea509-69f4-4ffd-a6eb-004aaabe9c3f",
+                            ConcurrencyStamp = "fd0fd71d-322f-4804-9ace-5ac40b2e7e5b",
+                            Name = "Student",
+                            NormalizedName = "STUDENT"
+                        },
+                        new
+                        {
+                            Id = "c4ed67cc-e86d-47d5-8dea-4730a1182d32",
+                            ConcurrencyStamp = "dd7c5d81-2a72-491f-afc5-f233de5d4ddb",
+                            Name = "Teacher",
+                            NormalizedName = "TEACHER"
+                        },
+                        new
+                        {
+                            Id = "0113e77c-0055-4ff8-8f3a-6107f145a720",
+                            ConcurrencyStamp = "5761f488-c0e6-4c41-8291-8664c4b2009d",
+                            Name = "School",
+                            NormalizedName = "SCHOOL"
+                        },
+                        new
+                        {
+                            Id = "44d4c4bb-b070-45fc-aa80-ae4da3457376",
+                            ConcurrencyStamp = "5de96a1c-781d-4417-bf31-c5227a9d8f8f",
+                            Name = "Tester",
+                            NormalizedName = "TESTER"
+                        },
+                        new
+                        {
+                            Id = "381a168f-1e33-486a-bfa9-44e6dbf10f20",
+                            ConcurrencyStamp = "212ce08a-2e6b-4a22-88d3-d88821d5ef01",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "a6326edd-3898-4466-8cc2-a4500e1c66c7",
+                            ConcurrencyStamp = "0a4bb00f-5543-4929-ab3a-a0969873a864",
+                            Name = "SuperAdmin",
+                            NormalizedName = "SUPERADMIN"
+                        });
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<long>", b =>
                 {
@@ -135,9 +198,6 @@ namespace Qualification.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<short>("AttandancePercent")
-                        .HasColumnType("smallint");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -230,6 +290,74 @@ namespace Qualification.Data.Migrations
                     b.ToTable("Groups");
                 });
 
+            modelBuilder.Entity("Qualification.Domain.Entities.Payment.PaymentAsset", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("AssetId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsFromAdmin")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("PaymentRequestId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PaymentRequestId");
+
+                    b.ToTable("PaymentAssets");
+                });
+
+            modelBuilder.Entity("Qualification.Domain.Entities.Payment.PaymentRequest", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<long>("ApplicationId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsPaid")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PaymentRequests");
+                });
+
             modelBuilder.Entity("Qualification.Domain.Entities.Payments.Payment", b =>
                 {
                     b.Property<long>("Id")
@@ -285,6 +413,9 @@ namespace Qualification.Data.Migrations
 
                     b.Property<short>("Level")
                         .HasColumnType("smallint");
+
+                    b.Property<long?>("StudentGradeId")
+                        .HasColumnType("bigint");
 
                     b.Property<int>("SubjectId")
                         .HasColumnType("integer");
@@ -384,6 +515,36 @@ namespace Qualification.Data.Migrations
                     b.ToTable("QuestionAssets");
                 });
 
+            modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuestionOption", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("QuizOptionId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("QuizQuestionId")
+                        .HasColumnType("bigint");
+
+                    b.Property<short>("ShufflePosition")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuizQuestionId");
+
+                    b.ToTable("QuizQuestionOptions");
+                });
+
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.Quiz", b =>
                 {
                     b.Property<long>("Id")
@@ -404,6 +565,9 @@ namespace Qualification.Data.Migrations
                     b.Property<DateTime>("EndsAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsForTeacher")
                         .HasColumnType("boolean");
 
@@ -422,11 +586,86 @@ namespace Qualification.Data.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ApplicationId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Quizes");
+                });
+
+            modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuizQuestion", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("QuestionId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("QuizId")
+                        .HasColumnType("bigint");
+
+                    b.Property<short>("ShufflePosition")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuizId");
+
+                    b.ToTable("QuizQuestions");
+                });
+
+            modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuizResult", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<short>("CorrectAnswers")
+                        .HasColumnType("smallint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("QuizId")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Score")
+                        .HasColumnType("integer");
+
+                    b.Property<long?>("StudentId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuizId");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Results");
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.Submission", b =>
@@ -440,15 +679,42 @@ namespace Qualification.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsForStudent")
+                        .HasColumnType("boolean");
+
+                    b.Property<long>("QuestionOptionId")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("QuizId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("QuizQuestionId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("StudentId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("QuestionOptionId")
+                        .IsUnique();
+
                     b.HasIndex("QuizId");
+
+                    b.HasIndex("QuizQuestionId");
+
+                    b.HasIndex("StudentId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Submissions");
                 });
@@ -480,6 +746,48 @@ namespace Qualification.Data.Migrations
                         .HasDatabaseName("RoleNameIndex");
 
                     b.ToTable("AspNetRoles", (string)null);
+                });
+
+            modelBuilder.Entity("Qualification.Domain.Entities.Users.Student", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<long?>("ApplicationId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("FirstName")
+                        .HasColumnType("text");
+
+                    b.Property<long?>("GradeId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("GradeLetter")
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("MiddleName")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.ToTable("Student");
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Users.User", b =>
@@ -637,6 +945,36 @@ namespace Qualification.Data.Migrations
                     b.Navigation("Application");
                 });
 
+            modelBuilder.Entity("Qualification.Domain.Entities.Payment.PaymentAsset", b =>
+                {
+                    b.HasOne("Qualification.Domain.Entities.Payment.PaymentRequest", "PaymentRequest")
+                        .WithMany("Assets")
+                        .HasForeignKey("PaymentRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PaymentRequest");
+                });
+
+            modelBuilder.Entity("Qualification.Domain.Entities.Payment.PaymentRequest", b =>
+                {
+                    b.HasOne("Qualification.Domain.Entities.Application", "Application")
+                        .WithMany("PaymentRequests")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Qualification.Domain.Entities.Users.User", "User")
+                        .WithMany("PaymentRequests")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
+
+                    b.Navigation("Application");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Qualification.Domain.Entities.Payments.Payment", b =>
                 {
                     b.HasOne("Qualification.Domain.Entities.Application", "Application")
@@ -681,6 +1019,15 @@ namespace Qualification.Data.Migrations
                     b.Navigation("Question");
                 });
 
+            modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuestionOption", b =>
+                {
+                    b.HasOne("Qualification.Domain.Entities.Quizes.QuizQuestion", null)
+                        .WithMany("Options")
+                        .HasForeignKey("QuizQuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.Quiz", b =>
                 {
                     b.HasOne("Qualification.Domain.Entities.Application", "Application")
@@ -689,25 +1036,118 @@ namespace Qualification.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Qualification.Domain.Entities.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Application");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuizQuestion", b =>
+                {
+                    b.HasOne("Qualification.Domain.Entities.Quizes.Quiz", null)
+                        .WithMany("Questions")
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuizResult", b =>
+                {
+                    b.HasOne("Qualification.Domain.Entities.Quizes.Quiz", "Quiz")
+                        .WithMany()
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Qualification.Domain.Entities.Users.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId");
+
+                    b.HasOne("Qualification.Domain.Entities.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Quiz");
+
+                    b.Navigation("Student");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.Submission", b =>
                 {
+                    b.HasOne("Qualification.Domain.Entities.Quizes.QuestionOption", "Option")
+                        .WithOne("Submission")
+                        .HasForeignKey("Qualification.Domain.Entities.Quizes.Submission", "QuestionOptionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Qualification.Domain.Entities.Quizes.Quiz", "Quiz")
                         .WithMany("Submissions")
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Qualification.Domain.Entities.Quizes.QuizQuestion", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuizQuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Qualification.Domain.Entities.Users.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Qualification.Domain.Entities.Users.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Option");
+
+                    b.Navigation("Question");
+
                     b.Navigation("Quiz");
+
+                    b.Navigation("Student");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Qualification.Domain.Entities.Users.Student", b =>
+                {
+                    b.HasOne("Qualification.Domain.Entities.Application", "Application")
+                        .WithMany("Students")
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Application");
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Application", b =>
                 {
                     b.Navigation("Groups");
 
+                    b.Navigation("PaymentRequests");
+
                     b.Navigation("Quizes");
+
+                    b.Navigation("Students");
+                });
+
+            modelBuilder.Entity("Qualification.Domain.Entities.Payment.PaymentRequest", b =>
+                {
+                    b.Navigation("Assets");
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Questions.Question", b =>
@@ -722,14 +1162,28 @@ namespace Qualification.Data.Migrations
                     b.Navigation("Assets");
                 });
 
+            modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuestionOption", b =>
+                {
+                    b.Navigation("Submission");
+                });
+
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.Quiz", b =>
                 {
+                    b.Navigation("Questions");
+
                     b.Navigation("Submissions");
+                });
+
+            modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuizQuestion", b =>
+                {
+                    b.Navigation("Options");
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Users.User", b =>
                 {
                     b.Navigation("Applications");
+
+                    b.Navigation("PaymentRequests");
                 });
 #pragma warning restore 612, 618
         }
