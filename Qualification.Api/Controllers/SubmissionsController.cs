@@ -15,7 +15,7 @@ namespace Qualification.Api.Controllers
             this.submissionService = submissionService;
         }
 
-        [HttpPost("teacher")]
+        [HttpPost]
         public async ValueTask<IActionResult> PostTeacherSubmissionAsync(
             SubmissionForCreationDto submissionForCreationDto) =>
             Ok(await this.submissionService.CreateSubmissionAsync(submissionForCreationDto));
