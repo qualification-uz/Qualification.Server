@@ -1,7 +1,7 @@
 using AutoMapper;
 using Qualification.Domain.Entities;
 using Qualification.Domain.Entities.Assets;
-using Qualification.Domain.Entities.Payment;
+using Qualification.Domain.Entities.Payments;
 using Qualification.Domain.Entities.Questions;
 using Qualification.Domain.Entities.Quizes;
 using Qualification.Domain.Entities.Users;
@@ -26,6 +26,10 @@ public class MapperProfile : Profile
         CreateMap<Application, ApplicationDto>().ReverseMap();
         CreateMap<Application, ApplicationForCreationDto>().ReverseMap();
         CreateMap<Application, ApplicationForUpdateDto>().ReverseMap();
+
+        CreateMap<Payment, PaymentDto>().ReverseMap();
+        CreateMap<Payment, PaymentForCreationDto>().ReverseMap();
+        CreateMap<Payment, PaymentDtoForTeacher>().ReverseMap();
 
         CreateMap<Group, GroupDto>().ReverseMap();
         CreateMap<Group, GroupForCreationDto>().ReverseMap();
