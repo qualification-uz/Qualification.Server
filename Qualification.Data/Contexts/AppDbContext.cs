@@ -102,12 +102,6 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
 
         #region Quiz
 
-        modelBuilder.Entity<Application>()
-            .HasOne(quiz => quiz.Teacher)
-            .WithMany()
-            .HasForeignKey(quiz => quiz.TeacherId)
-            .OnDelete(DeleteBehavior.Cascade);
-
         modelBuilder.Entity<Quiz>()
             .HasMany(quiz => quiz.Submissions)
             .WithOne(submission => submission.Quiz)

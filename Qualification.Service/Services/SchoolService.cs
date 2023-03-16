@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Qualification.Data.IRepositories;
+using Qualification.Data.Repositories;
 using Qualification.Domain.Configurations;
 using Qualification.Domain.Entities.Users;
 using Qualification.Domain.Enums;
@@ -17,16 +20,22 @@ public class SchoolService : ISchoolService
 {
     private readonly IAvloniyClientService avloniyClientService;
     private readonly UserManager<User> userManager;
+    private readonly IApplicationRepository applicationRepository;
+    private readonly IQuizRepository quizRepository;
     private readonly IMapper mapper;
 
     public SchoolService(
         IAvloniyClientService avloniyClientService,
         IMapper mapper,
-        UserManager<User> userManager)
+        UserManager<User> userManager,
+        IApplicationRepository applicationRepository,
+        IQuizRepository quizRepository)
     {
         this.avloniyClientService = avloniyClientService;
         this.mapper = mapper;
         this.userManager = userManager;
+        this.applicationRepository = applicationRepository;
+        this.quizRepository = quizRepository;
     }
 
     public IEnumerable<UserDto> RetrieveAllTeachers(
@@ -143,6 +152,19 @@ public class SchoolService : ISchoolService
     public async ValueTask<bool> RemoveTeacherAsync(int schoolId, long teacherId)
     {
         var user = await this.userManager.FindByIdAsync(teacherId.ToString());
+
+        // Deletes all Applications related to this teacher
+        var applications = applicationRepository.SelectAllApplications()
+            .Where(a => a.TeacherId == user.Id);
+
+        foreach(var application in applications)
+            await applicationRepository.DeleteApplicationAsync(application);
+        
+        // Deletes all quizes related to this teacher
+        var quizes = quizRepository.SelectAllQuizzes()
+            .Where(a => a.UserId == user.Id);
+        foreach(var quiz in quizes)
+            await quizRepository.DeleteQuizAsync(quiz);
 
         if (user is null)
             throw new NotFoundException("Coudn't find teacher with this ID");

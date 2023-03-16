@@ -56,6 +56,7 @@ public class SertificateService : ISertificateService
         string outputFilePath = Path.Combine(_env.WebRootPath, @$"Certificates\{outputFileName}");
 
         // generate QrCode
+        
         encoder.QRCodeScale = 9;
         var qrBitmap = encoder.Encode(Path.Combine($"qualification.visualstudio.uz/Certificates/{outputFileName}"));
         graphics.DrawImage(qrBitmap, bitmap.Width - 375, 75);
