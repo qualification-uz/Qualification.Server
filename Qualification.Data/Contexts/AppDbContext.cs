@@ -122,6 +122,7 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
             .HasForeignKey(paymentRequest => paymentRequest.UserId)
             .OnDelete(DeleteBehavior.SetNull);
 
+
         modelBuilder.Entity<PaymentRequest>()
             .HasMany(paymentRequest => paymentRequest.Assets)
             .WithOne(asset => asset.PaymentRequest)
