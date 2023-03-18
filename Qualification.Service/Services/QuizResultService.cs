@@ -132,8 +132,8 @@ public class QuizResultService : IQuizResultService
         quizResult = await this.quizResultRepository
             .UpdateQuizResultAsync(quizResult);
 
-        if(!studentQuiz.IsCompleted)
-            throw new NotFoundException("The quiz for student is not finished yet");
+        //if(!studentQuiz.IsCompleted)
+        //    throw new NotFoundException("The quiz for student is not finished yet");
 
         return this.mapper.Map<QuizResultDto>(quizResult);
     }

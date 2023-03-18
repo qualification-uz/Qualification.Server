@@ -11,7 +11,7 @@ public class Submission : Auditable
     public long QuizQuestionId { get; set; }
     public QuizQuestion Question { get; set; }
 
-    public long UserId { get; set; }
+    public long? UserId { get; set; }
     public User User { get; set; }
 
     public long QuestionOptionId { get; set; }
@@ -20,6 +20,6 @@ public class Submission : Auditable
     public bool IsCorrect { get; set; } 
     public bool IsForStudent { get; set; }
 
-    public long StudentId { get; set; }
+    public long? StudentId { get; set; }
     public Student Student { get; set; }
 }

@@ -51,7 +51,7 @@ public class SubmissionService : ISubmissionService
         var questionAnswers = await this.questionAnswerRepository.SelectAllQuestions().ToListAsync();
         var quizQuestionAnswer = questionAnswers.Find(t => t.Id == quizQuestionOption.QuizOptionId);
             
-        //submissionDto.QuestionOptionId = quizQuestionOption.Id;
+        submissionDto.QuestionOptionId = quizQuestionOption.Id;
         submissionDto.QuizQuestionId = quizQuestion.Id;
 
         var submission = this.mapper.Map<Submission>(submissionDto);
@@ -60,8 +60,16 @@ public class SubmissionService : ISubmissionService
             submission.IsCorrect = true;
 
         submission.IsForStudent = false;
-        submission = await this.submissionRepository
-            .InsertSubmissionAsync(submission);
+
+        // check for exist submission
+        var existSubmission = await submissionRepository
+            .SelectAllSubmissions()
+            .Where(s => s.QuestionOptionId == submissionDto.QuestionOptionId)
+            .FirstOrDefaultAsync();
+        if(existSubmission != null)
+            submission = await this.submissionRepository.UpdateSubmissionAsync(submission);
+        else 
+            submission = await this.submissionRepository.InsertSubmissionAsync(submission);
 
         return this.mapper.Map<SubmissionDto>(submission);
     }
@@ -88,7 +96,7 @@ public class SubmissionService : ISubmissionService
         var questionAnswers = await this.questionAnswerRepository.SelectAllQuestions().ToListAsync();
         var quizQuestionAnswer = questionAnswers.Find(t => t.Id == quizQuestionOption.QuizOptionId);
 
-        //submissionDto.QuestionOptionId = quizQuestionOption.Id;
+        submissionDto.QuestionOptionId = quizQuestionOption.Id;
         submissionDto.QuizQuestionId = quizQuestion.Id;
 
         var submission = this.mapper.Map<Submission>(submissionDto);
