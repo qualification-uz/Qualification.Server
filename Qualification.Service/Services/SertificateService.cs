@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
 using MessagingToolkit.QRCode.Codec;
+using Microsoft.AspNetCore.Http;
 
 namespace Qualification.Service.Services;
 
@@ -13,11 +14,12 @@ public class SertificateService : ISertificateService
 {
     private readonly IWebHostEnvironment _env;
     private readonly QRCodeEncoder encoder;
-
-    public SertificateService(IWebHostEnvironment env)
+    private readonly IHttpContextAccessor httpContextAccessor;
+    public SertificateService(IWebHostEnvironment env, IHttpContextAccessor httpContextAccessor)
     {
         _env = env;
         encoder = new QRCodeEncoder();
+        this.httpContextAccessor = httpContextAccessor;
     }
 
     public async ValueTask<byte[]> GenerateSertificateAsync(SertificateForCreationDto sertificateForCreationDto)
@@ -31,12 +33,13 @@ public class SertificateService : ISertificateService
         graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
         Brush brush = new SolidBrush(Color.FromKnownColor(KnownColor.Black));
 
+        var id = Guid.NewGuid().ToString("N");
         // Set text font
         Font defaultFont = new Font("Arial", 50, FontStyle.Regular);
         Font fullNameFont = new Font("Arial", 50, FontStyle.Bold);
 
         // Set text size
-        SizeF sizeOfCertNumber = graphics.MeasureString(sertificateForCreationDto.SertificateNumber, defaultFont);
+        SizeF sizeOfCertNumber = graphics.MeasureString(id, defaultFont);
         SizeF sizeOfFullName = graphics.MeasureString(sertificateForCreationDto.FullName, fullNameFont);
         SizeF sizeOfSubject = graphics.MeasureString(sertificateForCreationDto.Subject, defaultFont);
         SizeF sizeOfSubjectScore = graphics.MeasureString(sertificateForCreationDto.SubjectScore.ToString(), defaultFont);
@@ -52,19 +55,27 @@ public class SertificateService : ISertificateService
         graphics.DrawString(sertificateForCreationDto.TotalScore.ToString(), defaultFont, brush, new PointF((bitmap.Width - sizeOfTotalScore.Width) / 4.2f, 2570));
         
         // Save output image
-        string outputFileName = Guid.NewGuid().ToString("N") + ".png";
+        string outputFileName = id + ".png";
         string outputFilePath = Path.Combine(_env.WebRootPath, @$"Certificates\{outputFileName}");
 
         // generate QrCode
         
         encoder.QRCodeScale = 9;
-        var qrBitmap = encoder.Encode(Path.Combine($"qualification.visualstudio.uz/Certificates/{outputFileName}"));
-        graphics.DrawImage(qrBitmap, bitmap.Width - 375, 75);
+        var qrBitmap = encoder.Encode($"https://{httpContextAccessor.HttpContext.Request.Host.Value}/api/certificate/{id}");
+        graphics.DrawImage(qrBitmap, bitmap.Width - 370, 75);
         
         bitmap.Save(outputFilePath, ImageFormat.Png);
 
         if (File.Exists(outputFilePath))
             return await File.ReadAllBytesAsync(outputFilePath);
+
+        return null;
+    }
+
+    public async ValueTask<FileStream> GetSertificateAsync(string id)
+    {
+        if (File.Exists(Path.Combine(_env.WebRootPath, @$"Certificates\{id}.png")))
+            return new FileStream(Path.Combine(Path.Combine(_env.WebRootPath, @$"Certificates\{id}.png")), FileMode.Open, FileAccess.Read);
 
         return null;
     }
