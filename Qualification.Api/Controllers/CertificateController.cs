@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Qualification.Service.DTOs.Sertificate;
 using Qualification.Service.Interfaces;
+using System.IO;
 
 namespace Qualification.Api.Controllers
 {
@@ -25,5 +26,18 @@ namespace Qualification.Api.Controllers
         [HttpPost]
         public async ValueTask<IActionResult> PostCertificateAsync(SertificateForCreationDto sertDto) =>
             File(await this.sertificateService.GenerateSertificateAsync(sertDto), "application/octet-stream", "sertificate.png");
+
+        /// <summary>
+        /// Gets certificate by id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [HttpGet("{id}")]
+        public async ValueTask<IActionResult> GetCertificateAsync([FromRoute] string id)
+        {
+            var result = new FileStreamResult(await sertificateService.GetSertificateAsync(id), "image/png");   
+
+            return result;
+        }
     }
 }
