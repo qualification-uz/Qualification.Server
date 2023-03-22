@@ -67,7 +67,7 @@ public class SubmissionService : ISubmissionService
             .Where(s => s.QuestionOptionId == submissionDto.QuestionOptionId)
             .FirstOrDefaultAsync();
         if(existSubmission != null)
-            submission = await this.submissionRepository.UpdateSubmissionAsync(submission);
+            submission = await this.submissionRepository.DeleteSubmissionAsync(submission);
         else 
             submission = await this.submissionRepository.InsertSubmissionAsync(submission);
 
@@ -105,8 +105,16 @@ public class SubmissionService : ISubmissionService
             submission.IsCorrect = true;
 
         submission.IsForStudent = true;
-        submission = await this.submissionRepository
-            .InsertSubmissionAsync(submission);
+
+        // check for exist submission
+        var existSubmission = await submissionRepository
+            .SelectAllSubmissions()
+            .Where(s => s.QuestionOptionId == submissionDto.QuestionOptionId)
+            .FirstOrDefaultAsync();
+        if (existSubmission != null)
+            submission = await this.submissionRepository.DeleteSubmissionAsync(submission);
+        else
+            submission = await this.submissionRepository.InsertSubmissionAsync(submission);
 
         return this.mapper.Map<SubmissionForStudentDto>(submission);
     }

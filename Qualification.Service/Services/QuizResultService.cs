@@ -63,12 +63,16 @@ public class QuizResultService : IQuizResultService
         if (quiz is null)
             throw new NotFoundException("Couldn't find quiz for given id");
 
-        var correctAnswers = await this.submissionRepository.SelectAllSubmissions()
-            .Where(t => t.IsForStudent)
-            .Where(t => t.IsCorrect).ToListAsync();
 
-        quizResult.CorrectAnswers = (short)correctAnswers.Count;
-        quizResult.Score = correctAnswers.Count * 100 / quiz.Questions.Count;
+        var correctSubmissions = this.submissionRepository
+            .SelectAllSubmissions()
+            .Where(t => t.QuizId == quizId)
+            .Where(t => t.IsCorrect).ToList();
+
+        var correctAnswers = correctSubmissions.DistinctBy(t => t.QuizQuestionId).Count();
+
+        quizResult.CorrectAnswers = (short)correctAnswers;
+        quizResult.Score = correctAnswers * 100 / quiz.Questions.Count;
         quizResult.UserId = quiz.UserId;
         quizResult.QuizId = quiz.Id;
         quizResult.StudentId = studentId;
@@ -112,16 +116,23 @@ public class QuizResultService : IQuizResultService
             throw new NotFoundException("Couldn't find quiz for given id");
         }
 
-        var options = quiz.Submissions
-            .Select(submission =>
-                submission.Option.QuizOptionId)
-            .ToHashSet();
+        //var options = quiz.Submissions
+        //    .Select(submission =>
+        //        submission.Option.QuizOptionId)
+        //    .ToHashSet();
 
-        int correctAnswers = await this.questionAnswerRepository
-            .SelectAllQuestions()
-            .Where(answer => options.Any(id => id == answer.Id))
-            .Where(answer => answer.IsCorrect)
-            .CountAsync();
+        //int correctAnswers = await this.questionAnswerRepository
+        //    .SelectAllQuestions()
+        //    .Where(answer => options.Any(id => id == answer.Id))
+        //    .Where(answer => answer.IsCorrect)
+        //    .CountAsync();
+
+        var correctSubmissions = this.submissionRepository
+            .SelectAllSubmissions()
+            .Where(t => t.QuizId == quizId)
+            .Where(t => t.IsCorrect).ToList();
+
+        var correctAnswers = correctSubmissions.DistinctBy(t => t.QuizQuestionId).Count();
 
         quizResult.CorrectAnswers = (short)correctAnswers;
         quizResult.Score = correctAnswers * 100 / quiz.Questions.Count;
@@ -131,9 +142,6 @@ public class QuizResultService : IQuizResultService
 
         quizResult = await this.quizResultRepository
             .UpdateQuizResultAsync(quizResult);
-
-        //if(!studentQuiz.IsCompleted)
-        //    throw new NotFoundException("The quiz for student is not finished yet");
 
         return this.mapper.Map<QuizResultDto>(quizResult);
     }
