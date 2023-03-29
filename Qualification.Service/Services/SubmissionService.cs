@@ -13,6 +13,7 @@ public class SubmissionService : ISubmissionService
 {
     private readonly IMapper mapper;
     private readonly IStudentRepository studentRepository;
+    private readonly IQuestionRepository questionRepository;
     private readonly ISubmissionRepository submissionRepository;
     private readonly IQuizQuestionRepository quizQuestionRepository;
     private readonly IQuestionAnswerRepository questionAnswerRepository;
@@ -20,6 +21,7 @@ public class SubmissionService : ISubmissionService
     public SubmissionService(
         IMapper mapper,
         IStudentRepository studentRepository,
+        IQuestionRepository questionRepository,
         ISubmissionRepository submissionRepository,
         IQuizQuestionRepository quizQuestionRepository,
         IQuizQuestionOptionRepository questionOptionRepository,
@@ -27,6 +29,7 @@ public class SubmissionService : ISubmissionService
     {
         this.mapper = mapper;
         this.studentRepository = studentRepository;
+        this.questionRepository = questionRepository;
         this.submissionRepository = submissionRepository;
         this.quizQuestionRepository = quizQuestionRepository;
         this.questionOptionRepository = questionOptionRepository;
@@ -35,6 +38,9 @@ public class SubmissionService : ISubmissionService
 
     public async ValueTask<SubmissionDto> CreateSubmissionAsync(SubmissionForCreationDto submissionDto)
     {
+        var quizId = submissionDto.QuizId;
+        var questionId = submissionDto.QuizQuestionId;
+        var answerId = submissionDto.QuestionOptionId;
         var quizQuestion = await this.quizQuestionRepository
             .SelectAllQuizQuestions()
             .FirstOrDefaultAsync(qq => qq.QuestionId == submissionDto.QuizQuestionId);
@@ -67,11 +73,19 @@ public class SubmissionService : ISubmissionService
             .Where(s => s.QuestionOptionId == submissionDto.QuestionOptionId)
             .FirstOrDefaultAsync();
         if(existSubmission != null)
-            submission = await this.submissionRepository.DeleteSubmissionAsync(submission);
+            submission = await this.submissionRepository.UpdateSubmissionAsync(submission);
         else 
             submission = await this.submissionRepository.InsertSubmissionAsync(submission);
 
-        return this.mapper.Map<SubmissionDto>(submission);
+        var resultSubmission = new SubmissionDto
+        {
+            Id = submission.Id,
+            QuizId = quizId,
+            QuizQuestionId = questionId,
+            QuestionOptionId = answerId,
+            UserId = submissionDto.UserId,
+        };
+        return resultSubmission;
     }
 
     public async ValueTask<SubmissionForStudentDto> CreateSubmissionForStudentAsync(SubmissionForStudentForCreationDto submissionDto)
