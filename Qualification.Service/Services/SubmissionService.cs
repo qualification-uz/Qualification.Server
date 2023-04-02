@@ -17,6 +17,7 @@ public class SubmissionService : ISubmissionService
     private readonly ISubmissionRepository submissionRepository;
     private readonly IQuizQuestionRepository quizQuestionRepository;
     private readonly IQuestionAnswerRepository questionAnswerRepository;
+    private readonly ISubmissionResultRepository submissionResultRepository;
     private readonly IQuizQuestionOptionRepository questionOptionRepository;
     public SubmissionService(
         IMapper mapper,
@@ -24,6 +25,7 @@ public class SubmissionService : ISubmissionService
         IQuestionRepository questionRepository,
         ISubmissionRepository submissionRepository,
         IQuizQuestionRepository quizQuestionRepository,
+        ISubmissionResultRepository submissionResultRepository,
         IQuizQuestionOptionRepository questionOptionRepository,
         IQuestionAnswerRepository questionAnswerRepository)
     {
@@ -32,6 +34,7 @@ public class SubmissionService : ISubmissionService
         this.questionRepository = questionRepository;
         this.submissionRepository = submissionRepository;
         this.quizQuestionRepository = quizQuestionRepository;
+        this.submissionResultRepository = submissionResultRepository;
         this.questionOptionRepository = questionOptionRepository;
         this.questionAnswerRepository = questionAnswerRepository;
     }
@@ -41,94 +44,90 @@ public class SubmissionService : ISubmissionService
         var quizId = submissionDto.QuizId;
         var questionId = submissionDto.QuizQuestionId;
         var answerId = submissionDto.QuestionOptionId;
-        var quizQuestion = await this.quizQuestionRepository
-            .SelectAllQuizQuestions()
-            .FirstOrDefaultAsync(qq => qq.QuestionId == submissionDto.QuizQuestionId);
+
+        var quizQuestion = await this.questionRepository
+            .SelectAllQuestions()
+            .FirstOrDefaultAsync(qq => qq.Id == submissionDto.QuizQuestionId);
         if (quizQuestion is null)
             throw new NotFoundException("Couldn't find quiz question for given id");
 
-        var quizQuestionOption = await this.questionOptionRepository
-            .SelectAllQuizQuestions()
-            .OrderBy(p => p.Id)
-            .LastOrDefaultAsync(p => p.QuizOptionId == submissionDto.QuestionOptionId);
+        var quizQuestionOption = await this.questionAnswerRepository
+            .SelectAllQuestionAnswers().
+            Where(t => t.QuestionId == quizQuestion.Id).
+            FirstOrDefaultAsync(t => t.Id == submissionDto.QuestionOptionId);
         if (quizQuestionOption is null)
             throw new NotFoundException("Couldn't find quiz question option for given id");
-
-        var questionAnswers = await this.questionAnswerRepository.SelectAllQuestions().ToListAsync();
-        var quizQuestionAnswer = questionAnswers.Find(t => t.Id == quizQuestionOption.QuizOptionId);
             
         submissionDto.QuestionOptionId = quizQuestionOption.Id;
         submissionDto.QuizQuestionId = quizQuestion.Id;
 
-        var submission = this.mapper.Map<Submission>(submissionDto);
+        var submission = new SubmissionResult()
+        {
+            UserId = submissionDto.UserId,
+            QuestionOptionId = submissionDto.QuestionOptionId,
+            QuizQuestionId = submissionDto.QuizQuestionId,
+            QuizId = submissionDto.QuizId,
+            IsForStudent = false   
+        };
         
-        if(quizQuestionAnswer.IsCorrect)
+        if(quizQuestionOption.IsCorrect)
             submission.IsCorrect = true;
 
-        submission.IsForStudent = false;
-
         // check for exist submission
-        var existSubmission = await submissionRepository
-            .SelectAllSubmissions()
-            .Where(s => s.QuestionOptionId == submissionDto.QuestionOptionId)
-            .FirstOrDefaultAsync();
+        var existSubmission = await submissionResultRepository
+            .SelectAllSubmissionResults()
+            .FirstOrDefaultAsync(t => t.QuestionOptionId == submission.QuestionOptionId);
         if(existSubmission != null)
-            submission = await this.submissionRepository.UpdateSubmissionAsync(submission);
+            submission = await this.submissionResultRepository.UpdateSubmissionResultAsync(submission);
         else 
-            submission = await this.submissionRepository.InsertSubmissionAsync(submission);
+            submission = await this.submissionResultRepository.InsertSubmissionResultAsync(submission);
 
-        var resultSubmission = new SubmissionDto
-        {
-            Id = submission.Id,
-            QuizId = quizId,
-            QuizQuestionId = questionId,
-            QuestionOptionId = answerId,
-            UserId = submissionDto.UserId,
-        };
-        return resultSubmission;
+        return this.mapper.Map<SubmissionDto>(submission);
     }
 
     public async ValueTask<SubmissionForStudentDto> CreateSubmissionForStudentAsync(SubmissionForStudentForCreationDto submissionDto)
     {
-        var quizQuestion = await this.quizQuestionRepository
-            .SelectAllQuizQuestions()
-            .FirstOrDefaultAsync(qq => qq.QuestionId == submissionDto.QuizQuestionId);
+
+        var quizId = submissionDto.QuizId;
+        var questionId = submissionDto.QuizQuestionId;
+        var answerId = submissionDto.QuestionOptionId;
+
+        var quizQuestion = await this.questionRepository
+            .SelectAllQuestions()
+            .FirstOrDefaultAsync(qq => qq.Id == submissionDto.QuizQuestionId);
         if (quizQuestion is null)
             throw new NotFoundException("Couldn't find quiz question for given id");
 
-        var quizQuestionOption = await this.questionOptionRepository
-            .SelectAllQuizQuestions()
-            .OrderBy(p => p.Id)
-            .LastOrDefaultAsync(p => p.QuizOptionId == submissionDto.QuestionOptionId);
+        var quizQuestionOption = await this.questionAnswerRepository
+            .SelectAllQuestionAnswers().
+            Where(t => t.QuestionId == quizQuestion.Id).
+            FirstOrDefaultAsync(t => t.Id == submissionDto.QuestionOptionId);
         if (quizQuestionOption is null)
             throw new NotFoundException("Couldn't find quiz question option for given id");
-
-        var student = await this.studentRepository.SelectStudentByIdAsync(submissionDto.StudentId);
-        if (student is null)
-            throw new NotFoundException("Couldn't student for given id");
-
-        var questionAnswers = await this.questionAnswerRepository.SelectAllQuestions().ToListAsync();
-        var quizQuestionAnswer = questionAnswers.Find(t => t.Id == quizQuestionOption.QuizOptionId);
 
         submissionDto.QuestionOptionId = quizQuestionOption.Id;
         submissionDto.QuizQuestionId = quizQuestion.Id;
 
-        var submission = this.mapper.Map<Submission>(submissionDto);
+        var submission = new SubmissionResult()
+        {
+            StudentId = submissionDto.StudentId,
+            QuestionOptionId = submissionDto.QuestionOptionId,
+            QuizQuestionId = submissionDto.QuizQuestionId,
+            QuizId = submissionDto.QuizId,
+            IsForStudent = true
+        };
 
-        if (quizQuestionAnswer.IsCorrect)
+        if (quizQuestionOption.IsCorrect)
             submission.IsCorrect = true;
 
-        submission.IsForStudent = true;
-
         // check for exist submission
-        var existSubmission = await submissionRepository
-            .SelectAllSubmissions()
-            .Where(s => s.QuestionOptionId == submissionDto.QuestionOptionId)
-            .FirstOrDefaultAsync();
+        var existSubmission = await submissionResultRepository
+            .SelectAllSubmissionResults()
+            .FirstOrDefaultAsync(t => t.QuestionOptionId == submission.QuestionOptionId);
         if (existSubmission != null)
-            submission = await this.submissionRepository.DeleteSubmissionAsync(submission);
+            submission = await this.submissionResultRepository.UpdateSubmissionResultAsync(submission);
         else
-            submission = await this.submissionRepository.InsertSubmissionAsync(submission);
+            submission = await this.submissionResultRepository.InsertSubmissionResultAsync(submission);
 
         return this.mapper.Map<SubmissionForStudentDto>(submission);
     }

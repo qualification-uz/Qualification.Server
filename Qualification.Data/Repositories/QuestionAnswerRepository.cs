@@ -15,7 +15,7 @@ public class QuestionAnswerRepository : IQuestionAnswerRepository
         this.appDbContext = appDbContext;
     }
 
-    public IQueryable<QuestionAnswer> SelectAllQuestions() => this.appDbContext.QuestionAnswers;
+    public IQueryable<QuestionAnswer> SelectAllQuestionAnswers() => this.appDbContext.QuestionAnswers;
 
     public async ValueTask<QuestionAnswer> SelectQuestionByIdAsync(long questionAnswerId) =>
         await this.appDbContext.QuestionAnswers.FindAsync(questionAnswerId);

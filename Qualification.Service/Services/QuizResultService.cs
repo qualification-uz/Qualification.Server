@@ -14,7 +14,7 @@ public class QuizResultService : IQuizResultService
     private readonly IQuizRepository quizRepository;
     private readonly IStudentRepository studentRepository;
     private readonly IQuizResultRepository quizResultRepository;
-    private readonly ISubmissionRepository submissionRepository;
+    private readonly ISubmissionResultRepository submissionResultRepository;
     private readonly IQuestionAnswerRepository questionAnswerRepository;
 
     public QuizResultService(
@@ -22,14 +22,14 @@ public class QuizResultService : IQuizResultService
         IQuizRepository quizRepository,
         IStudentRepository studentRepository,
         IQuizResultRepository quizResultRepository,
-        ISubmissionRepository submissionRepository,
+        ISubmissionResultRepository submissionResultRepository,
         IQuestionAnswerRepository questionAnswerRepository)
     {
         this.mapper = mapper;
         this.quizRepository = quizRepository;
         this.studentRepository = studentRepository;
         this.quizResultRepository = quizResultRepository;
-        this.submissionRepository = submissionRepository;
+        this.submissionResultRepository = submissionResultRepository;
         this.questionAnswerRepository = questionAnswerRepository;
     }
 
@@ -64,8 +64,8 @@ public class QuizResultService : IQuizResultService
             throw new NotFoundException("Couldn't find quiz for given id");
 
 
-        var correctSubmissions = this.submissionRepository
-            .SelectAllSubmissions()
+        var correctSubmissions = this.submissionResultRepository
+            .SelectAllSubmissionResults()
             .Where(t => t.QuizId == quizId)
             .Where(t => t.IsCorrect).ToList();
 
@@ -127,8 +127,8 @@ public class QuizResultService : IQuizResultService
         //    .Where(answer => answer.IsCorrect)
         //    .CountAsync();
 
-        var correctSubmissions = this.submissionRepository
-            .SelectAllSubmissions()
+        var correctSubmissions = this.submissionResultRepository
+            .SelectAllSubmissionResults()
             .Where(t => t.QuizId == quizId)
             .Where(t => t.IsCorrect).ToList();
 

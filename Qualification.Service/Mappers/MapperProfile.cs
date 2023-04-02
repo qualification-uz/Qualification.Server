@@ -73,7 +73,11 @@ public class MapperProfile : Profile
 
         CreateMap<QuizResultDto, QuizResult>().ReverseMap();
         CreateMap<SubmissionDto, Submission>().ReverseMap();
+        CreateMap<SubmissionDto, SubmissionResult>().ReverseMap();
         CreateMap<SubmissionForStudentDto, Submission>().ReverseMap();
+        CreateMap<SubmissionForStudentDto, SubmissionResult>().ReverseMap();
         CreateMap<SubmissionForCreationDto, Submission>().ReverseMap();
+        CreateMap<SubmissionForStudentDto, SubmissionResult>().ReverseMap();
+        CreateMap<SubmissionForStudentForCreationDto, SubmissionResult>().ReverseMap();
     }
 }

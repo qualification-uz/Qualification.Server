@@ -4,7 +4,7 @@ namespace Qualification.Data.IRepositories;
 
 public interface IQuestionAnswerRepository
 {
-    IQueryable<QuestionAnswer> SelectAllQuestions();
+    IQueryable<QuestionAnswer> SelectAllQuestionAnswers();
     ValueTask<QuestionAnswer> SelectQuestionByIdAsync(long questionAnswerId);
 
     ValueTask<QuestionAnswer> SelectQuestionByIdAsync(
