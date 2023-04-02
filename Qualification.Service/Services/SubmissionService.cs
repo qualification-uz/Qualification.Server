@@ -12,6 +12,7 @@ namespace Qualification.Service.Services;
 public class SubmissionService : ISubmissionService
 {
     private readonly IMapper mapper;
+    private readonly AppDbContext appDbContext;
     private readonly IStudentRepository studentRepository;
     private readonly IQuestionRepository questionRepository;
     private readonly ISubmissionRepository submissionRepository;
@@ -21,6 +22,7 @@ public class SubmissionService : ISubmissionService
     private readonly IQuizQuestionOptionRepository questionOptionRepository;
     public SubmissionService(
         IMapper mapper,
+        AppDbContext appDbContext,
         IStudentRepository studentRepository,
         IQuestionRepository questionRepository,
         ISubmissionRepository submissionRepository,
@@ -30,6 +32,7 @@ public class SubmissionService : ISubmissionService
         IQuestionAnswerRepository questionAnswerRepository)
     {
         this.mapper = mapper;
+        this.appDbContext = appDbContext;
         this.studentRepository = studentRepository;
         this.questionRepository = questionRepository;
         this.submissionRepository = submissionRepository;
@@ -78,7 +81,7 @@ public class SubmissionService : ISubmissionService
             .SelectAllSubmissionResults()
             .FirstOrDefaultAsync(t => t.QuestionOptionId == submission.QuestionOptionId);
         if(existSubmission != null)
-            submission = await this.submissionResultRepository.UpdateSubmissionResultAsync(submission);
+            submission = await this.submissionResultRepository.DeleteSubmissionResultAsync(existSubmission);
         else 
             submission = await this.submissionResultRepository.InsertSubmissionResultAsync(submission);
 
@@ -125,7 +128,7 @@ public class SubmissionService : ISubmissionService
             .SelectAllSubmissionResults()
             .FirstOrDefaultAsync(t => t.QuestionOptionId == submission.QuestionOptionId);
         if (existSubmission != null)
-            submission = await this.submissionResultRepository.UpdateSubmissionResultAsync(submission);
+            submission = await this.submissionResultRepository.DeleteSubmissionResultAsync(existSubmission);
         else
             submission = await this.submissionResultRepository.InsertSubmissionResultAsync(submission);
 
