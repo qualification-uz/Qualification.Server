@@ -137,27 +137,27 @@ public class SubmissionService : ISubmissionService
 
     public IEnumerable<SubmissionDto> RetrieveAllSubmissions()
     {
-        var submissions = this.submissionRepository
-            .SelectAllSubmissions()
-            .OrderByDescending(submission => submission.CreatedAt);
+        var submissions = this.submissionResultRepository
+            .SelectAllSubmissionResults()
+            .OrderByDescending(submission => submission.Id);
 
         return this.mapper.Map<IEnumerable<SubmissionDto>>(submissions);
     }
 
     public IEnumerable<SubmissionDto> RetrieveAllSubmissionsByQuizId(long quizId)
     {
-        var submissions = this.submissionRepository
-            .SelectAllSubmissions()
+        var submissions = this.submissionResultRepository
+            .SelectAllSubmissionResults()
             .Where(submission => submission.QuizId == quizId)
-            .OrderByDescending(submission => submission.CreatedAt);
+            .OrderByDescending(submission => submission.Id);
 
         return this.mapper.Map<IEnumerable<SubmissionDto>>(submissions);
     }
 
     public async ValueTask<SubmissionDto> RetrieveSubmissionByIdAsync(long submissionId)
     {
-        var submission = await this.submissionRepository
-            .SelectSubmissionByIdAsync(submissionId);
+        var submission = await this.submissionResultRepository
+            .SelectSubmissionResultByIdAsync(submissionId);
 
         if (submission is null)
         {
