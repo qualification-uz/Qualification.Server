@@ -171,8 +171,8 @@ public class SubmissionService : ISubmissionService
         long submissionId,
         SubmissionForUpdateDto submissionDto)
     {
-        var submission = await this.submissionRepository
-            .SelectSubmissionByIdAsync(submissionId);
+        var submission = await this.submissionResultRepository
+            .SelectSubmissionResultByIdAsync(submissionId);
 
         if (submission is null)
         {
@@ -181,8 +181,8 @@ public class SubmissionService : ISubmissionService
 
         submission.QuestionOptionId = submissionDto.QuestionOptionId;
 
-        submission = await this.submissionRepository
-            .UpdateSubmissionAsync(submission);
+        submission = await this.submissionResultRepository
+            .UpdateSubmissionResultAsync(submission);
 
         return this.mapper.Map<SubmissionDto>(submission);
     }
