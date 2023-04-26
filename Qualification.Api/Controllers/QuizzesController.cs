@@ -18,6 +18,11 @@ public class QuizzesController : ControllerBase
         this.quizService = quizService;
     }
 
+
+    [HttpPost("student-quiz/create")]
+    public async Task<IActionResult> CreateStudentQuiz(QuizForStudentCreationDto quiz) =>
+        Ok(await this.quizService.CreateStudentQuizAsync(quiz));
+
     [HttpPost]
     public async ValueTask<IActionResult> PostQuizAsync(QuizForCreationDto quizForCreationDto) =>
         Ok(await this.quizService.CreateQuizAsync(quizForCreationDto));
@@ -65,9 +70,9 @@ public class QuizzesController : ControllerBase
     /// </summary>
     /// <param name="applicationId"></param>
     /// <returns></returns>
-    [HttpGet("{applicationId}/{studentGradeId}/questions")]
-    public async ValueTask<IActionResult> GetQuizRelatedQuestionsByApplicationId(long applicationId, long studentGradeId) =>
-        Ok(await this.quizService.RetrieveQuizQuestionsByApplicationId(applicationId, studentGradeId));
+    [HttpGet("{applicationId}/{studentId}/questions")]
+    public async ValueTask<IActionResult> GetQuizRelatedQuestionsByApplicationId(long applicationId, long studentId) =>
+        Ok(await this.quizService.RetrieveQuizQuestionsByApplicationId(applicationId, studentId));
 
     [HttpGet("status")]
     public IActionResult GetQuizStatuses() =>

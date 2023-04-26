@@ -48,7 +48,8 @@ public static class ServiceExtensions
         services.AddScoped<IInsightService, InsightService>();
         services.AddScoped<IExcelService, ExcelService>();
         services.AddScoped<IStudentService, StudentService>();
-
+        services.AddScoped<IStudentQuizRepository, StudentQuizRepository>();
+        services.AddScoped<IStudentQuizService, StudentQuizService>();
 
         services.AddScoped<IReportService, ReportService>();
 

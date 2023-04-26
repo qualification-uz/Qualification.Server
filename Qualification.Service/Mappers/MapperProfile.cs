@@ -60,6 +60,8 @@ public class MapperProfile : Profile
         CreateMap<QuizDto, Quiz>().ReverseMap();
         CreateMap<QuizForCreationDto, Quiz>().ReverseMap();
         CreateMap<QuizForUpdateDto, Quiz>().ReverseMap();
+        CreateMap<QuizForStudent, QuizForStudentCreationDto>().ReverseMap();
+        CreateMap<QuizForStudent, QuizeForStudentDto>().ReverseMap();
 
         CreateMap<QuizQuestionDto, Question>().ReverseMap()
             .ForMember(dto => dto.AssetIds, src => src

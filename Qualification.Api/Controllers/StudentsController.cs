@@ -9,7 +9,7 @@ namespace Qualification.Api.Controllers
     /// </summary>
     [ApiController]
     [Route("api/students")]
-    [Authorize("SchoolPolicy")]
+   // [Authorize("SchoolPolicy")]
     public class StudentsController : ControllerBase
     {
         private readonly IStudentService studentService;

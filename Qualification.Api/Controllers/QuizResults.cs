@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Qualification.Service.DTOs.Quizzes;
 using Qualification.Service.Interfaces;
 
 namespace Qualification.Api.Controllers
@@ -22,5 +23,7 @@ namespace Qualification.Api.Controllers
         [HttpGet("student-quiz/{quizId}")]
         public async ValueTask<IActionResult> GetStudentQuizResultAsync(long quizId, long studentId) =>
             Ok(await this.quizResultService.RetrieveStudentQuizResultAsync(quizId, studentId));
+
+
     }
 }

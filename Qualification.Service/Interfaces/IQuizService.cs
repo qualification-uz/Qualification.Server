@@ -10,6 +10,7 @@ namespace Qualification.Service.Interfaces;
 public interface IQuizService
 {
     ValueTask<QuizDto> CreateQuizAsync(QuizForCreationDto quizDto);
+    ValueTask<QuizeForStudentDto> CreateStudentQuizAsync(QuizForStudentCreationDto quizDto);
     ValueTask CreateBulkQuizAsync(QuizForBulkCreationDto quizForBulkCreationDto);
     IEnumerable<QuizDto> RetrieveAllQuizzes(Filters filter, PaginationParams @params);
     ValueTask<QuizDto> RetrieveQuizByPropertyValue(Filter filter);

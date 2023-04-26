@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Qualification.Data.Contexts;
@@ -11,9 +12,10 @@ using Qualification.Data.Contexts;
 namespace Qualification.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230420063811_AddStudentQuizMigration")]
+    partial class AddStudentQuizMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,43 +45,43 @@ namespace Qualification.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "99cab103-666a-4f74-92fc-60d966ae20a2",
-                            ConcurrencyStamp = "d29cf17a-df01-44d2-bd3c-113995ee7c5a",
+                            Id = "2e60d286-53fd-4c3c-9df9-e1baa8817b07",
+                            ConcurrencyStamp = "b7e01347-56f3-411d-af6a-1067ff09009c",
                             Name = "Student",
                             NormalizedName = "STUDENT"
                         },
                         new
                         {
-                            Id = "9a8ad44b-197c-4784-994b-be3ea1349bc0",
-                            ConcurrencyStamp = "9686a62c-7a46-46e2-b4df-de6bce8672b5",
+                            Id = "2831f5ab-5db5-4b4a-888f-8baff547d8f1",
+                            ConcurrencyStamp = "0a61650f-4557-494b-a64f-c5ab3f6ba488",
                             Name = "Teacher",
                             NormalizedName = "TEACHER"
                         },
                         new
                         {
-                            Id = "4cd128f2-6ce5-48c1-a216-08412d7f14d7",
-                            ConcurrencyStamp = "1c6a8cd5-b89c-419e-9ad4-495a0d0317d2",
+                            Id = "e9f7a9f0-f445-4faa-a72a-c3fdee0ffb5f",
+                            ConcurrencyStamp = "98dad463-66c2-443d-bc51-9fea3e01a916",
                             Name = "School",
                             NormalizedName = "SCHOOL"
                         },
                         new
                         {
-                            Id = "29a648f3-079a-45ad-a702-f9e41faa52c6",
-                            ConcurrencyStamp = "6b0e001a-e6dd-49d1-be31-de7e32fb9171",
+                            Id = "56bc9738-aa8e-4d31-b4d9-2b9cdcf0519d",
+                            ConcurrencyStamp = "1cb65249-7028-4210-bc13-8b7fa359a27a",
                             Name = "Tester",
                             NormalizedName = "TESTER"
                         },
                         new
                         {
-                            Id = "6e53d942-0d2a-48db-b738-b45be42273df",
-                            ConcurrencyStamp = "858e6587-51d5-4339-9a6d-6f49499db517",
+                            Id = "a57dd5fd-fdb6-44fc-860a-e877eae482a0",
+                            ConcurrencyStamp = "82a95d58-0f59-4fb5-ba97-273ea079a06d",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "450c2bdd-0803-4309-9879-91add872edc0",
-                            ConcurrencyStamp = "3a13e2c4-2954-40cf-970d-0b85567c96c0",
+                            Id = "518fcc16-2d1b-4a64-8851-1810b4590f8c",
+                            ConcurrencyStamp = "5cdae525-ea72-4834-85a3-171ddd76a062",
                             Name = "SuperAdmin",
                             NormalizedName = "SUPERADMIN"
                         });
@@ -659,7 +661,7 @@ namespace Qualification.Data.Migrations
                     b.Property<long?>("QuizForStudentId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("QuizId")
+                    b.Property<long>("QuizId")
                         .HasColumnType("bigint");
 
                     b.Property<short>("ShufflePosition")
@@ -1141,7 +1143,9 @@ namespace Qualification.Data.Migrations
 
                     b.HasOne("Qualification.Domain.Entities.Quizes.Quiz", null)
                         .WithMany("Questions")
-                        .HasForeignKey("QuizId");
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuizResult", b =>

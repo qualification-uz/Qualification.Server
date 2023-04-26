@@ -10,7 +10,7 @@ namespace Qualification.Api.Controllers
 {
     [ApiController]
     [Route("api/applications")]
-    [Authorize(Policy = "ApplicationPolicy")]
+ //   [Authorize(Policy = "ApplicationPolicy")]
     public class ApplicationsController : ControllerBase
     {
         private readonly IApplicationService applicationService;

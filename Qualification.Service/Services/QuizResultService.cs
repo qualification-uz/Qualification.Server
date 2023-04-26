@@ -73,7 +73,7 @@ public class QuizResultService : IQuizResultService
 
         quizResult.CorrectAnswers = (short)correctAnswers;
         quizResult.Score = correctAnswers * 100 / quiz.Questions.Count;
-        quizResult.UserId = quiz.UserId;
+        quizResult.UserId = (long)quiz.UserId;
         quizResult.QuizId = quiz.Id;
         quizResult.StudentId = studentId;
 
@@ -136,7 +136,7 @@ public class QuizResultService : IQuizResultService
 
         quizResult.CorrectAnswers = (short)correctAnswers;
         quizResult.Score = correctAnswers * 100 / quiz.Questions.Count;
-        quizResult.UserId = quiz.UserId;
+        quizResult.UserId = (long)quiz.UserId;
         quizResult.QuizId = quiz.Id;
         quizResult.StudentId = studentId;
 

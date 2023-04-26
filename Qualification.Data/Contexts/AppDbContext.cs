@@ -21,6 +21,12 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
         : base(options)
     { }
 
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseNpgsql("Host=185.217.131.133; Database=Qualification; Port=5432; User Id=postgres; Password=root;");
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         #region Seed data
@@ -166,4 +172,5 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
     public DbSet<QuizQuestion> QuizQuestions { get; set; }
     public DbSet<QuestionOption> QuizQuestionOptions { get; set; }
     public DbSet<QuizResult> Results { get; set; }
+    public DbSet<QuizForStudent> QuizForStudents { get; set; }
 }

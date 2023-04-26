@@ -16,6 +16,7 @@ using Qualification.Service.DTOs.Users;
 using Qualification.Service.Exceptions;
 using Qualification.Service.Extensions;
 using Qualification.Service.Interfaces;
+using System.Collections.Generic;
 
 namespace Qualification.Service.Services;
 
@@ -25,7 +26,11 @@ public class QuizService : IQuizService
     private readonly IQuestionRepository questionRepository;
     private readonly IConfiguration configuration;
     private readonly UserManager<User> userManager;
+    private readonly IApplicationRepository applicationRepository;
+    private readonly IStudentQuizRepository quizForStudentRepository;
+    private readonly IStudentRepository studentRepository;
     private readonly ISertificateService sertificateService;
+    private readonly IStudentQuizService studentQuizService;
     private readonly IQuizResultRepository quizResultRepository;
     private readonly IAvloniyClientService avloniyService;
     private IMapper mapper;
@@ -35,19 +40,27 @@ public class QuizService : IQuizService
         IMapper mapper,
         IQuizRepository quizRepository,
         UserManager<User> userManager,
+        IStudentRepository studentRepository,
         IQuestionRepository questionRepository,
         ISertificateService sertificateService,
         IQuizResultRepository quizResultRepository,
-        IAvloniyClientService avloniyService)
+        IStudentQuizService studentQuizService,
+        IAvloniyClientService avloniyService,
+        IStudentQuizRepository quizForStudentRepository,
+        IApplicationRepository applicationRepository)
     {
         this.configuration = configuration;
         this.mapper = mapper;
         this.quizRepository = quizRepository;
         this.userManager = userManager;
+        this.studentRepository = studentRepository;
         this.questionRepository = questionRepository;
         this.sertificateService = sertificateService;
         this.quizResultRepository = quizResultRepository;
+        this.studentQuizService = studentQuizService;
         this.avloniyService = avloniyService;
+        this.quizForStudentRepository = quizForStudentRepository;
+        this.applicationRepository = applicationRepository;
     }
 
     public async ValueTask<QuizDto> CreateQuizAsync(QuizForCreationDto quizDto)
@@ -78,6 +91,19 @@ public class QuizService : IQuizService
         quiz.Application = application;
         quiz.IsForTeacher = true;
         quiz = await this.quizRepository.InsertQuizAync(quiz);
+
+        var students = await this.studentRepository.SelectAllStudents()
+            .Where(t => t.ApplicationId == quiz.ApplicationId).ToListAsync();
+
+        foreach (var student in students)
+            await this.studentQuizService.CreateQuizAsync(new QuizForStudentCreationDto
+            {
+                Title = quiz.Title,
+                ApplicationId = application.Id,
+                StudentId = student.Id,
+                StartsAt = quiz.StartsAt,
+                EndsAt = quiz.EndsAt,
+            });
 
         return this.mapper.Map<QuizDto>(quiz);
     }
@@ -271,22 +297,24 @@ public class QuizService : IQuizService
         return this.mapper.Map<IEnumerable<QuizQuestionDto>>(questions);
     }
 
-    public async ValueTask<IEnumerable<QuizQuestionDto>> RetrieveQuizQuestionsByApplicationId(long applicationId, long studentGradeId)
+    public async ValueTask<IEnumerable<QuizQuestionDto>> RetrieveQuizQuestionsByApplicationId(long applicationId, long studentId)
     {
-        var quiz = await this.quizRepository
-                .SelectAllQuizzes()
+        var quiz = await this.quizForStudentRepository
+                .SelectAllStudentQuizzes()
                 .Include(quiz => quiz.Questions)
-                .Include(quiz => quiz.Application)
                 .FirstOrDefaultAsync(quiz => quiz.ApplicationId == applicationId);
 
         if (quiz is null)
             throw new NotFoundException("Couldn't find quiz for given id");
 
+        var application = await this.applicationRepository.SelectApplicationByIdAsync(applicationId);
+        var student = await this.studentRepository.SelectStudentByIdAsync(studentId);
+
         // Select questions if haven't created yet
         if (quiz.Questions.Count == 0)
         {
             var shuffledQuestions = await RetrieveShuffledQuestions(
-                subjectId: quiz.Application.SubjectId,
+                subjectId: application.SubjectId,
                 isForTeacher: false);
 
             foreach (var question in shuffledQuestions)
@@ -305,7 +333,7 @@ public class QuizService : IQuizService
                 });
             }
 
-            await this.quizRepository.UpdateQuizAsync(quiz);
+            await this.quizForStudentRepository.UpdateStudentQuizAsync(quiz);
 
             return this.mapper.Map<IEnumerable<QuizQuestionDto>>(shuffledQuestions);
         }
@@ -315,7 +343,7 @@ public class QuizService : IQuizService
             .SelectAllQuestions()
             .Where(question => quiz.Questions
                 .Select(question => question.QuestionId)
-                .Any(id => id == question.Id) && question.StudentGradeId == studentGradeId)
+                .Any(id => id == question.Id) && question.StudentGradeId == student.GradeId)
             .Include(question => question.Assets)
             .Include(question => question.Answers)
             .ThenInclude(answer => answer.Assets)
@@ -441,5 +469,25 @@ public class QuizService : IQuizService
         }
 
         throw new Exception("Couldn't get subject");
+    }
+
+    public async ValueTask<QuizeForStudentDto> CreateStudentQuizAsync(QuizForStudentCreationDto quizDto)
+    {
+        var student = await this.studentRepository.SelectStudentByIdAsync(quizDto.StudentId);
+        if (student is null)
+            throw new NotFoundException("Student is not found");
+
+        bool isApplication = student.ApplicationId.Equals(quizDto.ApplicationId);
+        if (!isApplication)
+            throw new NotFoundException("Application is not available");
+
+        var application = await this.applicationRepository.SelectApplicationByIdAsync(quizDto.ApplicationId);
+        application.Status = ApplicationStatus.TestBelgilandi;
+
+        var quiz = mapper.Map<QuizForStudent>(quizDto);
+        quiz.StudentId = student.Id;
+        quiz.ApplicationId = application.Id;
+        var result = await this.quizForStudentRepository.InsertStudentQuizAync(quiz);
+        return mapper.Map<QuizeForStudentDto>(result);
     }
 }
