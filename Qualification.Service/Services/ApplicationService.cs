@@ -74,7 +74,7 @@ public class ApplicationService : IApplicationService
 
         application.Students.AddRange(selectedStudents.Select(student => new Student
         {
-            Id = student.Id,
+            ERPId = student.Id,
             FirstName = student.FirstName,
             LastName = student.LastName,
             MiddleName = student.MiddleName,

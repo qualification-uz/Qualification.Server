@@ -5,6 +5,7 @@ namespace Qualification.Domain.Entities.Users;
 public class Student : Auditable
 {
     public string FirstName { get; set; }
+    public long ERPId { get; set; }
     
     public string LastName { get; set; }
     
