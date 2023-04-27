@@ -43,6 +43,7 @@ public class StudentQuizService : IStudentQuizService
         this.studentRepository = studentRepository;
         this.questionRepository = questionRepository;
         this.applicationService = applicationService;
+        this.applicationRepository = applicationRepository;
         this.studentQuizRepository = studentQuizRepository;
     }
 
