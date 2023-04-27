@@ -15,4 +15,7 @@ public class QuizeForStudentDto
     public QuizStatus Status { get; set; }
     public long StudentId { get; set; }
     public long ApplicationId { get; set; }
+    public long UserId { get; set; }
+    public UserDto User { get; set; }
+    public ApplicationDto Application { get; set; }
 }

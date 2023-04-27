@@ -14,6 +14,7 @@ public class QuizResultService : IQuizResultService
     private readonly IQuizRepository quizRepository;
     private readonly IStudentRepository studentRepository;
     private readonly IQuizResultRepository quizResultRepository;
+    private readonly IStudentQuizRepository studentQuizRepository;
     private readonly ISubmissionResultRepository submissionResultRepository;
     private readonly IQuestionAnswerRepository questionAnswerRepository;
 
@@ -22,6 +23,7 @@ public class QuizResultService : IQuizResultService
         IQuizRepository quizRepository,
         IStudentRepository studentRepository,
         IQuizResultRepository quizResultRepository,
+        IStudentQuizRepository studentQuizRepository,
         ISubmissionResultRepository submissionResultRepository,
         IQuestionAnswerRepository questionAnswerRepository)
     {
@@ -29,6 +31,7 @@ public class QuizResultService : IQuizResultService
         this.quizRepository = quizRepository;
         this.studentRepository = studentRepository;
         this.quizResultRepository = quizResultRepository;
+        this.studentQuizRepository = studentQuizRepository;
         this.submissionResultRepository = submissionResultRepository;
         this.questionAnswerRepository = questionAnswerRepository;
     }
@@ -50,11 +53,9 @@ public class QuizResultService : IQuizResultService
 
         quizResult = new QuizResult();
 
-        var quiz = await this.quizRepository
-            .SelectAllQuizzes()
+        var quiz = await this.studentQuizRepository
+            .SelectAllStudentQuizzes()
             .Where(quiz => quiz.Id == quizId)
-            .Where(quiz => !quiz.IsForTeacher)
-            .Where(quiz => quiz.Application.TeacherId == student.Application.TeacherId)
             .Include(quiz => quiz.Questions)
             .Include(quiz => quiz.Submissions)
             .ThenInclude(submission => submission.Option)
@@ -67,13 +68,14 @@ public class QuizResultService : IQuizResultService
         var correctSubmissions = this.submissionResultRepository
             .SelectAllSubmissionResults()
             .Where(t => t.QuizId == quizId)
+            .Where(t => t.IsForStudent)
             .Where(t => t.IsCorrect).ToList();
 
         var correctAnswers = correctSubmissions.DistinctBy(t => t.QuizQuestionId).Count();
 
         quizResult.CorrectAnswers = (short)correctAnswers;
         quizResult.Score = correctAnswers * 100 / quiz.Questions.Count;
-        quizResult.UserId = (long)quiz.UserId;
+        quizResult.UserId = (long)quiz.StudentId;
         quizResult.QuizId = quiz.Id;
         quizResult.StudentId = studentId;
 

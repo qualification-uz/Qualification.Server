@@ -4,12 +4,15 @@ using Microsoft.Extensions.Configuration;
 using Qualification.Data.IRepositories;
 using Qualification.Data.Repositories;
 using Qualification.Domain.Configurations;
+using Qualification.Domain.Entities;
 using Qualification.Domain.Entities.Questions;
 using Qualification.Domain.Entities.Quizes;
 using Qualification.Domain.Entities.Users;
 using Qualification.Domain.Enums;
 using Qualification.Service.DTOs;
+using Qualification.Service.DTOs.Application;
 using Qualification.Service.DTOs.Quizzes;
+using Qualification.Service.DTOs.Users;
 using Qualification.Service.Exceptions;
 using Qualification.Service.Extensions;
 using Qualification.Service.Interfaces;
@@ -53,12 +56,17 @@ public class StudentQuizService : IStudentQuizService
         if (!isApplication)
             throw new NotFoundException("Application is not available");
 
+        var application = await this.applicationRepository.SelectApplicationByIdAsync(quizDto.ApplicationId);
 
         var quiz = mapper.Map<QuizForStudent>(quizDto);
         quiz.StudentId = student.Id;
         quiz.ApplicationId = quizDto.ApplicationId;
-        var result = await this.studentQuizRepository.InsertStudentQuizAync(quiz);
-        return mapper.Map<QuizeForStudentDto>(result);
+        var createdQuiz = await this.studentQuizRepository.InsertStudentQuizAync(quiz);
+        var result = mapper.Map<QuizeForStudentDto>(createdQuiz);
+        result.User = mapper.Map<UserDto>(application.Teacher);
+        result.UserId = application.TeacherId;
+        result.Application = mapper.Map<ApplicationDto>(application);
+        return result;
     }
 
     public async ValueTask<QuizeForStudentDto> ModifyQuizAsync(long quizId, QuizForUpdateDto quizDto)
@@ -140,8 +148,14 @@ public class StudentQuizService : IStudentQuizService
 
         if (quiz is null)
             throw new NotFoundException("Couldn't find quiz for given id");
+       
+        var application = await this.applicationService.RetrieveApplicationByIdAsync(quiz.ApplicationId);
 
-        return this.mapper.Map<QuizeForStudentDto>(quiz);
+        var result = mapper.Map<QuizeForStudentDto>(quiz);
+        result.User = mapper.Map<UserDto>(application.Teacher);
+        result.UserId = application.Teacher.Id;
+        result.Application = mapper.Map<ApplicationDto>(application);
+        return result;
     }
 
     public async ValueTask<IEnumerable<QuizQuestionDto>> RetrieveQuizQuestions(long studentId)
