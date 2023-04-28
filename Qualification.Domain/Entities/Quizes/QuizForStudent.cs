@@ -16,6 +16,6 @@ public class QuizForStudent : Auditable
     public long StudentId { get; set; }
     public long ApplicationId { get; set; }
 
-    public ICollection<Submission> Submissions { get; set; }
-    public ICollection<QuizQuestion> Questions { get; set; }
+    public virtual ICollection<Submission> Submissions { get; set; }
+    public virtual ICollection<QuizQuestion> Questions { get; set; }
 }

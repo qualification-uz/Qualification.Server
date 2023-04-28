@@ -38,20 +38,11 @@ public class QuizResultService : IQuizResultService
 
     public async ValueTask<QuizResultDto> RetrieveStudentQuizResultAsync(long quizId, long studentId)
     {
-        var quizResult = await this.quizResultRepository
-            .SelectAllQuizResults()
-            .FirstOrDefaultAsync();
-
-        if (quizResult is not null)
-        {
-            return this.mapper.Map<QuizResultDto>(quizResult);
-        }
-
         var student = await this.studentRepository.SelectStudentByIdAsync(studentId);
         if (student is null)
             throw new NotFoundException("Couldn't find student for given id");
 
-        quizResult = new QuizResult();
+        var quizResult = new QuizResult();
 
         var quiz = await this.studentQuizRepository
             .SelectAllStudentQuizzes()
@@ -67,16 +58,15 @@ public class QuizResultService : IQuizResultService
 
         var correctSubmissions = this.submissionResultRepository
             .SelectAllSubmissionResults()
-            .Where(t => t.QuizId == quizId)
+            .Where(t => t.QuizForStudentId == quizId)
             .Where(t => t.IsForStudent)
             .Where(t => t.IsCorrect).ToList();
 
         var correctAnswers = correctSubmissions.DistinctBy(t => t.QuizQuestionId).Count();
 
         quizResult.CorrectAnswers = (short)correctAnswers;
-        quizResult.Score = correctAnswers * 100 / quiz.Questions.Count;
-        quizResult.UserId = (long)quiz.StudentId;
-        quizResult.QuizId = quiz.Id;
+        quizResult.Score = quiz.Questions.Count != 0 ? correctAnswers * 100 / quiz.Questions.Count : 0;
+        quizResult.QuizForStudentId = quiz.Id;
         quizResult.StudentId = studentId;
 
         quizResult = await this.quizResultRepository

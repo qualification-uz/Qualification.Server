@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Qualification.Data.Contexts;
@@ -11,9 +12,10 @@ using Qualification.Data.Contexts;
 namespace Qualification.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230427220640_AddedQuizForStudentToSubmissionMigration")]
+    partial class AddedQuizForStudentToSubmissionMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,43 +45,43 @@ namespace Qualification.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "43e9632a-5929-4369-8605-2f944c14ac30",
-                            ConcurrencyStamp = "5d57fa1f-46c8-49c6-8a2f-a8d5050d0b0b",
+                            Id = "f3ad250a-ad0a-4300-9ebd-9da2fbf76e72",
+                            ConcurrencyStamp = "a240ba07-5698-42e2-96ca-a63e08133ef5",
                             Name = "Student",
                             NormalizedName = "STUDENT"
                         },
                         new
                         {
-                            Id = "40ab0aae-e960-4459-bbdb-0ec897309cf5",
-                            ConcurrencyStamp = "2909d62d-b883-4a01-9e3a-c5d1e9640a05",
+                            Id = "5d9909d3-de62-4b9d-b57f-c61683f81675",
+                            ConcurrencyStamp = "ef7d97cf-c47b-4c06-9daf-1cedd2c104ec",
                             Name = "Teacher",
                             NormalizedName = "TEACHER"
                         },
                         new
                         {
-                            Id = "7d8ae194-6edf-44d3-b4ad-768813bdf94b",
-                            ConcurrencyStamp = "cec9fd7f-fc18-4397-b167-64ea98dfb519",
+                            Id = "431ce859-faed-4218-a5e0-60a04fa7231f",
+                            ConcurrencyStamp = "8d1b633b-56cb-46a1-abc4-e9bfbdc4261f",
                             Name = "School",
                             NormalizedName = "SCHOOL"
                         },
                         new
                         {
-                            Id = "961313d5-9a52-40ca-af6b-0f940ed42376",
-                            ConcurrencyStamp = "4a9a300a-5fe6-441f-8fcf-59c333f4aeb6",
+                            Id = "acfbb464-30a8-456a-a485-1a0739c553a0",
+                            ConcurrencyStamp = "fb17a795-75c6-4531-a27a-00e8a8b5b5a6",
                             Name = "Tester",
                             NormalizedName = "TESTER"
                         },
                         new
                         {
-                            Id = "8dd981e7-ee5a-4d29-98b5-f7ef722daca4",
-                            ConcurrencyStamp = "db68f4ea-095e-4ab2-b142-04042c2f2cd4",
+                            Id = "68e6baf8-88e7-471a-9e2f-cff83d32faa6",
+                            ConcurrencyStamp = "d4011f8d-3fb9-41b9-b0e7-dec24781bf0d",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "7bd3b87e-3d3c-49d3-a2f0-601614f76039",
-                            ConcurrencyStamp = "35810808-ace0-4c31-8377-e0f762b04b20",
+                            Id = "88c3dd22-0b4d-43d2-9da3-d0db747a3278",
+                            ConcurrencyStamp = "33ae7f90-5608-49a9-8a57-accd08b6886f",
                             Name = "SuperAdmin",
                             NormalizedName = "SUPERADMIN"
                         });
@@ -795,10 +797,7 @@ namespace Qualification.Data.Migrations
                     b.Property<long>("QuestionOptionId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("QuizForStudentId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("QuizId")
+                    b.Property<long>("QuizId")
                         .HasColumnType("bigint");
 
                     b.Property<long>("QuizQuestionId")

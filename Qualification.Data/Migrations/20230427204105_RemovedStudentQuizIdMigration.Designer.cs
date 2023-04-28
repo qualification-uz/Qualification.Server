@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Qualification.Data.Contexts;
@@ -11,9 +12,10 @@ using Qualification.Data.Contexts;
 namespace Qualification.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230427204105_RemovedStudentQuizIdMigration")]
+    partial class RemovedStudentQuizIdMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -43,43 +45,43 @@ namespace Qualification.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "43e9632a-5929-4369-8605-2f944c14ac30",
-                            ConcurrencyStamp = "5d57fa1f-46c8-49c6-8a2f-a8d5050d0b0b",
+                            Id = "01a80b0e-dfad-4d09-b2ac-eb5461f385db",
+                            ConcurrencyStamp = "8e447913-c579-4ac6-a355-3c3765c4a815",
                             Name = "Student",
                             NormalizedName = "STUDENT"
                         },
                         new
                         {
-                            Id = "40ab0aae-e960-4459-bbdb-0ec897309cf5",
-                            ConcurrencyStamp = "2909d62d-b883-4a01-9e3a-c5d1e9640a05",
+                            Id = "9b58d582-e120-4742-9739-976870fa7924",
+                            ConcurrencyStamp = "89c366ab-705f-4e4d-ac11-ce684865a686",
                             Name = "Teacher",
                             NormalizedName = "TEACHER"
                         },
                         new
                         {
-                            Id = "7d8ae194-6edf-44d3-b4ad-768813bdf94b",
-                            ConcurrencyStamp = "cec9fd7f-fc18-4397-b167-64ea98dfb519",
+                            Id = "c5c86e50-eba7-4111-be57-326804690861",
+                            ConcurrencyStamp = "46a2a83c-1f7e-4fd7-ac7e-a569d50323ec",
                             Name = "School",
                             NormalizedName = "SCHOOL"
                         },
                         new
                         {
-                            Id = "961313d5-9a52-40ca-af6b-0f940ed42376",
-                            ConcurrencyStamp = "4a9a300a-5fe6-441f-8fcf-59c333f4aeb6",
+                            Id = "25657599-791b-49de-9869-ac5d72eb7cdd",
+                            ConcurrencyStamp = "8ffb0bb9-5454-4a63-b7a2-a41efcb41e3d",
                             Name = "Tester",
                             NormalizedName = "TESTER"
                         },
                         new
                         {
-                            Id = "8dd981e7-ee5a-4d29-98b5-f7ef722daca4",
-                            ConcurrencyStamp = "db68f4ea-095e-4ab2-b142-04042c2f2cd4",
+                            Id = "ddf81ec7-20c2-463b-a942-4f4adf18b3cd",
+                            ConcurrencyStamp = "3a0435a8-7fa3-41a3-8c13-1a1948d953ec",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "7bd3b87e-3d3c-49d3-a2f0-601614f76039",
-                            ConcurrencyStamp = "35810808-ace0-4c31-8377-e0f762b04b20",
+                            Id = "d68b207a-58a0-472e-8732-9dfa112c5cde",
+                            ConcurrencyStamp = "8d49d4ee-09b2-420f-bb87-be7bdc9d916d",
                             Name = "SuperAdmin",
                             NormalizedName = "SUPERADMIN"
                         });
@@ -691,10 +693,7 @@ namespace Qualification.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long?>("QuizForStudentId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("QuizId")
+                    b.Property<long>("QuizId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Score")
@@ -706,12 +705,10 @@ namespace Qualification.Data.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<long?>("UserId")
+                    b.Property<long>("UserId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("QuizForStudentId");
 
                     b.HasIndex("QuizId");
 
@@ -745,7 +742,7 @@ namespace Qualification.Data.Migrations
                     b.Property<long?>("QuizForStudentId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("QuizId")
+                    b.Property<long>("QuizId")
                         .HasColumnType("bigint");
 
                     b.Property<long>("QuizQuestionId")
@@ -795,10 +792,7 @@ namespace Qualification.Data.Migrations
                     b.Property<long>("QuestionOptionId")
                         .HasColumnType("bigint");
 
-                    b.Property<long?>("QuizForStudentId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("QuizId")
+                    b.Property<long>("QuizId")
                         .HasColumnType("bigint");
 
                     b.Property<long>("QuizQuestionId")
@@ -1157,13 +1151,11 @@ namespace Qualification.Data.Migrations
 
             modelBuilder.Entity("Qualification.Domain.Entities.Quizes.QuizResult", b =>
                 {
-                    b.HasOne("Qualification.Domain.Entities.Quizes.QuizForStudent", "QuizForStudent")
-                        .WithMany()
-                        .HasForeignKey("QuizForStudentId");
-
                     b.HasOne("Qualification.Domain.Entities.Quizes.Quiz", "Quiz")
                         .WithMany()
-                        .HasForeignKey("QuizId");
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Qualification.Domain.Entities.Users.Student", "Student")
                         .WithMany()
@@ -1171,11 +1163,11 @@ namespace Qualification.Data.Migrations
 
                     b.HasOne("Qualification.Domain.Entities.Users.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Quiz");
-
-                    b.Navigation("QuizForStudent");
 
                     b.Navigation("Student");
 
@@ -1190,14 +1182,15 @@ namespace Qualification.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Qualification.Domain.Entities.Quizes.QuizForStudent", "QuizForStudent")
+                    b.HasOne("Qualification.Domain.Entities.Quizes.QuizForStudent", null)
                         .WithMany("Submissions")
                         .HasForeignKey("QuizForStudentId");
 
                     b.HasOne("Qualification.Domain.Entities.Quizes.Quiz", "Quiz")
                         .WithMany("Submissions")
                         .HasForeignKey("QuizId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Qualification.Domain.Entities.Quizes.QuizQuestion", "Question")
                         .WithMany()
@@ -1218,8 +1211,6 @@ namespace Qualification.Data.Migrations
                     b.Navigation("Question");
 
                     b.Navigation("Quiz");
-
-                    b.Navigation("QuizForStudent");
 
                     b.Navigation("Student");
 

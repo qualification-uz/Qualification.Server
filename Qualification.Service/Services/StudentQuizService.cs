@@ -141,11 +141,11 @@ public class StudentQuizService : IStudentQuizService
         return this.mapper.Map<List<QuizeForStudentDto>>(quiz);
     }
 
-    public async ValueTask<QuizeForStudentDto> RetrieveQuizByIdAsync(long studentQuizId)
+    public async ValueTask<QuizeForStudentDto> RetrieveQuizByIdAsync(long studentId)
     {
         var studentQuiz = await this.studentQuizRepository
             .SelectAllStudentQuizzes()
-            .FirstOrDefaultAsync(quiz => quiz.Id == studentQuizId);
+            .FirstOrDefaultAsync(quiz => quiz.StudentId == studentId);
 
         if (studentQuiz is null)
             throw new NotFoundException("Couldn't find quiz for given id");
@@ -183,6 +183,7 @@ public class StudentQuizService : IStudentQuizService
             {
                 quiz.Questions.Add(new QuizQuestion
                 {
+                    QuizForStudentId = quiz.Id,
                     QuestionId = question.Id,
                     CreatedAt = DateTime.UtcNow,
                     Options = question.Answers.Select(option => new QuestionOption

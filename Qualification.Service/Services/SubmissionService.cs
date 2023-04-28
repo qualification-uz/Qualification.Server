@@ -3,8 +3,10 @@ using Microsoft.EntityFrameworkCore;
 using Qualification.Data.Contexts;
 using Qualification.Data.IRepositories;
 using Qualification.Domain.Entities.Quizes;
+using Qualification.Domain.Enums;
 using Qualification.Service.DTOs.Quizzes;
 using Qualification.Service.Exceptions;
+using Qualification.Service.Helpers;
 using Qualification.Service.Interfaces;
 
 namespace Qualification.Service.Services;
@@ -55,8 +57,8 @@ public class SubmissionService : ISubmissionService
             throw new NotFoundException("Couldn't find quiz question for given id");
 
         var quizQuestionOption = await this.questionAnswerRepository
-            .SelectAllQuestionAnswers().
-            Where(t => t.QuestionId == quizQuestion.Id).
+            .SelectAllQuestionAnswers()
+            .Where(t => t.QuestionId == quizQuestion.Id).
             FirstOrDefaultAsync(t => t.Id == submissionDto.QuestionOptionId);
         if (quizQuestionOption is null)
             throw new NotFoundException("Couldn't find quiz question option for given id");
@@ -66,14 +68,25 @@ public class SubmissionService : ISubmissionService
 
         var submission = new SubmissionResult()
         {
-            UserId = submissionDto.UserId,
             QuestionOptionId = submissionDto.QuestionOptionId,
-            QuizQuestionId = submissionDto.QuizQuestionId,
-            QuizId = submissionDto.QuizId,
-            IsForStudent = false   
+            QuizQuestionId = submissionDto.QuizQuestionId
         };
-        
-        if(quizQuestionOption.IsCorrect)
+
+        // if it is student role
+        if (HttpContextHelper.Role == UserRole.Student.ToString())
+        {
+            submission.IsForStudent = true;
+            submission.StudentId = submissionDto.UserId;
+            submission.QuizForStudentId = submissionDto.QuizId;
+        }
+        else
+        {
+            submission.IsForStudent = false;
+            submission.UserId = submissionDto.UserId;
+            submission.QuizId = submissionDto.QuizId;
+        }
+
+        if (quizQuestionOption.IsCorrect)
             submission.IsCorrect = true;
 
         // check for exist submission
@@ -84,6 +97,10 @@ public class SubmissionService : ISubmissionService
             submission = await this.submissionResultRepository.DeleteSubmissionResultAsync(existSubmission);
         else 
             submission = await this.submissionResultRepository.InsertSubmissionResultAsync(submission);
+
+        // submission result should change for returning temporary
+        submission.UserId = submissionDto.UserId;
+        submission.QuizId = submissionDto.QuizId;
 
         return this.mapper.Map<SubmissionDto>(submission);
     }
@@ -148,8 +165,18 @@ public class SubmissionService : ISubmissionService
     {
         var submissions = this.submissionResultRepository
             .SelectAllSubmissionResults()
-            .Where(submission => submission.QuizId == quizId)
+            .Where(submission => submission.QuizForStudentId == quizId)
             .OrderByDescending(submission => submission.Id);
+
+        // if it is student 
+        if (HttpContextHelper.Role == UserRole.Student.ToString())
+        {
+            foreach (var submission in submissions)
+            {
+                submission.QuizId = submission.QuizForStudentId;
+                submission.UserId = submission.StudentId;
+            }
+        }
 
         return this.mapper.Map<IEnumerable<SubmissionDto>>(submissions);
     }

@@ -22,6 +22,9 @@ public class SchoolService : ISchoolService
     private readonly UserManager<User> userManager;
     private readonly IApplicationRepository applicationRepository;
     private readonly IQuizRepository quizRepository;
+    private readonly IQuizQuestionRepository quizQuestionRepository;
+    private readonly IStudentQuizRepository studentQuizRepository;
+    private readonly IQuizResultRepository quizResultRepository;
     private readonly IMapper mapper;
 
     public SchoolService(
@@ -29,13 +32,19 @@ public class SchoolService : ISchoolService
         IMapper mapper,
         UserManager<User> userManager,
         IApplicationRepository applicationRepository,
-        IQuizRepository quizRepository)
+        IQuizRepository quizRepository,
+        IQuizQuestionRepository quizQuestionRepository,
+        IStudentQuizRepository studentQuizRepository,
+        IQuizResultRepository quizResultRepository)
     {
         this.avloniyClientService = avloniyClientService;
         this.mapper = mapper;
         this.userManager = userManager;
         this.applicationRepository = applicationRepository;
         this.quizRepository = quizRepository;
+        this.quizQuestionRepository = quizQuestionRepository;
+        this.studentQuizRepository=studentQuizRepository;
+        this.quizResultRepository=quizResultRepository;
     }
 
     public IEnumerable<UserDto> RetrieveAllTeachers(
@@ -152,20 +161,42 @@ public class SchoolService : ISchoolService
     public async ValueTask<bool> RemoveTeacherAsync(int schoolId, long teacherId)
     {
         var user = await this.userManager.FindByIdAsync(teacherId.ToString());
+        if (user is null)
+            throw new NotFoundException("Teacher not found");
+
+        var quizes = this.quizRepository.SelectAllQuizzes()
+            .Where(a => a.UserId == user.Id);
+        var applications = this.applicationRepository.SelectAllApplications()
+           .Where(a => a.TeacherId == user.Id);
+        var studentQuizes = this.studentQuizRepository
+            .SelectAllStudentQuizzes()
+            .Where(sq => applications.Any(a => a.Id == sq.ApplicationId));
+
+        // Deletes all quize results related to this teacher/student
+        var quizResults = this.quizResultRepository.SelectAllQuizResults()
+            .Where(a => quizes.Any(q => q.Id == a.QuizId) || studentQuizes.Any(sq => sq.Id == a.QuizForStudentId));
+        foreach (var quizResult in quizResults)
+            await quizResultRepository.DeleteQuizResultAsync(quizResult);
+
+        // Deletes all quizes related to this teacher
+        var quizQuestions = await this.quizQuestionRepository.SelectAllQuizQuestions()
+            .Where(a => quizes.Any(q => q.Id == a.QuizId) || studentQuizes.Any(sq => sq.Id == a.QuizForStudentId))
+            .ToListAsync();
+        foreach (var quizQuestion in quizQuestions)
+            await quizQuestionRepository.DeleteQuizQuestionAsync(quizQuestion);
+
+        // deletes all quizeForStudents related to this teacher
+        foreach (var studentQuiz in studentQuizes)
+            await studentQuizRepository.DeleteStudentQuizAsync(studentQuiz);
+
+        // Deletes all quizes related to this teacher
+        foreach (var quiz in quizes)
+            await quizRepository.DeleteQuizAsync(quiz);
 
         // Deletes all Applications related to this teacher
-        var applications = applicationRepository.SelectAllApplications()
-            .Where(a => a.TeacherId == user.Id);
-
         foreach(var application in applications)
             await applicationRepository.DeleteApplicationAsync(application);
         
-        // Deletes all quizes related to this teacher
-        var quizes = quizRepository.SelectAllQuizzes()
-            .Where(a => a.UserId == user.Id);
-        foreach(var quiz in quizes)
-            await quizRepository.DeleteQuizAsync(quiz);
-
         if (user is null)
             throw new NotFoundException("Coudn't find teacher with this ID");
 
