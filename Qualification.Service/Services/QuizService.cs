@@ -33,6 +33,7 @@ public class QuizService : IQuizService
     private readonly IStudentQuizService studentQuizService;
     private readonly IQuizResultRepository quizResultRepository;
     private readonly IAvloniyClientService avloniyService;
+    private readonly IAssetService assetService;
     private IMapper mapper;
 
     public QuizService(
@@ -47,7 +48,8 @@ public class QuizService : IQuizService
         IStudentQuizService studentQuizService,
         IAvloniyClientService avloniyService,
         IStudentQuizRepository quizForStudentRepository,
-        IApplicationRepository applicationRepository)
+        IApplicationRepository applicationRepository,
+        IAssetService assetService)
     {
         this.configuration = configuration;
         this.mapper = mapper;
@@ -61,6 +63,7 @@ public class QuizService : IQuizService
         this.avloniyService = avloniyService;
         this.quizForStudentRepository = quizForStudentRepository;
         this.applicationRepository = applicationRepository;
+        this.assetService=assetService;
     }
 
     public async ValueTask<QuizDto> CreateQuizAsync(QuizForCreationDto quizDto)
@@ -280,7 +283,12 @@ public class QuizService : IQuizService
 
             await this.quizRepository.UpdateQuizAsync(quiz);
 
-            return this.mapper.Map<IEnumerable<QuizQuestionDto>>(shuffledQuestions);
+            // load asset links using asset ids
+            var mappedQuestions = this.mapper.Map<IEnumerable<QuizQuestionDto>>(shuffledQuestions);
+            foreach (var mappedQuestion in mappedQuestions)
+                mappedQuestion.Assets = await this.assetService.RetrieveLinksByIdsAsync(mappedQuestion.AssetIds);
+
+            return mappedQuestions;
         }
 
         // Questions have already exist

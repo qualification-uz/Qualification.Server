@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Qualification.Data.IRepositories;
 using Qualification.Service.Interfaces;
 
 namespace Qualification.Service.Services;
@@ -7,11 +9,13 @@ namespace Qualification.Service.Services;
 public class AssetService : IAssetService
 {
     private readonly IWebHostEnvironment webHostEnvironment;
+    private readonly IFileUploadRepository fileUploadRepository;
 
     public AssetService(
-        IWebHostEnvironment webHostEnvironment)
+        IWebHostEnvironment webHostEnvironment, IFileUploadRepository fileUploadRepository)
     {
         this.webHostEnvironment = webHostEnvironment;
+        this.fileUploadRepository = fileUploadRepository;
     }
 
     public async ValueTask<(string fileName, string filePath)> SaveFileAsync(IFormFile file, string folder = "Images")
@@ -45,4 +49,10 @@ public class AssetService : IAssetService
 
         return false;
     }
+
+    public async ValueTask<IReadOnlyList<string>> RetrieveLinksByIdsAsync(IEnumerable<long> ids)
+        => await this.fileUploadRepository.SelectAllAssets()
+            .Where(asset => ids.Contains(asset.Id))
+            .Select(asset => Path.Combine("Images", asset.Url))
+            .ToListAsync();
 }
