@@ -165,12 +165,17 @@ public class SubmissionService : ISubmissionService
     {
         var submissions = this.submissionResultRepository
             .SelectAllSubmissionResults()
-            .Where(submission => submission.QuizForStudentId == quizId)
+            .Where(submission => submission.QuizId == quizId)
             .OrderByDescending(submission => submission.Id);
 
         // if it is student 
         if (HttpContextHelper.Role == UserRole.Student.ToString())
         {
+            submissions = this.submissionResultRepository
+            .SelectAllSubmissionResults()
+            .Where(submission => submission.QuizForStudentId == quizId)
+            .OrderByDescending(submission => submission.Id);
+
             foreach (var submission in submissions)
             {
                 submission.QuizId = submission.QuizForStudentId;
