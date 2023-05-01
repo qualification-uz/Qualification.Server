@@ -34,7 +34,9 @@ public class QuestionService : IQuestionService
             .SelectAllQuestions()
             .Include(p => p.Answers)
             .ThenInclude(p => p.Assets)
+            .ThenInclude(p => p.Asset)
             .Include(p => p.Assets)
+            .ThenInclude(p => p.Asset)
             .OrderByDescending(question => question.CreatedAt)
             .AsQueryable();
 
@@ -48,7 +50,7 @@ public class QuestionService : IQuestionService
     public async ValueTask<QuestionDto> RetrieveQuestionByIdAsync(long questionId)
     {
         var question = await this.questionRepository
-            .SelectQuestionByIdAsync(questionId, includes: new[] { "Answers", "Assets", "Answers.Assets" });
+            .SelectQuestionByIdAsync(questionId, includes: new[] { "Answers", "Assets.Asset", "Answers.Assets.Asset" });
 
         if (question is null)
             throw new NotFoundException("Couldn't find any question for given id");

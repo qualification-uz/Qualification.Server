@@ -283,12 +283,7 @@ public class QuizService : IQuizService
 
             await this.quizRepository.UpdateQuizAsync(quiz);
 
-            // load asset links using asset ids
-            var mappedQuestions = this.mapper.Map<IEnumerable<QuizQuestionDto>>(shuffledQuestions);
-            foreach (var mappedQuestion in mappedQuestions)
-                mappedQuestion.Assets = await this.assetService.RetrieveLinksByIdsAsync(mappedQuestion.AssetIds);
-
-            return mappedQuestions;
+            return this.mapper.Map<IEnumerable<QuizQuestionDto>>(shuffledQuestions);
         }
 
         // Questions have already exist
@@ -298,11 +293,13 @@ public class QuizService : IQuizService
                 .Select(question => question.QuestionId)
                 .Any(id => id == question.Id))
             .Include(question => question.Assets)
+            .ThenInclude(question => question.Asset)
             .Include(question => question.Answers)
             .ThenInclude(answer => answer.Assets)
+            .ThenInclude(answer => answer.Asset)
             .ToListAsync();
 
-        return this.mapper.Map<IEnumerable<QuizQuestionDto>>(questions);
+        return this.mapper.Map<IEnumerable<QuizQuestionDto>>(questions); 
     }
 
     public async ValueTask<IEnumerable<QuizQuestionDto>> RetrieveQuizQuestionsByApplicationId(long applicationId, long studentId)
@@ -353,8 +350,10 @@ public class QuizService : IQuizService
                 .Select(question => question.QuestionId)
                 .Any(id => id == question.Id) && question.StudentGradeId == student.GradeId)
             .Include(question => question.Assets)
+            .ThenInclude(asset => asset.Asset)
             .Include(question => question.Answers)
             .ThenInclude(answer => answer.Assets)
+            .ThenInclude(answer => answer.Asset)
             .ToListAsync();
 
         return this.mapper.Map<IEnumerable<QuizQuestionDto>>(questions);
@@ -368,8 +367,10 @@ public class QuizService : IQuizService
             .SelectAllQuestions()
             .Where(p => p.IsForTeacher == isForTeacher && p.SubjectId == subjectId)
             .Include(p => p.Assets)
+            .ThenInclude(asset => asset.Asset)
             .Include(p => p.Answers)
             .ThenInclude(p => p.Assets)
+            .ThenInclude(p => p.Asset)
             .ToDictionaryAsync(question => question.Id);
 
         HashSet<long> questionIds = new HashSet<long>();

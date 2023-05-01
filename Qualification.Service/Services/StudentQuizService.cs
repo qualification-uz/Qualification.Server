@@ -207,8 +207,10 @@ public class StudentQuizService : IStudentQuizService
                 .Select(question => question.QuestionId)
                 .Any(id => id == question.Id) && question.StudentGradeId == student.GradeId)
             .Include(question => question.Assets)
+            .ThenInclude(asset => asset.Asset)
             .Include(question => question.Answers)
             .ThenInclude(answer => answer.Assets)
+            .ThenInclude(asset => asset.Asset)
             .ToListAsync();
 
         return this.mapper.Map<IEnumerable<QuizQuestionDto>>(questions);
@@ -222,8 +224,10 @@ public class StudentQuizService : IStudentQuizService
             .SelectAllQuestions()
             .Where(p => p.IsForTeacher == isForTeacher && p.SubjectId == subjectId)
             .Include(p => p.Assets)
+            .ThenInclude(asset => asset.Asset)
             .Include(p => p.Answers)
             .ThenInclude(p => p.Assets)
+            .ThenInclude(p => p.Asset)
             .ToDictionaryAsync(question => question.Id);
 
         HashSet<long> questionIds = new HashSet<long>();

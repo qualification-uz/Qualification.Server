@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Qualification.Data.IRepositories;
+using Qualification.Service.DTOs.Quizzes;
 using Qualification.Service.Interfaces;
 
 namespace Qualification.Service.Services;
@@ -49,10 +50,4 @@ public class AssetService : IAssetService
 
         return false;
     }
-
-    public async ValueTask<IReadOnlyList<string>> RetrieveLinksByIdsAsync(IEnumerable<long> ids)
-        => await this.fileUploadRepository.SelectAllAssets()
-            .Where(asset => ids.Contains(asset.Id))
-            .Select(asset => Path.Combine("Images", asset.Url))
-            .ToListAsync();
 }

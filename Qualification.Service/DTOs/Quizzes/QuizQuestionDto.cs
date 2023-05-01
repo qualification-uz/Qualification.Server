@@ -10,8 +10,6 @@ public class QuizQuestionDto
     public int SubjectId { get; set; }
     public short Level { get; set; }
     public bool IsForTeacher { get; set; }
-
-    public IReadOnlyList<long> AssetIds { get; set; }
-    public IReadOnlyList<string> Assets { get; set; }
+    public IReadOnlyList<string> AssetUrls { get; set; }
     public ICollection<QuizOptionDto> Answers { get; set; }
 }

@@ -12,6 +12,6 @@ public class QuestionDto
     public short Level { get; set; }
     public bool IsForTeacher { get; set; }
 
-    public IReadOnlyList<long> AssetIds { get; set; }
+    public IReadOnlyList<string> AssetUrls { get; set; }
     public ICollection<QuestionAnswerDto> Answers { get; set; }
 }
