@@ -21,11 +21,11 @@ namespace Qualification.Api.Controllers
         /// <summary>
         /// Get certificate by quizId
         /// </summary>
-        /// <param name="sertDto"></param>
+        /// <param name="quizId"></param>
         /// <returns></returns>
         [HttpPost]
-        public async ValueTask<IActionResult> PostCertificateAsync(SertificateForCreationDto sertDto) =>
-            File(await this.sertificateService.GenerateSertificateAsync(sertDto), "application/octet-stream", "sertificate.png");
+        public async ValueTask<IActionResult> PostSertificateAsync(long quizId) =>
+            File(await this.quizService.GenerateSertificateAsync(quizId), "application/octet-stream", "sertificate.png");
 
         /// <summary>
         /// Gets certificate by id

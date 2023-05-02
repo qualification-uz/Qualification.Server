@@ -162,11 +162,14 @@ public class StudentQuizService : IStudentQuizService
     public async ValueTask<IEnumerable<QuizQuestionDto>> RetrieveQuizQuestions(long studentId)
     {
         var student = await this.studentRepository.SelectStudentByIdAsync(studentId);
+        if (student == null)
+            throw new NotFoundException("Student not found");
+
         var application = await this.applicationService.RetrieveApplicationByIdAsync((long)student.ApplicationId);
         var quiz = await this.studentQuizRepository
                 .SelectAllStudentQuizzes()
                 .Include(q => q.Questions)
-                .FirstOrDefaultAsync(t => t.ApplicationId == application.Id);
+                .FirstOrDefaultAsync(t => t.StudentId == studentId);
 
         if (quiz is null)
             throw new NotFoundException("Couldn't find quiz for given id");

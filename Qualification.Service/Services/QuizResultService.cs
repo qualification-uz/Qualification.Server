@@ -55,6 +55,9 @@ public class QuizResultService : IQuizResultService
         if (quiz is null)
             throw new NotFoundException("Couldn't find quiz for given id");
 
+        quiz.IsCompleted = true;
+
+        await this.studentQuizRepository.UpdateStudentQuizAsync(quiz);
 
         var correctSubmissions = this.submissionResultRepository
             .SelectAllSubmissionResults()
@@ -79,7 +82,7 @@ public class QuizResultService : IQuizResultService
     {
         var quizResult = await this.quizResultRepository
             .SelectAllQuizResults()
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(p => p.QuizId == quizId);
 
         if (quizResult is not null)
         {

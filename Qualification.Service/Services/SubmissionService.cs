@@ -71,6 +71,7 @@ public class SubmissionService : ISubmissionService
             QuestionOptionId = submissionDto.QuestionOptionId,
             QuizQuestionId = submissionDto.QuizQuestionId
         };
+        var existSubmission = new SubmissionResult();
 
         // if it is student role
         if (HttpContextHelper.Role == UserRole.Student.ToString())
@@ -78,23 +79,29 @@ public class SubmissionService : ISubmissionService
             submission.IsForStudent = true;
             submission.StudentId = submissionDto.UserId;
             submission.QuizForStudentId = submissionDto.QuizId;
+
+            // check for exist submission
+            existSubmission = await submissionResultRepository
+                .SelectAllSubmissionResults()
+                .FirstOrDefaultAsync(t => t.QuestionOptionId == submission.QuestionOptionId && t.QuizForStudentId == submissionDto.QuizId);
         }
         else
         {
             submission.IsForStudent = false;
             submission.UserId = submissionDto.UserId;
             submission.QuizId = submissionDto.QuizId;
+
+            // check for exist submission
+            existSubmission = await submissionResultRepository
+                .SelectAllSubmissionResults()
+                .FirstOrDefaultAsync(t => t.QuestionOptionId == submission.QuestionOptionId && t.QuizId == submissionDto.QuizId);
         }
 
         if (quizQuestionOption.IsCorrect)
             submission.IsCorrect = true;
 
-        // check for exist submission
-        var existSubmission = await submissionResultRepository
-            .SelectAllSubmissionResults()
-            .FirstOrDefaultAsync(t => t.QuestionOptionId == submission.QuestionOptionId);
         if(existSubmission != null)
-            submission = await this.submissionResultRepository.DeleteSubmissionResultAsync(existSubmission);
+            submission = await this.submissionResultRepository.UpdateSubmissionResultAsync(existSubmission);
         else 
             submission = await this.submissionResultRepository.InsertSubmissionResultAsync(submission);
 

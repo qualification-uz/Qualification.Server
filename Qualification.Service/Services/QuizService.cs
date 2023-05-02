@@ -23,6 +23,7 @@ namespace Qualification.Service.Services;
 public class QuizService : IQuizService
 {
     private readonly IQuizRepository quizRepository;
+    private readonly IStudentQuizRepository studentQuizRepository;
     private readonly IQuestionRepository questionRepository;
     private readonly IConfiguration configuration;
     private readonly UserManager<User> userManager;
@@ -49,7 +50,8 @@ public class QuizService : IQuizService
         IAvloniyClientService avloniyService,
         IStudentQuizRepository quizForStudentRepository,
         IApplicationRepository applicationRepository,
-        IAssetService assetService)
+        IAssetService assetService,
+        IStudentQuizRepository studentQuizRepository)
     {
         this.configuration = configuration;
         this.mapper = mapper;
@@ -64,6 +66,7 @@ public class QuizService : IQuizService
         this.quizForStudentRepository = quizForStudentRepository;
         this.applicationRepository = applicationRepository;
         this.assetService=assetService;
+        this.studentQuizRepository=studentQuizRepository;
     }
 
     public async ValueTask<QuizDto> CreateQuizAsync(QuizForCreationDto quizDto)
@@ -450,15 +453,36 @@ public class QuizService : IQuizService
         if (quiz is null)
             throw new NotFoundException("Couldn't find quiz for given id");
 
-        var quizResults = await this.quizResultRepository.SelectAllQuizResults()
+        // calculate subject score
+        var quizResult = await this.quizResultRepository.SelectAllQuizResults()
             .Where(quizResult => quizResult.QuizId == quizId)
             .Include(quizResult => quizResult.Quiz)
             .Include(quizResult => quizResult.User)
+            .FirstOrDefaultAsync();
+
+        var subjectScore = 20 * (quizResult?.Score ?? 0) / 100;
+
+        // calculate pedagocial score
+        var studentQuizes = await this.studentQuizRepository.SelectAllStudentQuizzes()
+            .Where(studentQuiz => studentQuiz.ApplicationId == quiz.ApplicationId)
+            .ToListAsync();
+        var studentIds = studentQuizes.Select(studentQuiz => studentQuiz.StudentId);
+        var allQuizCompleted = studentQuizes.All(studentQuiz => studentQuiz.IsCompleted);
+        if (!allQuizCompleted)
+            throw new Exception("All student have to finish the quiz");
+
+        if (!studentIds.Any())
+            throw new NotFoundException("Students not found");
+
+        var studentQuizResults = await this.quizResultRepository.SelectAllQuizResults()
+            .Where(quizResult => studentIds.Contains(quizResult.StudentId ?? 0))
             .ToListAsync();
 
-        var subjectScore = quizResults.FirstOrDefault(p => p.QuizId == quizId && p.StudentId == null)?.Score ?? 0;
-        var pedagogicalScore = quizResults.Where(p => p.QuizId == quizId && p.StudentId != null).Average(p => p.Score);
-        var total = pedagogicalScore == 0 ? subjectScore : (subjectScore + pedagogicalScore) / 2;
+        var pedagogicalScore = 80 * studentQuizResults.Count(p => p.Score >= 60) / studentIds.Count();
+
+        if(pedagogicalScore + subjectScore < 60)
+            throw new Exception("Siz test sinovlaridan o’ta olmadingiz yoki test topshiriqlarini muvaffaqiyatli topshira olmadingiz");
+
         // create sertificate
         var subjectsResponse = await this.avloniyService.SelectAllSubjectsAsync();
         if(subjectsResponse.Success)
@@ -466,16 +490,16 @@ public class QuizService : IQuizService
             var subject = subjectsResponse.Result.FirstOrDefault(subject => subject.Id == quiz.Application?.SubjectId);
             var sertificate = await this.sertificateService.GenerateSertificateAsync(new SertificateForCreationDto
             {
-                FullName = quizResults.FirstOrDefault().User?.FirstName + " " + quizResults.FirstOrDefault().User?.LastName,
+                FullName = quizResult?.User?.FirstName + " " + quizResult?.User?.LastName,
                 SertificateNumber = Guid.NewGuid().ToString("N"),
                 Subject = subject.Name,
                 SubjectScore = subjectScore,
                 PedagogicalScore = pedagogicalScore,
-                TotalScore = (subjectScore + pedagogicalScore) / 2
+                TotalScore = pedagogicalScore + subjectScore
             });
-
+            
             return sertificate;
-        }
+        };
 
         throw new Exception("Couldn't get subject");
     }

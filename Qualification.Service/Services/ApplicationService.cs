@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Qualification.Data.IRepositories;
+using Qualification.Data.Repositories;
 using Qualification.Domain.Configurations;
 using Qualification.Domain.Entities;
 using Qualification.Domain.Entities.Users;
@@ -20,6 +21,10 @@ namespace Qualification.Service.Services;
 public class ApplicationService : IApplicationService
 {
     private readonly IApplicationRepository applicationRepository;
+    private readonly IQuizRepository quizRepository;
+    private readonly IStudentQuizRepository studentQuizRepository;
+    private readonly IQuizResultRepository quizResultRepository;
+    private readonly IQuizQuestionRepository quizQuestionRepository;
     private readonly IMapper mapper;
     private readonly IAssetService assetService;
     private readonly UserManager<User> userManager;
@@ -32,7 +37,11 @@ public class ApplicationService : IApplicationService
         IAssetService assetService,
         UserManager<User> userManager,
         IAvloniyClientService avloniyClientService,
-        IExcelService excelService)
+        IExcelService excelService,
+        IQuizRepository quizRepository,
+        IStudentQuizRepository studentQuizRepository,
+        IQuizResultRepository quizResultRepository,
+        IQuizQuestionRepository quizQuestionRepository)
     {
         this.applicationRepository = applicationRepository;
         this.mapper = mapper;
@@ -40,6 +49,10 @@ public class ApplicationService : IApplicationService
         this.userManager = userManager;
         this.avloniyClientService = avloniyClientService;
         this.excelService = excelService;
+        this.quizRepository = quizRepository;
+        this.studentQuizRepository = studentQuizRepository;
+        this.quizResultRepository=quizResultRepository;
+        this.quizQuestionRepository=quizQuestionRepository;
     }
 
     public async ValueTask<ApplicationDto> AddApplicationAsync(ApplicationForCreationDto applicationDto)
@@ -197,9 +210,35 @@ public class ApplicationService : IApplicationService
     {
         var application =
             await this.applicationRepository.SelectApplicationByIdAsync(applicationId);
-
         if (application is null)
             throw new NotFoundException("Couldn't find application for given id");
+
+        var quizes = this.quizRepository.SelectAllQuizzes()
+            .Where(a => a.UserId == application.TeacherId);
+        var studentQuizes = this.studentQuizRepository
+            .SelectAllStudentQuizzes()
+            .Where(sq => sq.ApplicationId == applicationId);
+
+        // Deletes all quize results related to this teacher/student
+        var quizResults = this.quizResultRepository.SelectAllQuizResults()
+            .Where(a => quizes.Any(q => q.Id == a.QuizId) || studentQuizes.Any(sq => sq.Id == a.QuizForStudentId));
+        foreach (var quizResult in quizResults)
+            await quizResultRepository.DeleteQuizResultAsync(quizResult);
+
+        // Deletes all quizes related to this teacher
+        var quizQuestions = await this.quizQuestionRepository.SelectAllQuizQuestions()
+            .Where(a => quizes.Any(q => q.Id == a.QuizId) || studentQuizes.Any(sq => sq.Id == a.QuizForStudentId))
+            .ToListAsync();
+        foreach (var quizQuestion in quizQuestions)
+            await quizQuestionRepository.DeleteQuizQuestionAsync(quizQuestion);
+
+        // deletes all quizeForStudents related to this teacher
+        foreach (var studentQuiz in studentQuizes)
+            await studentQuizRepository.DeleteStudentQuizAsync(studentQuiz);
+
+        // Deletes all quizes related to this teacher
+        foreach (var quiz in quizes)
+            await quizRepository.DeleteQuizAsync(quiz);
 
         application = await this.applicationRepository.DeleteApplicationAsync(application);
 

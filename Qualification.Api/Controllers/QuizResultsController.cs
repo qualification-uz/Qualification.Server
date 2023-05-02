@@ -6,11 +6,11 @@ namespace Qualification.Api.Controllers
 {
     [Route("api/results")]
     [ApiController]
-    public class QuizResults : ControllerBase
+    public class QuizResultsController : ControllerBase
     {
         private readonly IQuizResultService quizResultService;
 
-        public QuizResults(IQuizResultService quizResultService)
+        public QuizResultsController(IQuizResultService quizResultService)
         {
             this.quizResultService = quizResultService;
         }
