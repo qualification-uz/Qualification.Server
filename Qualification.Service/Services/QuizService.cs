@@ -482,10 +482,10 @@ public class QuizService : IQuizService
             .Where(quizResult => studentIds.Contains(quizResult.StudentId ?? 0))
             .ToListAsync();
 
-        var pedagogicalScore = 80 * studentQuizResults.Count(p => p.Score >= 60) / studentIds.Count();
+        var pedagogicalScore = 80 * studentQuizResults.Count(p => p.Score >= 50) / studentIds.Count();
 
         if(pedagogicalScore + subjectScore < 60)
-            throw new Exception("Siz test sinovlaridan o’ta olmadingiz yoki test topshiriqlarini muvaffaqiyatli topshira olmadingiz");
+            throw new Exception("Siz test sinovlaridan oï¿½ta olmadingiz yoki test topshiriqlarini muvaffaqiyatli topshira olmadingiz");
 
         // create sertificate
         var subjectsResponse = await this.avloniyService.SelectAllSubjectsAsync();

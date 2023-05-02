@@ -6,7 +6,6 @@ public class Certificate : Auditable
 {
     public long? UserId { get; set; }
     public long? ApplicationId { get; set; }
-    public Application Application { get; set; }
     public double SubjectScore { get; set; }
     public double PedagogicalScore { get; set; }
     public string Code { get; set; }
