@@ -35,7 +35,7 @@ namespace Qualification.Api.Controllers
         [HttpGet("{id}")]
         public async ValueTask<IActionResult> GetCertificateAsync([FromRoute] string id)
         {
-            var result = new FileStreamResult(await sertificateService.GetSertificateAsync(id), "image/png");   
+            var result = new FileStreamResult(await sertificateService.GetFileAsync(id), "image/png");   
 
             return result;
         }

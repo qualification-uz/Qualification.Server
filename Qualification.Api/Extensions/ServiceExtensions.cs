@@ -17,6 +17,7 @@ public static class ServiceExtensions
 {
     public static void AddCustomServices(this IServiceCollection services)
     {
+        services.AddScoped<ICertificateRepository, CertificateRepository>();
         services.AddScoped<IPaymentRequestRepository, PaymentRequestRepository>();
         services.AddScoped<IApplicationRepository, ApplicationRepository>();
         services.AddScoped<IApplicationRepository, ApplicationRepository>();

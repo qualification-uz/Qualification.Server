@@ -15,6 +15,7 @@ using Qualification.Service.DTOs.Sertificate;
 using Qualification.Service.DTOs.Users;
 using Qualification.Service.Exceptions;
 using Qualification.Service.Extensions;
+using Qualification.Service.Helpers;
 using Qualification.Service.Interfaces;
 using System.Collections.Generic;
 
@@ -23,6 +24,7 @@ namespace Qualification.Service.Services;
 public class QuizService : IQuizService
 {
     private readonly IQuizRepository quizRepository;
+    private readonly ICertificateRepository certificateRepository;
     private readonly IStudentQuizRepository studentQuizRepository;
     private readonly IQuestionRepository questionRepository;
     private readonly IConfiguration configuration;
@@ -51,7 +53,8 @@ public class QuizService : IQuizService
         IStudentQuizRepository quizForStudentRepository,
         IApplicationRepository applicationRepository,
         IAssetService assetService,
-        IStudentQuizRepository studentQuizRepository)
+        IStudentQuizRepository studentQuizRepository,
+        ICertificateRepository certificateRepository)
     {
         this.configuration = configuration;
         this.mapper = mapper;
@@ -67,6 +70,7 @@ public class QuizService : IQuizService
         this.applicationRepository = applicationRepository;
         this.assetService=assetService;
         this.studentQuizRepository=studentQuizRepository;
+        this.certificateRepository=certificateRepository;
     }
 
     public async ValueTask<QuizDto> CreateQuizAsync(QuizForCreationDto quizDto)
@@ -485,20 +489,32 @@ public class QuizService : IQuizService
 
         // create sertificate
         var subjectsResponse = await this.avloniyService.SelectAllSubjectsAsync();
-        if(subjectsResponse.Success)
+        if (subjectsResponse.Success)
         {
             var subject = subjectsResponse.Result.FirstOrDefault(subject => subject.Id == quiz.Application?.SubjectId);
-            var sertificate = await this.sertificateService.GenerateSertificateAsync(new SertificateForCreationDto
+            
+            // save certificate
+            var certificate = await this.certificateRepository.InsertCertificateAsync(new Certificate
+            {
+                ApplicationId = quiz.ApplicationId,
+                DateIssued = DateTime.UtcNow,
+                PedagogicalScore = pedagogicalScore,
+                SubjectScore = subjectScore,
+                UserId = HttpContextHelper.UserId ?? 0
+            });
+            certificate.Code = HttpContextHelper.UserId + "-" + quizId + "-" + certificate.Id;
+
+            certificate = await this.certificateRepository.UpdateCertificateAsync(certificate);
+
+            return await this.sertificateService.GenerateSertificateAsync(new SertificateForCreationDto
             {
                 FullName = quizResult?.User?.FirstName + " " + quizResult?.User?.LastName,
-                SertificateNumber = Guid.NewGuid().ToString("N"),
+                SertificateNumber = certificate.Code,
+                PedagogicalScore = certificate.PedagogicalScore,
                 Subject = subject.Name,
-                SubjectScore = subjectScore,
-                PedagogicalScore = pedagogicalScore,
+                SubjectScore= subjectScore,
                 TotalScore = pedagogicalScore + subjectScore
             });
-            
-            return sertificate;
         };
 
         throw new Exception("Couldn't get subject");

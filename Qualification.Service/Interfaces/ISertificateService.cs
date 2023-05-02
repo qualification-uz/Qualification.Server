@@ -5,5 +5,5 @@ namespace Qualification.Service.Interfaces;
 public interface ISertificateService
 {
     ValueTask<byte[]> GenerateSertificateAsync(SertificateForCreationDto sertificateForCreationDto);
-    ValueTask<FileStream> GetSertificateAsync(string id);
+    ValueTask<FileStream> GetFileAsync(string code);
 }

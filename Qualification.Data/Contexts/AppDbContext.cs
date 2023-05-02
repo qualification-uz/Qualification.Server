@@ -162,6 +162,7 @@ public class AppDbContext : IdentityDbContext<User, Role, long>
     }
 
     public DbSet<Application> Applications { get; set; }
+    public DbSet<Certificate> Certificates { get; set; }
     public DbSet<Payment> Payments { get; set; }
     public DbSet<Group> Groups { get; set; }
     public DbSet<Question> Questions { get; set; }

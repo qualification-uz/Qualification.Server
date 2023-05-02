@@ -6,6 +6,7 @@ using System.Drawing.Imaging;
 using System.Drawing.Text;
 using MessagingToolkit.QRCode.Codec;
 using Microsoft.AspNetCore.Http;
+using Qualification.Data.IRepositories;
 
 namespace Qualification.Service.Services;
 
@@ -15,11 +16,13 @@ public class SertificateService : ISertificateService
     private readonly IWebHostEnvironment _env;
     private readonly QRCodeEncoder encoder;
     private readonly IHttpContextAccessor httpContextAccessor;
-    public SertificateService(IWebHostEnvironment env, IHttpContextAccessor httpContextAccessor)
+    private readonly ICertificateRepository certificateRepository;
+    public SertificateService(IWebHostEnvironment env, IHttpContextAccessor httpContextAccessor, ICertificateRepository certificateRepository)
     {
         _env = env;
         encoder = new QRCodeEncoder();
         this.httpContextAccessor = httpContextAccessor;
+        this.certificateRepository=certificateRepository;
     }
 
     public async ValueTask<byte[]> GenerateSertificateAsync(SertificateForCreationDto sertificateForCreationDto)
@@ -33,7 +36,7 @@ public class SertificateService : ISertificateService
         graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
         Brush brush = new SolidBrush(Color.FromKnownColor(KnownColor.Black));
 
-        var id = Guid.NewGuid().ToString("N");
+        var id = sertificateForCreationDto.SertificateNumber;
         // Set text font
         Font defaultFont = new Font("Arial", 50, FontStyle.Regular);
         Font fullNameFont = new Font("Arial", 50, FontStyle.Bold);
@@ -72,10 +75,10 @@ public class SertificateService : ISertificateService
         return null;
     }
 
-    public async ValueTask<FileStream> GetSertificateAsync(string id)
+    public async ValueTask<FileStream> GetFileAsync(string code)
     {
-        if (File.Exists(Path.Combine(_env.WebRootPath, @$"Certificates\{id}.png")))
-            return new FileStream(Path.Combine(Path.Combine(_env.WebRootPath, @$"Certificates\{id}.png")), FileMode.Open, FileAccess.Read);
+        if (File.Exists(Path.Combine(_env.WebRootPath, @$"Certificates\{code}.png")))
+            return new FileStream(Path.Combine(Path.Combine(_env.WebRootPath, @$"Certificates\{code}.png")), FileMode.Open, FileAccess.Read);
 
         return null;
     }
