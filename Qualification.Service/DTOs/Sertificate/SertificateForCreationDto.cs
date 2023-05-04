@@ -12,4 +12,6 @@ public class SertificateForCreationDto
     public double SubjectScore { get; set; }
     public double PedagogicalScore { get; set; }
     public double TotalScore { get; set; }
+    public DateTime CreatedDate { get; set; }
+    public DateTime ExpireDate { get; set; }
 }

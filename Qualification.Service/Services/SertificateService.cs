@@ -7,6 +7,8 @@ using System.Drawing.Text;
 using MessagingToolkit.QRCode.Codec;
 using Microsoft.AspNetCore.Http;
 using Qualification.Data.IRepositories;
+using Microsoft.EntityFrameworkCore;
+using Qualification.Service.Exceptions;
 
 namespace Qualification.Service.Services;
 
@@ -38,8 +40,9 @@ public class SertificateService : ISertificateService
 
         var id = sertificateForCreationDto.SertificateNumber;
         // Set text font
-        Font defaultFont = new Font("Arial", 50, FontStyle.Regular);
-        Font fullNameFont = new Font("Arial", 50, FontStyle.Bold);
+        Font defaultFont = new Font("Arial", 40, FontStyle.Regular);
+        Font dateFont = new Font("Arial", 30, FontStyle.Regular);
+        Font fullNameFont = new Font("Arial", 40, FontStyle.Bold);
 
         // Set text size
         SizeF sizeOfCertNumber = graphics.MeasureString(id, defaultFont);
@@ -48,6 +51,7 @@ public class SertificateService : ISertificateService
         SizeF sizeOfSubjectScore = graphics.MeasureString(sertificateForCreationDto.SubjectScore.ToString(), defaultFont);
         SizeF sizeOfPedagogicalScore = graphics.MeasureString(sertificateForCreationDto.PedagogicalScore.ToString(), defaultFont);
         SizeF sizeOfTotalScore = graphics.MeasureString(sertificateForCreationDto.TotalScore.ToString(), defaultFont);
+        SizeF sizeOfDate = graphics.MeasureString(sertificateForCreationDto.CreatedDate.ToShortDateString(), defaultFont);
 
         // Draw text to image
         graphics.DrawString(sertificateForCreationDto.SertificateNumber, defaultFont, brush, new PointF((bitmap.Width - sizeOfCertNumber.Width) / 2, 1715));
@@ -56,7 +60,9 @@ public class SertificateService : ISertificateService
         graphics.DrawString(sertificateForCreationDto.SubjectScore.ToString(), defaultFont, brush, new PointF((bitmap.Width - sizeOfSubjectScore.Width) / 5 * 4.2f, 2140));
         graphics.DrawString(sertificateForCreationDto.PedagogicalScore.ToString(), defaultFont, brush, new PointF((bitmap.Width - sizeOfPedagogicalScore.Width) / 5 * 4.2f, 2490));
         graphics.DrawString(sertificateForCreationDto.TotalScore.ToString(), defaultFont, brush, new PointF((bitmap.Width - sizeOfTotalScore.Width) / 4.2f, 2570));
-        
+        graphics.DrawString(sertificateForCreationDto.CreatedDate.ToShortDateString(), dateFont, brush, new PointF((bitmap.Width - sizeOfDate.Width) / 2 + 125, 3010));
+        graphics.DrawString(sertificateForCreationDto.ExpireDate.ToShortDateString(), dateFont, brush, new PointF((bitmap.Width - sizeOfDate.Width) / 5 * 4.2f + 80, 3010));
+
         // Save output image
         string outputFileName = id + ".png";
         string outputFilePath = Path.Combine(_env.WebRootPath, @$"Certificates\{outputFileName}");
@@ -77,6 +83,15 @@ public class SertificateService : ISertificateService
 
     public async ValueTask<FileStream> GetFileAsync(string code)
     {
+        var cert = await this.certificateRepository.SelectAllCertificates()
+            .OrderBy(c => c.Id)
+            .LastOrDefaultAsync(c => c.Code == code);
+        if (cert == null)
+            throw new NotFoundException("Sertifikat topilmadi!");
+
+        if (cert.ExpireDate < DateTime.UtcNow)
+            throw new HttpStatusCodeException(400, "Sertifikatning muddati o'tgan!");
+
         if (File.Exists(Path.Combine(_env.WebRootPath, @$"Certificates\{code}.png")))
             return new FileStream(Path.Combine(Path.Combine(_env.WebRootPath, @$"Certificates\{code}.png")), FileMode.Open, FileAccess.Read);
 

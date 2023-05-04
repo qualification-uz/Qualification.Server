@@ -497,12 +497,12 @@ public class QuizService : IQuizService
             var certificate = await this.certificateRepository.InsertCertificateAsync(new Certificate
             {
                 ApplicationId = quiz.ApplicationId,
-                DateIssued = DateTime.UtcNow,
+                ExpireDate = DateTime.UtcNow.AddYears(1),
                 PedagogicalScore = pedagogicalScore,
                 SubjectScore = subjectScore,
-                UserId = HttpContextHelper.UserId ?? 0
+                UserId = quiz.UserId
             });
-            certificate.Code = HttpContextHelper.UserId + "-" + quizId + "-" + certificate.Id;
+            certificate.Code = quiz.UserId + "-" + quizId + "-" + certificate.Id;
 
             certificate = await this.certificateRepository.UpdateCertificateAsync(certificate);
 
@@ -513,7 +513,9 @@ public class QuizService : IQuizService
                 PedagogicalScore = certificate.PedagogicalScore,
                 Subject = subject.Name,
                 SubjectScore= subjectScore,
-                TotalScore = pedagogicalScore + subjectScore
+                TotalScore = pedagogicalScore + subjectScore,
+                CreatedDate = DateTime.UtcNow,
+                ExpireDate = DateTime.UtcNow.AddYears(1)
             });
         };
 

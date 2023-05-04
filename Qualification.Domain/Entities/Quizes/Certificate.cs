@@ -9,5 +9,5 @@ public class Certificate : Auditable
     public double SubjectScore { get; set; }
     public double PedagogicalScore { get; set; }
     public string Code { get; set; }
-    public DateTime DateIssued { get; set; }
+    public DateTime ExpireDate { get; set; }
 }
