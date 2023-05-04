@@ -38,7 +38,10 @@ public class MapperProfile : Profile
         CreateMap<Question, QuestionDto>()
             .ForMember(dto => dto.AssetUrls, src => src
                 .MapFrom(dest => dest.Assets
-                    .Select(asset => Path.Combine("Images", asset.Asset == null ? string.Empty : asset.Asset.Url))));
+                    .Select(asset => Path.Combine("Images", asset.Asset == null ? string.Empty : asset.Asset.Url))))
+            .ForMember(dto => dto.AssetIds, src => src 
+                .MapFrom(dest => dest.Assets
+                    .Select(asset => asset.AssetId)));
 
         CreateMap<QuestionForCreationDto, Question>().ReverseMap();
         CreateMap<QuestionAnswerForCreationDto, QuestionAnswer>().ReverseMap();
@@ -46,7 +49,10 @@ public class MapperProfile : Profile
         CreateMap<QuestionAnswer, QuestionAnswerDto>()
             .ForMember(dto => dto.AssetUrls, src => src
                 .MapFrom(dest => dest.Assets
-                    .Select(asset => Path.Combine("Images", asset.Asset == null ? string.Empty : asset.Asset.Url))));
+                    .Select(asset => Path.Combine("Images", asset.Asset == null ? string.Empty : asset.Asset.Url))))
+            .ForMember(dto => dto.AssetIds, src => src 
+                .MapFrom(dest => dest.Assets
+                    .Select(asset => asset.AssetId)));
 
         CreateMap<Asset, AssetDto>().ReverseMap();
 

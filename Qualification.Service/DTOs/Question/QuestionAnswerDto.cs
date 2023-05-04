@@ -6,5 +6,6 @@ public class QuestionAnswerDto
     public string Content { get; set; }
     public bool IsCorrect { get; set; }
 
+    public IReadOnlyList<long> AssetIds { get; set; }
     public IReadOnlyList<string> AssetUrls { get; set; }
 }

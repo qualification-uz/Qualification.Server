@@ -93,14 +93,15 @@ public class QuestionService : IQuestionService
         if (!string.IsNullOrEmpty(questionForUpdateDto.Content))
             question.Content = questionForUpdateDto.Content;
 
-        if (questionForUpdateDto.Type.HasValue)
-            question.Type = questionForUpdateDto.Type.Value;
+        if(questionForUpdateDto.AssetIds != null) 
+        {
+            question.Assets = new List<QuestionAsset>();
+            foreach(var assetId in questionForUpdateDto.AssetIds)
+                question.Assets.Add(new QuestionAsset { AssetId = assetId });
+        }
 
         if (questionForUpdateDto.SubjectId.HasValue)
             question.SubjectId = questionForUpdateDto.SubjectId.Value;
-
-        if (questionForUpdateDto.Level.HasValue)
-            question.Level = questionForUpdateDto.Level.Value;
 
         if (questionForUpdateDto.CorrectAnswers.HasValue)
             question.CorrectAnswers = questionForUpdateDto.CorrectAnswers.Value;
