@@ -180,7 +180,9 @@ public class StudentQuizService : IStudentQuizService
         {
             var shuffledQuestions = await RetrieveShuffledQuestions(
                 subjectId: application.SubjectId,
-                isForTeacher: false);
+                isForTeacher: false, 
+                studentGradeId: student.GradeId ?? 0
+            );
 
             foreach (var question in shuffledQuestions)
             {
@@ -219,13 +221,13 @@ public class StudentQuizService : IStudentQuizService
         return this.mapper.Map<IEnumerable<QuizQuestionDto>>(questions);
     }
 
-    private async ValueTask<IEnumerable<Question>> RetrieveShuffledQuestions(long subjectId, bool isForTeacher)
+    private async ValueTask<IEnumerable<Question>> RetrieveShuffledQuestions(long subjectId, bool isForTeacher, long studentGradeId)
     {
         int questionCount = int.Parse(configuration.GetSection("Quiz:QuestionCount").Value);
 
         var questions = await questionRepository
             .SelectAllQuestions()
-            .Where(p => p.IsForTeacher == isForTeacher && p.SubjectId == subjectId)
+            .Where(p => p.IsForTeacher == isForTeacher && p.SubjectId == subjectId && p.StudentGradeId == studentGradeId)
             .Include(p => p.Assets)
             .ThenInclude(asset => asset.Asset)
             .Include(p => p.Answers)
